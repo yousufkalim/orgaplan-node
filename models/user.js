@@ -3,20 +3,40 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema(
   {
-    name: {
+    firstName: {
       type: String,
-      trim: true,
+    },
+    lastName: {
+      type: String,
     },
     email: {
       type: String,
       trim: true,
-      unique: true,
     },
     password: {
       type: String,
     },
-    image: {
+    picture: {
       type: String,
+    },
+    phone: {
+      type: Number,
+    },
+    address: {
+      street: {
+        type: String,
+      },
+      // [long, lat]
+      location: [{ type: Number }],
+      zip: {
+        type: String,
+      },
+      city: {
+        type: String,
+      },
+      country: {
+        type: String,
+      },
     },
     role: {
       type: String,
@@ -38,4 +58,4 @@ const userSchema = new Schema(
   }
 );
 
-module.exports = mongoose.model("users", userSchema);
+module.exports = mongoose.model("User", userSchema);
