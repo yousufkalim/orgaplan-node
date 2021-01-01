@@ -15,7 +15,11 @@ class AuthContoller {
     let user = await User.findOne({ email: data.email });
     if (user) throw new CustomError(Texts.errors.emailExists);
 
+    const address = JSON.parse(data.address);
+    data.address = address;
+
     user = new User(data);
+
     const token = JWT.sign({ id: user._id, role: "user" }, ENV.JWT_SECRET);
     await user.save();
 

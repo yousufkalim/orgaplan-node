@@ -24,12 +24,14 @@ const buildingSchema = new Schema(
     },
     delivery: {
       type: Schema.Types.ObjectId,
-      ref: "Building",
+      ref: "Delivery",
     },
-    material: {
-      type: Schema.Types.ObjectId,
-      ref: "Material",
-    },
+    material: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Material",
+      },
+    ],
     mean: {
       type: Schema.Types.ObjectId,
       ref: "Mean",

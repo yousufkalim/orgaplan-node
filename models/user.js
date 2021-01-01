@@ -16,7 +16,7 @@ const userSchema = new Schema(
     password: {
       type: String,
     },
-    picture: {
+    image: {
       type: String,
     },
     phone: {
@@ -41,8 +41,13 @@ const userSchema = new Schema(
     role: {
       type: String,
       trim: true,
-      enum: ["user", "admin"],
-      default: "user",
+      enum: [
+        "admin",
+        "owner",
+        "enterpriseUser",
+        "trafficAgent",
+        "bufferTrafficAgent",
+      ],
     },
     isActive: {
       type: Boolean,

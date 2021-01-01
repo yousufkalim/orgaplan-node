@@ -15,6 +15,10 @@ const subscriptionSchema = new Schema(
     price: {
       type: Number,
     },
+    subscriberID: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
     status: {
       type: String,
       enum: ["ACTIVE", "INACTIVE", "CLOSED"],
