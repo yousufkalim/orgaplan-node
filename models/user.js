@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-
+const { globals } = require("../utils/texts");
 const userSchema = new Schema(
   {
     firstName: {
@@ -42,11 +42,11 @@ const userSchema = new Schema(
       type: String,
       trim: true,
       enum: [
-        "admin",
-        "owner",
-        "enterpriseUser",
-        "trafficAgent",
-        "bufferTrafficAgent",
+        globals.roles.admin,
+        globals.roles.superAdmin,
+        globals.roles.enterprise,
+        globals.roles.trafficAgent,
+        globals.roles.bufferTrafficAgent,
       ],
     },
     isActive: {

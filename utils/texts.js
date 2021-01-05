@@ -7,6 +7,8 @@ module.exports = {
     userNotFound: "User does not exist",
     quoteRequestNotFound: "Quote Request Not Found",
     subscriptionNotFound: "No Subscription Found",
+    siteNotFound: "No Site Found",
+
     passwordRequired: "Password is required",
     passwordInvalid: "Password is incorrect!",
     userNameExists: "Username is not available!",
@@ -33,8 +35,24 @@ module.exports = {
     emailVerified: "Email verified successfully",
     passwordResetSent: "Password reset link sent",
     emailVerificationSent: "Email verfication link sent",
+    siteRequested: "Site Requested",
+    siteUpdated: "Site Updated",
+    siteDeleted: "Site deleted",
   },
   globals: {
     quotaRedirectUrl: "http://192.168.1.8:5001/api/v1/request-quote/",
+    roles: {
+      admin: "admin",
+      superAdmin: "owner",
+      enterprise: "enterpriseUser",
+      trafficAgent: "trafficAgent",
+      bufferTrafficAgent: "bufferTrafficAgent",
+    },
+    siteStatus: {
+      active: "ACTIVE",
+      inActive: "INACTIVE",
+      unavailable: "UNAVAILABLE",
+      completed: "COMPLETED",
+    },
   },
 };

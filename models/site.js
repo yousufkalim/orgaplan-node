@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const { globals } = require("../utils/texts");
+const { number } = require("joi");
 const Schema = mongoose.Schema;
 
 const siteSchema = new Schema(
@@ -21,31 +23,33 @@ const siteSchema = new Schema(
     closingHour: {
       type: Number,
     },
+    siteEndAlertTime: {
+      type: Number,
+    },
     status: {
       type: String,
-      enum: ["ACTIVE", "UNAVAILABLE", "INACTIVE", "COMPLETED"],
+      enum: [
+        globals.siteStatus.active,
+        globals.siteStatus.unavailable,
+        globals.siteStatus.inActive,
+        globals.siteStatus.completed,
+      ],
     },
-    statusReason: {
+    unavailabilityReason: {
       type: String,
+      required: false,
     },
-    locations: [
-      {
-        street: {
-          type: String,
-        },
-        // [long, lat]
-        location: [{ type: Number }],
-        zip: {
-          type: String,
-        },
-        city: {
-          type: String,
-        },
-        country: {
-          type: String,
-        },
-      },
-    ],
+    adminId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    location: {
+      buildingIds: [
+        { type: Schema.Types.ObjectId, ref: "Building", required: false },
+      ],
+      levelIds: [{ type: Schema.Types.ObjectId, ref: "Level", require: false }],
+    },
+    addresses: [{ type: String }],
   },
   {
     timestamps: true,

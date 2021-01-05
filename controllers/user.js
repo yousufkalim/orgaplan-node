@@ -2,10 +2,14 @@ const User = require("../models/user");
 const Texts = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
+const bcrypt = require("bcryptjs");
 
 class UserContoller {
   async create(req, res) {
     const result = await new User(req.body).save();
+    if (result) {
+      result.password = await bcrypt.hash(result.password, 10);
+    }
     res.status(200).send(response(Texts.texts.userCreated, result));
   }
 
