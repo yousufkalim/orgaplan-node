@@ -1,44 +1,33 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const STRINGS = require("../utils/texts");
 
 const buildingSchema = new Schema(
   {
     name: {
       type: String,
     },
-    levels: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Level",
-      },
-    ],
     startDate: {
       type: Date,
     },
     endDate: {
       type: Date,
     },
-    storage: {
-      type: Schema.Types.ObjectId,
-      ref: "Building",
-    },
-    delivery: {
-      type: Schema.Types.ObjectId,
-      ref: "Delivery",
-    },
-    material: [
+    mean: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Material",
+        ref: STRINGS.MODALS.MEAN,
       },
     ],
-    mean: {
-      type: Schema.Types.ObjectId,
-      ref: "Mean",
-    },
+    levels: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: STRINGS.MODALS.LEVEL,
+      },
+    ],
     status: {
       type: String,
-      enum: ["ACTIVE", "INPROGRESS", "INACTIVE", "COMPLETED", "ACCIDENTs"],
+      enum: [STRINGS.STATUS.ACTIVE, STRINGS.STATUS.INACTIVE],
     },
     statusReason: {
       type: String,
@@ -49,4 +38,4 @@ const buildingSchema = new Schema(
   }
 );
 
-module.exports = mongoose.model("Building", buildingSchema);
+module.exports = mongoose.model(STRINGS.MODALS.BUILDING, buildingSchema);

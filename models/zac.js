@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-
+const STRINGS = require("../utils/texts");
 const zacSchema = new Schema(
   {
     name: {
@@ -9,7 +9,7 @@ const zacSchema = new Schema(
     sites: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Site",
+        ref: STRINGS.MODALS.SITE,
       },
     ],
   },
@@ -18,4 +18,4 @@ const zacSchema = new Schema(
   }
 );
 
-module.exports = mongoose.model("UserSites", zacSchema);
+module.exports = mongoose.model(STRINGS.MODALS.ZAC, zacSchema);

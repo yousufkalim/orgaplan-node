@@ -1,27 +1,27 @@
 const Site = require("../models/site");
-const Texts = require("../utils/texts");
+const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 class SiteController {
   async create(req, res) {
     const result = await new Site(req.body).save();
-    res.status(200).send(response(Texts.texts.siteRequested, result));
+    res.status(200).send(response(STRINGS.TEXTS.siteRequested, result));
   }
 
   async getAll(req, res) {
     const result = await Site.find({}, { password: 0, __v: 0 });
     res
       .status(200)
-      .send(response(Texts.texts.allRequestedSubscriptions, result));
+      .send(response(STRINGS.TEXTS.allRequestedSubscriptions, result));
   }
 
   async getOne(req, res) {
     const id = req.params.id;
 
     const result = await Site.findOne({ _id: id }, { password: 0, __v: 0 });
-    if (!result) throw new CustomError(Texts.errors.siteNotFound);
+    if (!result) throw new CustomError(STRINGS.ERRORS.siteNotFound);
 
-    res.status(200).send(response(Texts.texts.siteRequested, result));
+    res.status(200).send(response(STRINGS.TEXTS.siteRequested, result));
   }
 
   async update(req, res) {
@@ -34,9 +34,9 @@ class SiteController {
       { new: true }
     );
 
-    if (!result) throw new CustomError(Texts.errors.siteNotFound, 404);
+    if (!result) throw new CustomError(STRINGS.ERRORS.siteNotFound, 404);
 
-    res.status(200).send(response(Texts.texts.siteUpdated, result));
+    res.status(200).send(response(STRINGS.TEXTS.siteUpdated, result));
   }
 
   async delete(req, res) {
@@ -47,7 +47,7 @@ class SiteController {
     });
     result.remove();
 
-    res.status(200).send(response(Texts.texts.siteDeleted, result));
+    res.status(200).send(response(STRINGS.TEXTS.siteDeleted, result));
   }
 }
 

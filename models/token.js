@@ -1,10 +1,11 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const STRINGS = require("../utils/texts");
 
 const tokenSchema = new Schema({
   userId: {
     type: Schema.Types.ObjectId,
-    ref: "User",
+    ref: STRINGS.MODALS.USER,
   },
   token: {
     type: String,
@@ -18,4 +19,4 @@ const tokenSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model("Token", tokenSchema);
+module.exports = mongoose.model(STRINGS.MODALS.TOKEN, tokenSchema);

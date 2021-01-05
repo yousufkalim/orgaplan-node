@@ -1,19 +1,19 @@
 const RequestQuote = require("../models/requestQuote");
-const Texts = require("../utils/texts");
+const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const MailService = require("../services/mail.service");
 class RequestQuoteController {
   async create(req, res) {
     const result = await new RequestQuote(req.body).save();
-    res.status(200).send(response(Texts.texts.quoteRequest, result));
+    res.status(200).send(response(STRINGS.TEXTS.quoteRequest, result));
   }
 
   async getAll(req, res) {
     const result = await RequestQuote.find({}, { password: 0, __v: 0 });
     res
       .status(200)
-      .send(response(Texts.texts.allRequestedSubscriptions, result));
+      .send(response(STRINGS.TEXTS.allRequestedSubscriptions, result));
   }
 
   async getOne(req, res) {
@@ -23,9 +23,9 @@ class RequestQuoteController {
       { _id: id },
       { password: 0, __v: 0 }
     );
-    if (!result) throw new CustomError(Texts.errors.quoteRequestNotFound);
+    if (!result) throw new CustomError(STRINGS.ERRORS.quoteRequestNotFound);
 
-    res.status(200).send(response(Texts.texts.quoteRequest, result));
+    res.status(200).send(response(STRINGS.TEXTS.quoteRequest, result));
   }
 
   async update(req, res) {
@@ -38,11 +38,12 @@ class RequestQuoteController {
       { new: true }
     );
 
-    if (!result) throw new CustomError(Texts.errors.quoteRequestNotFound, 404);
+    if (!result)
+      throw new CustomError(STRINGS.ERRORS.quoteRequestNotFound, 404);
 
     res
       .status(200)
-      .send(response(Texts.texts.qouteRequestQuoteUpdated, result));
+      .send(response(STRINGS.TEXTS.qouteRequestQuoteUpdated, result));
   }
 
   async sendQuote(req, res) {
@@ -55,12 +56,13 @@ class RequestQuoteController {
       { new: true }
     );
 
-    if (!result) throw new CustomError(Texts.errors.quoteRequestNotFound, 404);
+    if (!result)
+      throw new CustomError(STRINGS.ERRORS.quoteRequestNotFound, 404);
     let emailService = new MailService();
     await emailService.sendQuote("Your Quote", result);
     res
       .status(200)
-      .send(response(Texts.texts.qouteRequestQuoteUpdated, result));
+      .send(response(STRINGS.TEXTS.qouteRequestQuoteUpdated, result));
   }
 
   async delete(req, res) {
@@ -71,7 +73,7 @@ class RequestQuoteController {
     });
     result.remove();
 
-    res.status(200).send(response(Texts.texts.quoteRequestDeleted, result));
+    res.status(200).send(response(STRINGS.TEXTS.quoteRequestDeleted, result));
   }
 }
 

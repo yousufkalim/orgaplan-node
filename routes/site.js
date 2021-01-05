@@ -11,7 +11,7 @@ router.get("/:id", auth("admin"), siteContoller.getOne);
 router.post("/", auth("admin"), upload("logo"), siteContoller.create);
 
 // PUTS
-router.put("/:id", auth("admin"), upload("logo"), siteContoller.update);
+router.put("/:id", upload("logo"), siteContoller.update);
 
 // DELETES
 router.delete("/:id", auth("admin"), siteContoller.delete);

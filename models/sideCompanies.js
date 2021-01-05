@@ -1,16 +1,17 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const STRINGS = require("../utils/texts");
 
 const siteCompaniesSchema = new Schema(
   {
     siteId: {
       type: Schema.Types.ObjectId,
-      ref: "Site",
+      ref: STRINGS.MODALS.SITE,
     },
     companies: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Company",
+        ref: STRINGS.MODALS.COMPANY,
       },
     ],
   },
@@ -19,4 +20,7 @@ const siteCompaniesSchema = new Schema(
   }
 );
 
-module.exports = mongoose.model("SiteCompanies", siteCompaniesSchema);
+module.exports = mongoose.model(
+  STRINGS.MODALS.SITECOMPANIES,
+  siteCompaniesSchema
+);

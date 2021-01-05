@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const { globals } = require("../utils/texts");
+const STRINGS = require("../utils/texts");
+
 const userSchema = new Schema(
   {
     firstName: {
@@ -38,16 +39,14 @@ const userSchema = new Schema(
         type: String,
       },
     },
+    company: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.COMPANY,
+    },
     role: {
       type: String,
-      trim: true,
-      enum: [
-        globals.roles.admin,
-        globals.roles.superAdmin,
-        globals.roles.enterprise,
-        globals.roles.trafficAgent,
-        globals.roles.bufferTrafficAgent,
-      ],
+      enum: [STRINGS.ROLE.USER, STRINGS.ROLE.SUPERADMIN],
+      default: STRINGS.ROLE.USER,
     },
     isActive: {
       type: Boolean,
@@ -63,4 +62,4 @@ const userSchema = new Schema(
   }
 );
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model(STRINGS.MODALS.USER, userSchema);

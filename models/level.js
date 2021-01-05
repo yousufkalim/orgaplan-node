@@ -1,14 +1,34 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const STRINGS = require("../utils/texts");
 
 const levelSchema = new Schema(
   {
     name: {
       type: String,
     },
+    number: {
+      type: String,
+    },
+    levelType: {
+      type: String,
+      enum: [
+        STRINGS.LEVELTYPE.STORAGE,
+        STRINGS.LEVELTYPE.DELIVERY,
+        STRINGS.LEVELTYPE.BOTH,
+      ],
+    },
+    storage: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.STORAGEAREA,
+    },
+    delivery: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.DELIVERYAREA,
+    },
     building: {
       type: Schema.Types.ObjectId,
-      ref: "Building",
+      ref: STRINGS.MODALS.BUILDING,
     },
   },
   {
@@ -16,4 +36,4 @@ const levelSchema = new Schema(
   }
 );
 
-module.exports = mongoose.model("Level", levelSchema);
+module.exports = mongoose.model(STRINGS.MODALS.LEVEL, levelSchema);

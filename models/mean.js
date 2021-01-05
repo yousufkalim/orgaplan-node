@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const STRINGS = require("../utils/texts");
 
 const meanSchema = new Schema(
   {
@@ -8,7 +9,12 @@ const meanSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["ACTIVE", "UNAVAILABLE", "INACTIVE", "COMPLETED"],
+      enum: [
+        STRINGS.STATUS.ACTIVE,
+        STRINGS.STATUS.UNAVAILABLE,
+        STRINGS.STATUS.INACTIVE,
+        STRINGS.STATUS.COMPLETED,
+      ],
     },
     statusReason: {
       type: String,
@@ -19,4 +25,4 @@ const meanSchema = new Schema(
   }
 );
 
-module.exports = mongoose.model("Mean", meanSchema);
+module.exports = mongoose.model(STRINGS.MODALS.MEAN, meanSchema);

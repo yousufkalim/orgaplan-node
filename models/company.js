@@ -1,23 +1,9 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const { globals } = require("../utils/texts");
+const STRINGS = require("../utils/texts");
+
 const companySchema = new Schema(
   {
-    users: [
-      {
-        userId: { type: Schema.Types.ObjectId, ref: "User" },
-        role: {
-          type: String,
-          enum: [
-            globals.roles.admin,
-            globals.roles.enterprise,
-            globals.roles.trafficAgent,
-            globals.roles.bufferTrafficAgent,
-          ],
-        },
-        status: { type: String, enum: ["PENDING", "ACTIVE"] },
-      },
-    ],
     logo: {
       type: String,
     },
@@ -36,14 +22,32 @@ const companySchema = new Schema(
     },
     companyId: {
       type: Schema.Types.ObjectId,
-      ref: "Company",
+      ref: STRINGS.MODALS.COMPANY,
       required: false,
     },
-    siteIds: [{ type: Schema.Types.ObjectId, ref: "Site" }],
+    users: [
+      {
+        userId: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.USER },
+        role: {
+          type: String,
+          enum: [
+            STRINGS.ROLES.ADMIN,
+            STRINGS.ROLES.ENTERPRISE,
+            STRINGS.ROLES.TRAFFIC,
+            STRINGS.ROLES.BUFFER,
+          ],
+        },
+        status: {
+          type: String,
+          enum: [STRINGS.STATUS.PENDING, STRINGS.STATUS.ACTIVE],
+        },
+      },
+    ],
+    siteIds: [{ type: Schema.Types.ObjectId, ref: STRINGS.MODALS.SITE }],
   },
   {
     timestamps: true,
   }
 );
 
-module.exports = mongoose.model("Company", companySchema);
+module.exports = mongoose.model(STRINGS.MODALS.COMPANY, companySchema);

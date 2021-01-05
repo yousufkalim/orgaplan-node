@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
-const { globals } = require("../utils/texts");
 const { number } = require("joi");
 const Schema = mongoose.Schema;
+const STRINGS = require("../utils/texts");
 
 const siteSchema = new Schema(
   {
@@ -29,10 +29,10 @@ const siteSchema = new Schema(
     status: {
       type: String,
       enum: [
-        globals.siteStatus.active,
-        globals.siteStatus.unavailable,
-        globals.siteStatus.inActive,
-        globals.siteStatus.completed,
+        STRINGS.STATUS.ACTIVE,
+        STRINGS.STATUS.UNAVAILABLE,
+        STRINGS.STATUS.INACTIVE,
+        STRINGS.STATUS.COMPLETED,
       ],
     },
     unavailabilityReason: {
@@ -41,13 +41,23 @@ const siteSchema = new Schema(
     },
     adminId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: STRINGS.MODALS.USER,
     },
     location: {
       buildingIds: [
-        { type: Schema.Types.ObjectId, ref: "Building", required: false },
+        {
+          type: Schema.Types.ObjectId,
+          ref: STRINGS.MODALS.BUILDING,
+          required: false,
+        },
       ],
-      levelIds: [{ type: Schema.Types.ObjectId, ref: "Level", require: false }],
+      levelIds: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: STRINGS.MODALS.LEVEL,
+          require: false,
+        },
+      ],
     },
     addresses: [{ type: String }],
   },
@@ -56,4 +66,4 @@ const siteSchema = new Schema(
   }
 );
 
-module.exports = mongoose.model("Site", siteSchema);
+module.exports = mongoose.model(STRINGS.MODALS.SITE, siteSchema);

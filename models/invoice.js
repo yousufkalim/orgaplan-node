@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const STRINGS = require("../utils/texts");
 
 const invoiceSchema = new Schema({
   name: {
@@ -19,13 +20,18 @@ const invoiceSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ["Paid", "Unpaid"],
-    default: "Paid",
+    enum: [STRINGS.STATUS.PAID, STRINGS.STATUS.UNPAID],
+    default: STRINGS.STATUS.PAID,
   },
   invoiceType: {
     type: String,
-    enum: ["Delay", "Incident", "Unplanned Delivery", "Way"],
-    default: "Delays",
+    enum: [
+      STRINGS.INVOICETYPES.DELAY,
+      STRINGS.INVOICETYPES.INCIDENT,
+      STRINGS.INVOICETYPES.UNPLANNEDDELIVERY,
+      STRINGS.INVOICETYPES.WAYS,
+    ],
+    default: STRINGS.INVOICETYPES.DELAY,
   },
   information: [
     {
@@ -33,18 +39,18 @@ const invoiceSchema = new Schema({
       images: [{ type: String }],
       site: {
         type: Schema.Types.ObjectId,
-        ref: "User",
+        ref: STRINGS.MODALS.USER,
       },
       enterprise: {
         type: Schema.Types.ObjectId,
-        ref: "User",
+        ref: STRINGS.MODALS.USER,
       },
       comments: [
         {
           comment: String,
           userId: {
             type: Schema.Types.ObjectId,
-            ref: "User",
+            ref: STRINGS.MODALS.USER,
           },
         },
       ],
@@ -52,4 +58,4 @@ const invoiceSchema = new Schema({
   ],
 });
 
-module.exports = mongoose.model("Invoice", invoiceSchema);
+module.exports = mongoose.model(STRINGS.MODALS.INVOICE, invoiceSchema);

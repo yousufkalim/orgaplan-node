@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const STRINGS = require("../utils/texts");
 
 const subscriptionSchema = new Schema(
   {
@@ -17,11 +18,15 @@ const subscriptionSchema = new Schema(
     },
     subscriberID: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: STRINGS.MODALS.USER,
     },
     status: {
       type: String,
-      enum: ["ACTIVE", "INACTIVE", "CLOSED"],
+      enum: [
+        STRINGS.STATUS.ACTIVE,
+        STRINGS.STATUS.INACTIVE,
+        STRINGS.STATUS.CLOSED,
+      ],
     },
   },
   {
@@ -29,4 +34,7 @@ const subscriptionSchema = new Schema(
   }
 );
 
-module.exports = mongoose.model("Subscription", subscriptionSchema);
+module.exports = mongoose.model(
+  STRINGS.MODALS.SUBSCRIPTION,
+  subscriptionSchema
+);

@@ -3,7 +3,7 @@ const CustomError = require("./../utils/customError");
 const handlebars = require("handlebars");
 const fs = require("fs");
 const path = require("path");
-const texts = require("../utils/texts");
+const STRINGS = require("../utils/texts");
 const { text } = require("body-parser");
 const ENV = process.env;
 
@@ -65,7 +65,7 @@ class MailService {
     const replacements = {
       name: user.firstName + " " + user.lastName,
       email: user.email,
-      action_url: texts.globals.quotaRedirectUrl + user.id,
+      action_url: STRINGS.QUOTEREDIRECT + user.id,
     };
     const htmlToSend = template(replacements);
 

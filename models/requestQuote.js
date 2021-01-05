@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const STRINGS = require("../utils/texts");
 
-const requestQuoteSchema = new Schema(
+const QuoteSchema = new Schema(
   {
     companyName: {
       type: String,
@@ -36,4 +37,4 @@ const requestQuoteSchema = new Schema(
   }
 );
 
-module.exports = mongoose.model("RequestQuote", requestQuoteSchema);
+module.exports = mongoose.model(STRINGS.MODALS.QUOTE, QuoteSchema);

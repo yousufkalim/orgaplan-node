@@ -1,16 +1,17 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const STRINGS = require("../utils/texts");
 
 const alertSchema = new Schema(
   {
     createdBy: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: STRINGS.MODALS.USER,
     },
     createdFor: [
       {
         type: Schema.Types.ObjectId,
-        ref: "User",
+        ref: STRINGS.MODALS.USER,
       },
     ],
     reason: {
@@ -25,4 +26,4 @@ const alertSchema = new Schema(
   }
 );
 
-module.exports = mongoose.model("Alert", alertSchema);
+module.exports = mongoose.model(STRINGS.MODALS.ALERT, alertSchema);
