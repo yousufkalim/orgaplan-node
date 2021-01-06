@@ -45,8 +45,8 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: [STRINGS.ROLE.USER, STRINGS.ROLE.SUPERADMIN],
-      default: STRINGS.ROLE.USER,
+      enum: [STRINGS.ROLES.USER, STRINGS.ROLES.SUPERADMIN],
+      default: STRINGS.ROLES.USER,
     },
     isActive: {
       type: Boolean,

@@ -45,6 +45,7 @@ module.exports = {
     TRAFFIC: "TRAFFIC",
     SUPERADMIN: "SUPERADMIN",
     ENTERPRISE: "ENTERPRISE",
+    USER: "USER",
   },
   STATUS: {
     ACTIVE: "ACTIVE",
@@ -92,9 +93,5 @@ module.exports = {
     USER: "User",
     USERSITES: "UserSites",
     ZAC: "Zac",
-  },
-  ROLE: {
-    USER: "USER",
-    SUPERADMIN: "SUPERADMIN",
   },
 };

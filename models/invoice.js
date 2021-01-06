@@ -7,7 +7,7 @@ const invoiceSchema = new Schema({
     type: String,
   },
   date: {
-    type: String,
+    type: Date,
   },
   time: {
     type: String,
@@ -39,7 +39,7 @@ const invoiceSchema = new Schema({
       images: [{ type: String }],
       site: {
         type: Schema.Types.ObjectId,
-        ref: STRINGS.MODALS.USER,
+        ref: STRINGS.MODALS.SITE,
       },
       enterprise: {
         type: Schema.Types.ObjectId,

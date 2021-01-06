@@ -16,11 +16,16 @@ const userSitesSchema = new Schema(
         },
         role: {
           type: String,
+          enum: [
+            STRINGS.ROLES.ADMIN,
+            STRINGS.ROLES.TRAFFIC,
+            STRINGS.ROLES.BUFFER,
+            STRINGS.ROLES.ENTERPRISE,
+          ],
           required: true,
         },
         status: {
           type: String,
-          required: true,
         },
       },
     ],

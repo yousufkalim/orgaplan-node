@@ -25,7 +25,7 @@ const storageArea = new Schema(
       type: Boolean,
       default: false,
     },
-    company: [
+    companies: [
       {
         type: Schema.Types.ObjectId,
         ref: STRINGS.MODALS.COMPANY,

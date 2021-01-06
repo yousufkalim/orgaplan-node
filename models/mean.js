@@ -19,7 +19,34 @@ const meanSchema = new Schema(
     statusReason: {
       type: String,
     },
+    pricePerHour: {
+      type: Number,
+    },
+    unavailable: {
+      reason: {
+        type: String,
+      },
+      startDate: {
+        type: Date,
+      },
+      endDate: {
+        type: Date,
+      },
+    },
+
+    availability: {
+      reason: {
+        type: String,
+      },
+      startDate: {
+        type: Date,
+      },
+      endDate: {
+        type: Date,
+      },
+    },
   },
+
   {
     timestamps: true,
   }

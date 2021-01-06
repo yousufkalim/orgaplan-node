@@ -27,6 +27,10 @@ const deliveryArea = new Schema(
       endDate: {
         type: Date,
       },
+      siteId: {
+        type: Schema.Types.ObjectId,
+        ref: STRINGS.MODALS.SITE,
+      },
     },
   },
   {
