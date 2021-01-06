@@ -4,18 +4,10 @@ const STRINGS = require("../utils/texts");
 
 const subscriptionSchema = new Schema(
   {
-    name: {
-      type: String,
-    },
-    startDate: {
-      type: Date,
-    },
-    endDate: {
-      type: Date,
-    },
-    price: {
-      type: Number,
-    },
+    name: String,
+    start: Date,
+    end: Date,
+    price: Number,
     subscriberID: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.USER,

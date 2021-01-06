@@ -3,21 +3,11 @@ const Schema = mongoose.Schema;
 const STRINGS = require("../utils/texts");
 
 const invoiceSchema = new Schema({
-  name: {
-    type: String,
-  },
-  date: {
-    type: Date,
-  },
-  time: {
-    type: String,
-  },
-  location: {
-    type: String,
-  },
-  price: {
-    type: Number,
-  },
+  name: String,
+  date: Date,
+  time: String,
+  location: String,
+  price: Number,
   status: {
     type: String,
     enum: [STRINGS.STATUS.PAID, STRINGS.STATUS.UNPAID],

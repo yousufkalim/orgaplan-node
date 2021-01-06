@@ -4,18 +4,10 @@ const STRINGS = require("../utils/texts");
 
 const companySchema = new Schema(
   {
-    logo: {
-      type: String,
-    },
-    name: {
-      type: String,
-    },
-    color: {
-      type: String,
-    },
-    description: {
-      type: String,
-    },
+    logo: String,
+    name: String,
+    color: String,
+    description: String,
     isSubContractor: {
       type: Boolean,
       default: false,

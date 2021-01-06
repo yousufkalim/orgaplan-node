@@ -4,15 +4,9 @@ const STRINGS = require("../utils/texts");
 
 const buildingSchema = new Schema(
   {
-    name: {
-      type: String,
-    },
-    startDate: {
-      type: Date,
-    },
-    endDate: {
-      type: Date,
-    },
+    name: String,
+    start: Date,
+    end: Date,
     mean: [
       {
         type: Schema.Types.ObjectId,
@@ -29,9 +23,7 @@ const buildingSchema = new Schema(
       type: String,
       enum: [STRINGS.STATUS.ACTIVE, STRINGS.STATUS.INACTIVE],
     },
-    statusReason: {
-      type: String,
-    },
+    statusReason: String,
   },
   {
     timestamps: true,

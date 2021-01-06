@@ -5,27 +5,13 @@ const STRINGS = require("../utils/texts");
 
 const siteSchema = new Schema(
   {
-    name: {
-      type: String,
-    },
-    logo: {
-      type: String,
-    },
-    startDate: {
-      type: Date,
-    },
-    endDate: {
-      type: Date,
-    },
-    openingHour: {
-      type: Number,
-    },
-    closingHour: {
-      type: Number,
-    },
-    siteEndAlertTime: {
-      type: Number,
-    },
+    name: String,
+    logo: String,
+    start: Date,
+    end: Date,
+    openingHour: Number,
+    closingHour: Number,
+    siteEndAlertTime: Number,
     status: {
       type: String,
       enum: [
@@ -35,30 +21,19 @@ const siteSchema = new Schema(
         STRINGS.STATUS.COMPLETED,
       ],
     },
-    unavailabilityReason: {
-      type: String,
-      required: false,
-    },
-    adminId: {
-      type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.USER,
-    },
-    location: {
-      buildingIds: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: STRINGS.MODALS.BUILDING,
-          required: false,
-        },
-      ],
-      levelIds: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: STRINGS.MODALS.LEVEL,
-          require: false,
-        },
-      ],
-    },
+    unavailabilityReason: String,
+    means: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: STRINGS.MODALS.MEAN,
+      },
+    ],
+    buildings: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: STRINGS.MODALS.BUILDING,
+      },
+    ],
     addresses: [{ type: String }],
   },
   {

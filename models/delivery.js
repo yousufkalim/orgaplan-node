@@ -41,14 +41,12 @@ const deliverySchema = new Schema(
     ],
     images: [
       {
-        type: Strig,
+        type: String,
       },
     ],
     comments: [
       {
-        comment: {
-          type: String,
-        },
+        comment: String,
         user: {
           role: {
             type: String,
@@ -68,9 +66,7 @@ const deliverySchema = new Schema(
       ],
       default: STRINGS.STATUS.ACTIVE,
     },
-    statusReason: {
-      type: String,
-    },
+    statusReason: String,
   },
   {
     timestamps: true,

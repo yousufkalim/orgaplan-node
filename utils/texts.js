@@ -73,6 +73,11 @@ module.exports = {
     DELIVERY: "DELIVERY",
     BOTH: "BOTH",
   },
+  MEANTYPES: {
+    LIFTING: "LIFTING",
+    ROUTING: "ROUTING",
+    BOTH: "BOTH",
+  },
   MODALS: {
     USER: "User",
     ALERT: "Alert",

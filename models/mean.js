@@ -4,47 +4,31 @@ const STRINGS = require("../utils/texts");
 
 const meanSchema = new Schema(
   {
-    name: {
+    name: String,
+    description: String,
+    sheet: String,
+    pricePerHour: Number,
+    meanType: {
       type: String,
+      enum: [STRINGS.MEANTYPES.LIFTING, STRINGS.MEANTYPES.ROUTING],
     },
     status: {
       type: String,
-      enum: [
-        STRINGS.STATUS.ACTIVE,
-        STRINGS.STATUS.UNAVAILABLE,
-        STRINGS.STATUS.INACTIVE,
-        STRINGS.STATUS.COMPLETED,
-      ],
+      enum: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],
     },
-    statusReason: {
-      type: String,
-    },
-    pricePerHour: {
-      type: Number,
-    },
-    unavailable: {
-      reason: {
-        type: String,
+    availability: [
+      {
+        start: Date,
+        end: Date,
       },
-      startDate: {
-        type: Date,
+    ],
+    unavailable: [
+      {
+        reason: String,
+        start: Date,
+        end: Date,
       },
-      endDate: {
-        type: Date,
-      },
-    },
-
-    availability: {
-      reason: {
-        type: String,
-      },
-      startDate: {
-        type: Date,
-      },
-      endDate: {
-        type: Date,
-      },
-    },
+    ],
   },
 
   {

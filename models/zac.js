@@ -1,11 +1,10 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const STRINGS = require("../utils/texts");
+
 const zacSchema = new Schema(
   {
-    name: {
-      type: String,
-    },
+    name: String,
     sites: [
       {
         type: Schema.Types.ObjectId,

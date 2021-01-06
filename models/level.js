@@ -4,12 +4,8 @@ const STRINGS = require("../utils/texts");
 
 const levelSchema = new Schema(
   {
-    name: {
-      type: String,
-    },
-    number: {
-      type: String,
-    },
+    name: String,
+    number: String,
     levelType: {
       type: String,
       enum: [

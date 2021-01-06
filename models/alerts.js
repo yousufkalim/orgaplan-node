@@ -14,12 +14,8 @@ const alertSchema = new Schema(
         ref: STRINGS.MODALS.USER,
       },
     ],
-    reason: {
-      type: String,
-    },
-    location: {
-      type: String, // Question
-    },
+    reason: String,
+    location: String, // Question
   },
   {
     timestamps: true,

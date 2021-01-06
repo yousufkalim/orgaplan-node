@@ -4,9 +4,7 @@ const STRINGS = require("../utils/texts");
 
 const materialSchema = new Schema(
   {
-    name: {
-      type: String,
-    },
+    name: String,
     status: {
       type: String,
       enum: [
@@ -16,9 +14,7 @@ const materialSchema = new Schema(
         STRINGS.STATUS.COMPLETED,
       ],
     },
-    statusReason: {
-      type: String,
-    },
+    statusReason: String,
   },
   {
     timestamps: true,

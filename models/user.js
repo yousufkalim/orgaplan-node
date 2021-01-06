@@ -4,45 +4,30 @@ const STRINGS = require("../utils/texts");
 
 const userSchema = new Schema(
   {
-    firstName: {
-      type: String,
-    },
-    lastName: {
-      type: String,
-    },
+    firstName: String,
+    lastName: String,
     email: {
       type: String,
       trim: true,
     },
-    password: {
-      type: String,
-    },
-    image: {
-      type: String,
-    },
-    phone: {
-      type: Number,
-    },
+    password: String,
+    image: String,
+    phone: Number,
     address: {
-      street: {
-        type: String,
-      },
+      zip: String,
+      city: String,
+      street: String,
+      country: String,
       // [long, lat]
       location: [{ type: Number }],
-      zip: {
-        type: String,
-      },
-      city: {
-        type: String,
-      },
-      country: {
-        type: String,
-      },
     },
-    company: {
-      type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.COMPANY,
-    },
+    // Only one company per user allowed, but for future proofing, it's an array
+    company: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: STRINGS.MODALS.COMPANY,
+      },
+    ],
     role: {
       type: String,
       enum: [STRINGS.ROLES.USER, STRINGS.ROLES.SUPERADMIN],

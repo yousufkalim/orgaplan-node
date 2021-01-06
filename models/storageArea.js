@@ -4,15 +4,9 @@ const STRINGS = require("../utils/texts");
 
 const storageArea = new Schema(
   {
-    name: {
-      type: String,
-    },
-    startDate: {
-      type: Date,
-    },
-    endDate: {
-      type: Date,
-    },
+    name: String,
+    startDate: Date,
+    endDate: Date,
     level: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.LEVEL,
@@ -35,6 +29,12 @@ const storageArea = new Schema(
       {
         type: Schema.Types.ObjectId,
         ref: STRINGS.MODALS.MATERIAL,
+      },
+    ],
+    means: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: STRINGS.MODALS.MEAN,
       },
     ],
     status: {

@@ -24,9 +24,7 @@ const userSitesSchema = new Schema(
           ],
           required: true,
         },
-        status: {
-          type: String,
-        },
+        status: String,
       },
     ],
   },
