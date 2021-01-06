@@ -1,14 +1,14 @@
 const JWT = require("jsonwebtoken");
 const User = require("../models/user");
 const CustomError = require("../utils/customError");
-
+const STRINGS = require("../utils/texts");
 /**
  * If no role is passed the default role is user
  *
  * @param  {String} role role allowed to access the route
  */
 
-function auth(role = "user") {
+function auth(role = STRINGS.ROLES.USER) {
   // roles = roles.length > 0 && roles : role.USER;
 
   return async (req, res, next) => {

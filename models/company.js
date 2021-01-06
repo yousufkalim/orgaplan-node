@@ -17,6 +17,12 @@ const companySchema = new Schema(
       ref: STRINGS.MODALS.COMPANY,
       required: false,
     },
+    incharge: {
+      firstName: { type: String },
+      lastName: { type: String },
+      phone: { type: Number },
+      email: { type: String },
+    },
     users: [
       {
         userId: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.USER },
@@ -28,10 +34,6 @@ const companySchema = new Schema(
             STRINGS.ROLES.TRAFFIC,
             STRINGS.ROLES.BUFFER,
           ],
-        },
-        status: {
-          type: String,
-          enum: [STRINGS.STATUS.PENDING, STRINGS.STATUS.ACTIVE],
         },
       },
     ],

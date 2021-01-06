@@ -10,7 +10,7 @@ const userSitesSchema = new Schema(
     },
     sites: [
       {
-        site: {
+        siteId: {
           type: Schema.Types.ObjectId,
           ref: STRINGS.MODALS.SITE,
         },

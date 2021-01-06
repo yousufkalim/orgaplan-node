@@ -12,9 +12,9 @@ const errorNames = [
 ];
 
 module.exports = (app) => {
-  app.use("*", (req, res) => {
-    res.status(400).send(response("Invalid request", null, false));
-  });
+  // app.use("*", (req, res) => {
+  //   res.status(400).send(response("Invalid request", null, false));
+  // });
 
   app.use((error, req, res, next) => {
     console.log(Colors.FgRed, error);

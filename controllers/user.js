@@ -3,13 +3,14 @@ const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const bcrypt = require("bcryptjs");
+const ENV = process.env;
 
 class UserContoller {
   async create(req, res) {
-    const result = await new User(req.body).save();
-    if (result) {
-      result.password = await bcrypt.hash(result.password, 10);
-    }
+    const body = req.body;
+    body.address = JSON.parse(body.address);
+    body.password = await bcrypt.hash(body.password, ENV.BCRYPT_SALT);
+    const result = await new User(body).save();
     res.status(200).send(response(STRINGS.TEXTS.userCreated, result));
   }
 

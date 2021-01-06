@@ -16,9 +16,9 @@ class AuthContoller {
     if (user) throw new CustomError(STRINGS.ERRORS.emailExists);
 
     const address = JSON.parse(data.address);
+    const password = await bcrypt.hash(data.password, 10);
     data.address = address;
-
-    user = new User(data);
+    (data.password = password), (user = new User(data));
 
     const token = JWT.sign({ id: user._id, role: "user" }, ENV.JWT_SECRET);
     await user.save();
@@ -35,7 +35,6 @@ class AuthContoller {
 
   async signin(req, res) {
     const data = req.body;
-
     if (!data.email) throw new CustomError(STRINGS.ERRORS.emailRequired);
     if (!data.password) throw new CustomError(STRINGS.ERRORS.passwordRequired);
 
@@ -52,7 +51,7 @@ class AuthContoller {
       ENV.JWT_SECRET
     );
 
-    result = {
+    const result = {
       uid: user._id,
       email: user.email,
       role: user.role,
@@ -71,10 +70,10 @@ class AuthContoller {
     if (!user) throw new CustomError(STRINGS.ERRORS.userNotFound);
 
     // Check if user password is correct
-    const isCorrect = await bcrypt.compare(data.password, user.password);
+    const isCorrect = await bcrypt.compare(data.oldPassword, user.password);
     if (!isCorrect) throw new CustomError(STRINGS.ERRORS.passwordInvalid);
 
-    const hash = await bcrypt.hash(data.password, ENV.BCRYPT_SALT);
+    const hash = await bcrypt.hash(data.password, 10);
 
     const result = await User.updateOne(
       { _id: userId },
@@ -96,7 +95,7 @@ class AuthContoller {
     if (token) await token.deleteOne();
 
     let verifyToken = crypto.randomBytes(32).toString("hex");
-    const hash = await bcrypt.hash(verifyToken, BCRYPT_SALT);
+    const hash = await bcrypt.hash(verifyToken, 10);
 
     await new Token({
       userId: user._id,
@@ -144,7 +143,7 @@ class AuthContoller {
     if (token) await token.deleteOne();
 
     let resetToken = crypto.randomBytes(32).toString("hex");
-    const hash = await bcrypt.hash(resetToken, ENV.BCRYPT_SALT);
+    const hash = await bcrypt.hash(resetToken, 10);
 
     await new Token({
       userId: user._id,
@@ -167,7 +166,7 @@ class AuthContoller {
     const isValid = await bcrypt.compare(resetToken, RToken.token);
     if (!isValid) throw new CustomError(STRINGS.ERRORS.invalidToken);
 
-    const hash = await bcrypt.hash(password, ENV.BCRYPT_SALT);
+    const hash = await bcrypt.hash(password, 10);
 
     const result = await User.updateOne(
       { _id: userId },
