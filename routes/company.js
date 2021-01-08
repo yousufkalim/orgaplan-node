@@ -1,19 +1,20 @@
 const router = require("express").Router();
-const upload = require("../middlewares/multer");
 const auth = require("../middlewares/auth");
+const upload = require("../middlewares/multer");
 const companyController = require("../controllers/company");
 
 // GETS
-router.get("/", auth("admin"), companyController.getAll);
-router.get("/:id", auth("admin"), companyController.getOne);
+router.get("/", auth(), companyController.getAll);
+router.get("/:id", auth(), companyController.getOne);
 
 // POSTS
-router.post("/", auth("admin"), upload("logo"), companyController.create);
+// router.post("/", auth(), upload("logo"), companyController.create);
+router.post("/", auth(), upload("company", "logo"), companyController.create);
 
 // PUTS
-router.put("/:id", auth("admin"), upload("logo"), companyController.update);
-router.put("/add_user/:id", auth("admin"), companyController.addUser);
+// router.put("/:id", auth(), upload("logo"), companyController.update);
+router.put("/add_user/:id", auth(), companyController.addUser);
 // DELETES
-router.delete("/:id", auth("admin"), companyController.delete);
+router.delete("/:id", auth(), companyController.delete);
 
 module.exports = router;

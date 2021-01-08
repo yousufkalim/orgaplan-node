@@ -8,22 +8,25 @@ class UserSitesController {
     let result = null;
     result = await UserSites.findOne({ userId: data.userId });
     if (!result) {
-      const userSites = await new UserSites(data).save();
+      // Check roles
+      const userSites = await new UserSites({
+        userId: data.userId,
+        sites: [{ siteId: data.siteId, role: data.role }],
+      }).save();
       res
         .status(200)
         .send(response(STRINGS.TEXTS.userSiteRequested, userSites));
     } else {
-      if (!data.sites && data.sites.length <= 0) {
-        throw new CustomError(STRINGS.ERRORS.userSitesNotFound);
+      const siteIndex = result.sites.findIndex(
+        (sit) => String(sit.siteId) === String(data.siteId)
+      );
+      if (siteIndex == -1) {
+        result.sites.push({ siteId: data.siteId, role: data.role });
+        await result.save(result);
+        res.status(200).send(response(STRINGS.TEXTS.userSiteRequested, result));
+      } else {
+        throw new CustomError(STRINGS.ERRORS.userAddedToSite);
       }
-      const sitesClone = [...result.sites];
-      console.log(JSON.stringify(sitesClone));
-      const site = { siteId: data.sites[0].siteId, role: data.sites[0].role };
-      sitesClone.push(site);
-      console.log(JSON.stringify(sitesClone, null, 2));
-      result.sites = sitesClone;
-      await result.updateOne(result);
-      res.status(200).send(response(STRINGS.TEXTS.userSiteRequested, result));
     }
   }
 
@@ -37,10 +40,15 @@ class UserSitesController {
   async getOne(req, res) {
     const id = req.params.id;
 
-    const result = await UserSites.findOne(
-      { _id: id },
-      { password: 0, __v: 0 }
-    );
+    const result = await UserSites.findById({ _id: id });
+    if (!result) throw new CustomError(STRINGS.ERRORS.userSitesNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.userSiteRequested, result));
+  }
+  async getSiteByUserId(req, res) {
+    const userId = req.params.userId;
+
+    const result = await UserSites.findOne({ userId: userId });
     if (!result) throw new CustomError(STRINGS.ERRORS.userSitesNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.userSiteRequested, result));
@@ -59,6 +67,22 @@ class UserSitesController {
     if (!result) throw new CustomError(STRINGS.ERRORS.userSitesNotFound, 404);
 
     res.status(200).send(response(STRINGS.TEXTS.userSitesUpdated, result));
+  }
+
+  async deleteUserSite(req, res) {
+    const userId = req.params.userId;
+    const data = req.body;
+
+    const userSites = await UserSites.findOne({ userId: userId });
+    if (userSites.sites.some((site) => site.siteId == data.siteId)) {
+      await UserSites.findOneAndUpdate(
+        {
+          userId: userId,
+        },
+        { $pull: { sites: { siteId: data.siteId } } }
+      );
+      res.status(200).send(response(STRINGS.TEXTS.userSitesDeleted, userSites));
+    } else throw new CustomError(STRINGS.ERRORS.userSitesNotFound, 404);
   }
 
   async delete(req, res) {

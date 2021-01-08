@@ -8,10 +8,10 @@ router.get("/", auth("admin"), siteContoller.getAll);
 router.get("/:id", auth("admin"), siteContoller.getOne);
 
 // POSTS
-router.post("/", upload("logo"), siteContoller.create);
+router.post("/", upload("site", "logo"), siteContoller.create);
 
 // PUTS
-router.put("/:id", upload("logo"), siteContoller.update);
+router.put("/:id", upload("site", "logo"), siteContoller.update);
 
 // DELETES
 router.delete("/:id", auth("admin"), siteContoller.delete);
