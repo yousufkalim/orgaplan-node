@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const upload = require("../middlewares/multer");
 const auth = require("../middlewares/auth");
-const requestQuoteController = require("../controllers/registrationRequest");
+const requestQuoteController = require("../controllers/client");
 
 // GETS
 router.get("/", auth("admin"), requestQuoteController.getAll);

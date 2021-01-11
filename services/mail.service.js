@@ -49,7 +49,7 @@ class MailService {
     return;
   }
 
-  async sendQuote(subject, user) {
+  async sendEmailToClient(subject, user, requestedQuote) {
     const from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
 
     //if (!to) throw new CustomError("Recipient is required");
@@ -65,7 +65,7 @@ class MailService {
     const replacements = {
       name: user.firstName + " " + user.lastName,
       email: user.email,
-      action_url: STRINGS.QUOTEREDIRECT + user.id,
+      action_url: STRINGS.QUOTEREDIRECT + requestedQuote._id,
     };
     const htmlToSend = template(replacements);
 

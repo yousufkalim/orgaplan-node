@@ -1,4 +1,4 @@
-const RequestQuote = require("../models/registrationRequest");
+const Client = require("../models/client");
 const User = require("../models/user");
 const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
@@ -6,11 +6,9 @@ const CustomError = require("../utils/customError");
 const MailService = require("../services/mail.service");
 const Company = require("../models/company");
 const { param, use } = require("../routes");
-class RequestQuoteController {
+class ClientController {
   async create(req, res) {
     const params = req.body;
-
-    // const result = await new RequestQuote(req.body).save();
     const companyName = params.companyName;
     let companyLogo = null;
     if (req.file) companyLogo = req.file.path;
@@ -22,7 +20,6 @@ class RequestQuoteController {
       phone: params.phone,
     };
 
-    // res.status(200).send(response(STRINGS.TEXTS.quoteRequest, result));
     const user = await new User(userData).save();
     const userId = user._id;
 
@@ -39,7 +36,7 @@ class RequestQuoteController {
     const updatedUser = await User.findByIdAndUpdate(userId, {
       $addToSet: { company: company._id },
     });
-    const requestedQuote = await RequestQuote({
+    const client = await Client({
       companyId: company._id,
       userId: user._id,
       contractStartDate: user.contractStartDate,
@@ -47,14 +44,12 @@ class RequestQuoteController {
       additionalInfo: user.additionalInfo,
     }).save();
     let emailService = new MailService();
-    await emailService.sendQuote("Your Quote", updatedUser, requestedQuote);
-    res
-      .status(200)
-      .send(response(STRINGS.TEXTS.qouteRequestQuoteUpdated, updatedUser));
+    await emailService.sendEmailToClient("Your Quote", updatedUser, client);
+    res.status(200).send(response(STRINGS.TEXTS.clientUpdated, updatedUser));
   }
 
   async getAll(req, res) {
-    const result = await RequestQuote.find({}, { password: 0, __v: 0 });
+    const result = await Client.find({}, { password: 0, __v: 0 });
     res
       .status(200)
       .send(response(STRINGS.TEXTS.allRequestedSubscriptions, result));
@@ -63,62 +58,58 @@ class RequestQuoteController {
   async getOne(req, res) {
     const id = req.params.id;
 
-    const result = await RequestQuote.findOne(
+    const result = await Client.findOne(
       { _id: id },
       { password: 0, __v: 0 }
-    );
-    if (!result) throw new CustomError(STRINGS.ERRORS.quoteRequestNotFound);
+    ).populate("userId");
+    if (!result) throw new CustomError(STRINGS.ERRORS.clientRequestNotFound);
 
-    res.status(200).send(response(STRINGS.TEXTS.quoteRequest, result));
+    res.status(200).send(response(STRINGS.TEXTS.clientRequest, result));
   }
 
   async update(req, res) {
     const id = req.params.id;
     const data = req.body;
 
-    const result = await RequestQuote.findByIdAndUpdate(
+    const result = await Client.findByIdAndUpdate(
       { _id: id },
       { $set: data },
       { new: true }
     );
 
     if (!result)
-      throw new CustomError(STRINGS.ERRORS.quoteRequestNotFound, 404);
+      throw new CustomError(STRINGS.ERRORS.clientRequestNotFound, 404);
 
-    res
-      .status(200)
-      .send(response(STRINGS.TEXTS.qouteRequestQuoteUpdated, result));
+    res.status(200).send(response(STRINGS.TEXTS.clientUpdated, result));
   }
 
   async sendQuote(req, res) {
     const id = req.params.id;
     const data = req.body;
 
-    const result = await RequestQuote.findByIdAndUpdate(
+    const result = await Client.findByIdAndUpdate(
       { _id: id },
       { $set: data },
       { new: true }
     );
 
     if (!result)
-      throw new CustomError(STRINGS.ERRORS.quoteRequestNotFound, 404);
+      throw new CustomError(STRINGS.ERRORS.clientRequestNotFound, 404);
     let emailService = new MailService();
-    await emailService.sendQuote("Your Quote", result);
-    res
-      .status(200)
-      .send(response(STRINGS.TEXTS.qouteRequestQuoteUpdated, result));
+    await emailService.sendEmailToClient("Your Quote", result);
+    res.status(200).send(response(STRINGS.TEXTS.clientUpdated, result));
   }
 
   async delete(req, res) {
     const id = req.params.id;
 
-    const result = await RequestQuote.findOne({
+    const result = await Client.findOne({
       _id: id,
     });
     result.remove();
 
-    res.status(200).send(response(STRINGS.TEXTS.quoteRequestDeleted, result));
+    res.status(200).send(response(STRINGS.TEXTS.clientDeleted, result));
   }
 }
 
-module.exports = new RequestQuoteController();
+module.exports = new ClientController();

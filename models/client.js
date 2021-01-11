@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 const STRINGS = require("../utils/texts");
 const { ref } = require("joi");
 
-const QuoteSchema = new Schema(
+const ClientSchema = new Schema(
   {
     companyId: {
       type: Schema.Types.ObjectId,
@@ -34,4 +34,4 @@ const QuoteSchema = new Schema(
   }
 );
 
-module.exports = mongoose.model(STRINGS.MODALS.QUOTE, QuoteSchema);
+module.exports = mongoose.model(STRINGS.MODALS.QUOTE, ClientSchema);

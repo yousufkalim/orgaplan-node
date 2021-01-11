@@ -24,10 +24,6 @@ const QuoteSchema = new Schema(
       type: Boolean,
       default: true,
     },
-    role: {
-      type: String,
-      default: "admin",
-    },
   },
 
   {
