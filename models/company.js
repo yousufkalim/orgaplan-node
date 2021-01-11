@@ -8,15 +8,23 @@ const companySchema = new Schema(
     name: String,
     color: String,
     description: String,
-    isSubContractor: {
-      type: Boolean,
-      default: false,
-    },
-    companyId: {
-      type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.COMPANY,
-      required: false,
-    },
+    connection: [
+      {
+        childCompanyId: [
+          {
+            // Represents company subcontractors
+            type: Schema.Types.ObjectId,
+            ref: STRINGS.MODALS.COMPANY,
+          },
+        ],
+        parentCompanyId: {
+          // Represents company's main company if the company us subcontractor
+          type: Schema.Types.ObjectId,
+          ref: STRINGS.MODALS.COMPANY,
+        },
+        siteId: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.SITE },
+      },
+    ],
     incharge: {
       firstName: { type: String },
       lastName: { type: String },
@@ -37,7 +45,6 @@ const companySchema = new Schema(
         },
       },
     ],
-    siteIds: [{ type: Schema.Types.ObjectId, ref: STRINGS.MODALS.SITE }],
   },
   {
     timestamps: true,

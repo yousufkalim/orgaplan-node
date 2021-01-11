@@ -2,13 +2,104 @@ const Company = require("../models/company");
 const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
+
 class CompanyController {
   async create(req, res) {
     const data = req.body;
-    data.users = JSON.parse(data.users);
-    data.incharge = JSON.parse(data.incharge);
-    const result = await new Company(data).save();
-    res.status(200).send(response(STRINGS.TEXTS.companyRequested, result));
+    console.log(data.isSubcontractor);
+    if (data.isSubcontractor == "true") {
+      if (data.childCompanyId) {
+        // if the subcontractor exists
+        if (!data.parentCompanyId)
+          throw new CustomError(STRINGS.ERRORS.parentCompanyNotFound);
+
+        // If the subcontractor company already exists
+        const subcontractor = await Company.findOneAndUpdate(
+          {
+            _id: data.childCompanyId,
+            "connection.siteId": data.siteId,
+          },
+          {
+            $set: { "connection.$.parentCompanyId": data.parentCompanyId },
+          }
+        );
+
+        const parentCompany = await Company.findOneAndUpdate(
+          {
+            _id: data.parentCompanyId,
+            "connection.siteId": data.siteId,
+          },
+          { $addToSet: { "connection.$.childCompanyId": data.childCompanyId } }
+        ); //Get parent company id and add child to that company
+        res
+          .status(200)
+          .send(response(STRINGS.TEXTS.companyRequested, subcontractor));
+
+        //   const subcontractor = await Company.findOneAndUpdate(
+        //     {
+        //       _id: data.parentCompanyId,
+        //       "connection.siteId": data.siteId,
+        //     },
+        //     { $addToSet: { "connection.$.childCompanyId": childCompanyId } }
+        //   ); //Get parent company id and add child to that company
+        //   res
+        //     .status(200)
+        //     .send(response(STRINGS.TEXTS.companyRequested, childCompany));
+        // }
+      }
+      if (!data.childCompanyId) {
+        // It's a sub contractor but the company does not already exists
+        if (data.parentCompanyId) {
+          const parentCompanyId = data.parentCompanyId;
+          const siteId = data.siteId;
+
+          const connection = [
+            { parentCompanyId: parentCompanyId, siteId: siteId },
+          ];
+          data["connection"] = connection;
+          if (data.users) data.users = JSON.parse(data.users);
+          const childCompany = await Company(data).save(); // Create child company
+          const childCompanyId = childCompany._id;
+
+          const parentCompany = await Company.findOneAndUpdate(
+            {
+              _id: data.parentCompanyId,
+              "connection.siteId": data.siteId,
+            },
+            { $addToSet: { "connection.$.childCompanyId": childCompanyId } }
+          ); //Get parent company id and add child to that company
+          res
+            .status(200)
+            .send(response(STRINGS.TEXTS.companyRequested, childCompany));
+        }
+      }
+    }
+
+    if (data.isSubcontractor == "false") {
+      // If its the
+      console.log("\n\n\nHERE1");
+
+      if (data.parentCompanyId) {
+        // It the company already exists then just assing it a site
+
+        const mainCompany = await Company.findOneAndUpdate(
+          {
+            _id: data.parentCompanyId,
+          },
+          { $addToSet: { connection: { siteId: data.siteId } } }
+        );
+
+        res
+          .status(200)
+          .send(response(STRINGS.TEXTS.companyRequested, mainCompany));
+      } else {
+        if (data.users) data.users = JSON.parse(data.users);
+        const connection = [{ siteId: data.siteId }];
+        data["connection"] = connection;
+        const company = await Company(data).save(); // Create child company
+        res.status(200).send(response(STRINGS.TEXTS.companyRequested, company));
+      }
+    }
   }
 
   async getAll(req, res) {

@@ -8,11 +8,16 @@ const userController = require("../controllers/user");
 router.get("/", auth("admin"), userController.getAll);
 router.get("/:userId", userController.getOne);
 
-// POSTS
-router.post("/", upload("image"), userController.create);
+//POSTS
+router.post("/", upload("user", "image"), userController.create);
 
-// PUTS
-router.put("/:userId", auth("admin"), upload("image"), userController.update);
+//PUTS
+router.put(
+  "/:userId",
+  auth("admin"),
+  upload("user", "image"),
+  userController.update
+);
 
 // DELETES
 router.delete("/:userId", auth("admin"), userController.delete);

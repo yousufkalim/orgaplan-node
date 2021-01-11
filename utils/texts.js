@@ -3,11 +3,16 @@ module.exports = {
     error: "There was an error!",
     siteNotFound: "No Site Found",
     userSitesNotFound: "No Site Found",
+    userAddedToSite: "User Already Added To Site.",
     emailRequired: "Email is required",
     imageRequired: "Image is required",
     emailExists: "Email already exists",
     userNotFound: "User does not exist",
     companyNotFound: "No Company Found",
+    parentCompanyNotFound: "No Incubent Company Selected",
+
+    siteCompanyNotFound: "No Site Company Found",
+    companyAlreadyAdded: "Company Already Added",
     userIdRequired: "User ID Is Required",
     userRoleRequired: "User Role Is Required",
     passwordRequired: "Password is required",
@@ -38,6 +43,11 @@ module.exports = {
     companyUpdated: "Company Updated",
     compantDeleted: "Company deleted",
     companyRequested: "Company Requested",
+
+    siteCompanyUpdated: "Site Company Updated",
+    siteCompanyDeleted: "Site Company deleted",
+    siteCompanyRequested: "Site Company Requested",
+
     userAdded: "User Added",
     quoteRequest: "Quote Request Sent",
     passwordSuccess: "Password updated",

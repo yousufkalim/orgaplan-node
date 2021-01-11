@@ -12,6 +12,7 @@ const siteCompaniesSchema = new Schema(
       {
         type: Schema.Types.ObjectId,
         ref: STRINGS.MODALS.COMPANY,
+        unique: true,
       },
     ],
   },

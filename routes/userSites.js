@@ -4,16 +4,22 @@ const auth = require("../middlewares/auth");
 const userSitesController = require("../controllers/userSites");
 
 // GETS
-router.get("/", auth("admin"), userSitesController.getAll);
-router.get("/:id", auth("admin"), userSitesController.getOne);
+router.get("/", auth(), userSitesController.getAll);
+router.get("/:id", auth(), userSitesController.getOne);
+router.get("/single/:userId", auth(), userSitesController.getSiteByUserId);
 
 // POSTS
-router.post("/", upload("logo"), userSitesController.create);
+// router.post("/", auth(), upload("logo"), userSitesController.create);
 
 // PUTS
-router.put("/:id", upload("logo"), userSitesController.update);
+// router.put("/:id", auth(), upload("logo"), userSitesController.update);
 
 // DELETES
-router.delete("/:id", auth("admin"), userSitesController.delete);
+router.delete("/:id", auth(), userSitesController.delete);
+router.delete(
+  "/delete-user-site/:userId",
+  auth(),
+  userSitesController.deleteUserSite
+);
 
 module.exports = router;
