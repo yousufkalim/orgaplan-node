@@ -5,7 +5,6 @@ const STRINGS = require("../utils/texts");
 const QuoteSchema = new Schema(
   {
     companyName: String,
-
     firstName: {
       type: String,
     },

@@ -22,6 +22,7 @@ const buildingSchema = new Schema(
     status: {
       type: String,
       enum: [STRINGS.STATUS.ACTIVE, STRINGS.STATUS.INACTIVE],
+      default: STRINGS.STATUS.ACTIVE,
     },
     statusReason: String,
   },
