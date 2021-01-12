@@ -1,8 +1,8 @@
+require("colors");
 require("express-async-ERRORS");
 const dotenv = require("dotenv");
 const express = require("express");
 const mongoose = require("mongoose");
-const Colors = require("./utils/Colors");
 
 // Load env vars
 dotenv.config({ path: ".env.dev" });
@@ -35,9 +35,9 @@ mongoose
   })
   .then((result) => {
     app.listen(PORT, () => {
-      console.log(Colors.Reset, Colors.FgMagenta, `App listening: ${PORT}`);
+      console.log(`App listening: ${PORT}`.magenta);
     });
   })
   .catch((err) => {
-    console.log("[App.Mongoose]", err);
+    console.log("[App.Mongoose]".red, err);
   });

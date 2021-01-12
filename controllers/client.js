@@ -5,7 +5,6 @@ const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const MailService = require("../services/mail.service");
 const Company = require("../models/company");
-const { param, use } = require("../routes");
 class ClientController {
   async create(req, res) {
     const params = req.body;

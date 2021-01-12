@@ -1,5 +1,5 @@
+require("colors");
 const response = require("../utils/response");
-const Colors = require("../utils/colors");
 
 // Possible error names
 const errorNames = [
@@ -17,7 +17,7 @@ module.exports = (app) => {
   // });
 
   app.use((error, req, res, next) => {
-    console.log(Colors.FgRed, error);
+    console.log(`${error}`.red);
     if (error.name == "CustomError") {
       res.status(error.status).send(response(error.message, null, false));
     } else if (error.name == "MongoError" && error.code == 11000) {
