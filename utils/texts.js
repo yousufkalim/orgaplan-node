@@ -10,7 +10,9 @@ module.exports = {
     userNotFound: "User does not exist",
     companyNotFound: "No Company Found",
     parentCompanyNotFound: "No Incubent Company Selected",
-
+    alreadySubscribed: "Already Subscribed",
+    subscriptionExpired: "Subscription Expired",
+    subscriptionPending: "Your Subscription Request Is Pending.",
     siteCompanyNotFound: "No Site Company Found",
     companyAlreadyAdded: "Company Already Added",
     userIdRequired: "User ID Is Required",
@@ -55,6 +57,7 @@ module.exports = {
     subscriptionDeleted: "Subscription deleted",
     clientDeleted: "Client deleted",
     subscriptonRequested: "Subscription Request",
+    subscriptionStatusChanged: "Subscription Status Changed",
     emailVerified: "Email verified successfully",
     passwordResetSent: "Password reset link sent",
     allRequestedSubscriptions: "All Subscriptions",
@@ -121,5 +124,8 @@ module.exports = {
     USER: "User",
     USERSITES: "UserSites",
     ZAC: "Zac",
+  },
+  FORMATS: {
+    DATE: "DD-MM-YYYY hh:mm",
   },
 };
