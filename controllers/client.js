@@ -5,7 +5,6 @@ const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const MailService = require("../services/mail.service");
 const Company = require("../models/company");
-const { param, use } = require("../routes");
 class ClientController {
   async create(req, res) {
     const params = req.body;
@@ -26,6 +25,9 @@ class ClientController {
     const companyConnection = [];
     companyConnection.push({ inchargeId: userId, color: companyColor });
 
+    const companyResult = await Company.find({ name: companyName });
+    if (companyResult)
+      throw new CustomError(STRINGS.ERRORS.companyAlreadyAdded);
     const companyData = {
       logo: companyLogo,
       name: companyName,

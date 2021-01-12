@@ -5,19 +5,17 @@ const STRINGS = require("../utils/texts");
 const subscriptionSchema = new Schema(
   {
     name: String,
-    start: Date,
-    end: Date,
+    startDate: Date,
+    endDate: Date,
     price: Number,
-    subscriberID: {
-      type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.USER,
-    },
+    email: String,
     status: {
       type: String,
+      default: STRINGS.STATUS.PENDING,
       enum: [
         STRINGS.STATUS.ACTIVE,
         STRINGS.STATUS.INACTIVE,
-        STRINGS.STATUS.CLOSED,
+        STRINGS.STATUS.PENDING,
       ],
     },
   },
