@@ -25,7 +25,7 @@ class MailService {
     // Email Starts
     const filePath = path.join(
       __dirname,
-      "./html_templates/resetPassword.html"
+      "../html_templates/requestQuote.html"
     );
     const source = fs.readFileSync(filePath, "utf-8").toString();
     const template = handlebars.compile(source);
@@ -82,7 +82,7 @@ class MailService {
     // Email Starts
     const filePath = path.join(
       __dirname,
-      "./html_templates/resetPassword.html"
+      "../html_templates/requestQuote.html"
     );
     const source = fs.readFileSync(filePath, "utf-8").toString();
     const template = handlebars.compile(source);

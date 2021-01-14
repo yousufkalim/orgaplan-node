@@ -4,7 +4,10 @@ const STRINGS = require("../utils/texts");
 
 const zacSchema = new Schema(
   {
-    name: String,
+    name: {
+      type: String,
+      unique: true,
+    },
     sites: [
       {
         type: Schema.Types.ObjectId,

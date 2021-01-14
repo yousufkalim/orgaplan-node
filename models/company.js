@@ -23,14 +23,10 @@ const companySchema = new Schema(
           ref: STRINGS.MODALS.COMPANY,
         },
         siteId: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.SITE },
+        incharge: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.USER },
       },
     ],
-    incharge: {
-      firstName: { type: String },
-      lastName: { type: String },
-      phone: { type: Number },
-      email: { type: String },
-    },
+
     users: [
       {
         userId: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.USER },

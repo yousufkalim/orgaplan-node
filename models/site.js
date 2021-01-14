@@ -21,6 +21,12 @@ const siteSchema = new Schema(
         STRINGS.STATUS.COMPLETED,
       ],
     },
+    adminId: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.USER,
+    },
+    additionalInfo: String,
+    unAvailabilityDates: [{ type: Date }],
     unavailabilityReason: String,
     means: [
       {

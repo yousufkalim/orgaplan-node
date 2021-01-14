@@ -5,6 +5,7 @@ const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const MailService = require("../services/mail.service");
 const Company = require("../models/company");
+const Auth = require("../controllers/auth");
 class ClientController {
   async create(req, res) {
     const params = req.body;
@@ -19,7 +20,14 @@ class ClientController {
       phone: params.phone,
     };
 
-    const user = await new User(userData).save();
+    // const user = await new User(userData).save();
+    // const userId = user._id;
+
+    const user = await Auth.signup(userData);
+    if (user.exists) {
+      res.status(200).send(response(STRINGS.TEXTS.emailVerificationSent, user));
+    }
+
     const userId = user._id;
 
     const companyConnection = [];
@@ -45,8 +53,6 @@ class ClientController {
       contractEndDate: user.contractEndDate,
       additionalInfo: user.additionalInfo,
     }).save();
-    let emailService = new MailService();
-    await emailService.sendEmailToClient("Your Quote", updatedUser, client);
     res.status(200).send(response(STRINGS.TEXTS.clientUpdated, updatedUser));
   }
 

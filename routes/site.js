@@ -8,7 +8,7 @@ router.get("/", auth("admin"), siteContoller.getAll);
 router.get("/:id", auth("admin"), siteContoller.getOne);
 
 // POSTS
-router.post("/", upload("site", "logo"), siteContoller.create);
+router.post("/", auth(), upload("site", "logo"), siteContoller.create);
 
 // PUTS
 router.put("/:id", upload("site", "logo"), siteContoller.update);

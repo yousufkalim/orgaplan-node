@@ -2,6 +2,13 @@ module.exports = {
   ERRORS: {
     error: "There was an error!",
     siteNotFound: "No Site Found",
+    zacNotFound: "No Zac Found",
+    buildingNotFound: "No Building Found",
+    buildingNameAlreadyExists: "This building name already exists.",
+    levelExists: "Level Already Exists",
+    levelNotFouned: "No Level Found",
+    buildingIdRequired: "Building Id Required",
+    levelNameRequired: "Level Name Required",
     userSitesNotFound: "No Site Found",
     userAddedToSite: "User Already Added To Site.",
     emailRequired: "Email is required",
@@ -34,8 +41,23 @@ module.exports = {
     userCreated: "User created",
     userUpdated: "User updated",
     userDeleted: "User deleted",
+
+    buildingCreated: "Building Created",
+    buildingDeleted: "Building Deleted",
+    buildingRequested: "Building Requested",
+    buildingUpdated: "Building Updated",
+
+    levelCreated: "Level Created",
+    levelDeleted: "Level Deleted",
+    levelRequested: "Level Requested",
+    levelUpdated: "Level Updated",
+
     siteUpdated: "Site Updated",
     siteDeleted: "Site deleted",
+    zacDeleted: "Zac Deleted",
+    zacCreated: "Zac Created",
+    zacRequested: "Zac Requested",
+    zacUpdated: "Zac Updated",
     siteRequested: "Site Requested",
 
     userSitesUpdated: "Site Updated",
@@ -61,6 +83,10 @@ module.exports = {
     emailVerified: "Email verified successfully",
     passwordResetSent: "Password reset link sent",
     allRequestedSubscriptions: "All Subscriptions",
+    allZacs: "All Zacs",
+    allBuildings: "All Buildings",
+    allLevels: "All Levels",
+
     clientUpdated: "Client Updated",
     emailVerificationSent: "Email verfication link sent",
   },

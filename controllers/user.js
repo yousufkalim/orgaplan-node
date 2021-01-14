@@ -10,6 +10,7 @@ class UserContoller {
     const body = req.body;
     body.address = JSON.parse(body.address);
     body.password = await bcrypt.hash(body.password, +ENV.BCRYPT_SALT);
+
     const result = await new User(body).save();
     res.status(200).send(response(STRINGS.TEXTS.userCreated, result));
   }
