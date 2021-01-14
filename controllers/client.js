@@ -46,7 +46,7 @@ class ClientController {
       additionalInfo: user.additionalInfo,
     }).save();
     let emailService = new MailService();
-    await emailService.sendEmailToClient("Your Quote", updatedUser, client);
+    await emailService.requestSubscriptionActivation(updatedUser);
     res.status(200).send(response(STRINGS.TEXTS.clientUpdated, updatedUser));
   }
 
@@ -98,7 +98,7 @@ class ClientController {
     if (!result)
       throw new CustomError(STRINGS.ERRORS.clientRequestNotFound, 404);
     let emailService = new MailService();
-    await emailService.sendEmailToClient("Your Quote", result);
+    await emailService.sendSubscriptionActivationConfirmation(result);
     res.status(200).send(response(STRINGS.TEXTS.clientUpdated, result));
   }
 

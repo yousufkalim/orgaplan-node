@@ -20,12 +20,12 @@ class MailService {
   async requestEmailVerification(to) {
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
 
-    if (!to) throw new CustomError("Recipient is required");
+    if (!to) throw new CustomError(STRINGS.ERRORS.recipientRequired);
 
     // Email Starts
     const filePath = path.join(
       __dirname,
-      "./html_templates/resetPassword.html"
+      "./html_templates/requestEmailVerification.html"
     );
     const source = fs.readFileSync(filePath, "utf-8").toString();
     const template = handlebars.compile(source);
@@ -39,7 +39,7 @@ class MailService {
     await this.transporter.sendMail({
       from,
       to: Array.isArray(to) ? to.join() : to,
-      subject: "Email Verification",
+      subject: STRINGS.TEXTS.requestEmailVerificationSubject,
       html: htmlToSend,
     });
 
@@ -49,12 +49,12 @@ class MailService {
   async sendEmailConfirmation(to) {
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
 
-    if (!to) throw new CustomError("Recipient is required");
+    if (!to) throw new CustomError(STRINGS.ERRORS.recipientRequired);
 
     // Email Starts
     const filePath = path.join(
       __dirname,
-      "./html_templates/resetPassword.html"
+      "./html_templates/sendEmailVerificationConfirmation.html"
     );
     const source = fs.readFileSync(filePath, "utf-8").toString();
     const template = handlebars.compile(source);
@@ -67,22 +67,22 @@ class MailService {
     await this.transporter.sendMail({
       from,
       to: Array.isArray(to) ? to.join() : to,
-      subject: "Email Verified Successfully",
+      subject: STRINGS.TEXTS.sendEmailConfirmationSubject,
       html: htmlToSend,
     });
 
     return;
   }
 
-  async sendQuoteActivation(to) {
+  async requestSubscriptionActivation(to) {
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
 
-    if (!to) throw new CustomError("Recipient is required");
+    if (!to) throw new CustomError(STRINGS.ERRORS.recipientRequired);
 
     // Email Starts
     const filePath = path.join(
       __dirname,
-      "./html_templates/resetPassword.html"
+      "./html_templates/requestSubscriptionActivation.html"
     );
     const source = fs.readFileSync(filePath, "utf-8").toString();
     const template = handlebars.compile(source);
@@ -95,7 +95,35 @@ class MailService {
     await this.transporter.sendMail({
       from,
       to: Array.isArray(to) ? to.join() : to,
-      subject: "Quote activated successfully",
+      subject: STRINGS.TEXTS.requestSubscriptionActivationSubject,
+      html: htmlToSend,
+    });
+
+    return;
+  }
+
+  async sendSubscriptionActivationConfirmation(to) {
+    let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
+
+    if (!to) throw new CustomError(STRINGS.ERRORS.recipientRequired);
+
+    // Email Starts
+    const filePath = path.join(
+      __dirname,
+      "./html_templates/sendSubscriptionActivationConfirmation.html"
+    );
+    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const template = handlebars.compile(source);
+    const replacements = {
+      name: to.firstName + " " + to.lastName,
+      email: to.email,
+    };
+    const htmlToSend = template(replacements);
+
+    await this.transporter.sendMail({
+      from,
+      to: Array.isArray(to) ? to.join() : to,
+      subject: STRINGS.TEXTS.sendSubscriptionActivationConfirmationSubject,
       html: htmlToSend,
     });
 
@@ -103,14 +131,14 @@ class MailService {
   }
 
   async requestResetPassword(to, link) {
-    if (!to) throw new CustomError("Recipient is required");
+    if (!to) throw new CustomError(STRINGS.ERRORS.recipientRequired);
 
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
 
     // Email Starts
     const filePath = path.join(
       __dirname,
-      "./html_templates/resetPassword.html"
+      "./html_templates/requestResetPassword.html"
     );
     const source = fs.readFileSync(filePath, "utf-8").toString();
     const template = handlebars.compile(source);
@@ -124,7 +152,7 @@ class MailService {
     await this.transporter.sendMail({
       from,
       to: Array.isArray(to) ? to.join() : to,
-      subject: "Password Reset",
+      subject: STRINGS.TEXTS.requestResetPasswordSubject,
       html: htmlToSend,
     });
 
@@ -132,14 +160,14 @@ class MailService {
   }
 
   async sendPasswordResetConfirmation(to) {
-    if (!to) throw new CustomError("Recipient is required");
+    if (!to) throw new CustomError(STRINGS.ERRORS.recipientRequired);
 
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
 
     // Email Starts
     const filePath = path.join(
       __dirname,
-      "./html_templates/resetPassword.html"
+      "./html_templates/sendPasswordResetConfirmation.html"
     );
     const source = fs.readFileSync(filePath, "utf-8").toString();
     const template = handlebars.compile(source);
@@ -152,37 +180,7 @@ class MailService {
     await this.transporter.sendMail({
       from,
       to: Array.isArray(to) ? to.join() : to,
-      subject: "Password was reset successfully",
-      html: htmlToSend,
-    });
-
-    return;
-  }
-
-  async sendEmailToClient(subject, user, requestedQuote) {
-    const from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
-
-    if (!user) throw new CustomError("Recipient is required");
-    if (!subject) throw new CustomError("Subject is required");
-
-    // Email Starts
-    const filePath = path.join(
-      __dirname,
-      "../html_templates/requestQuote.html"
-    );
-    const source = fs.readFileSync(filePath, "utf-8").toString();
-    const template = handlebars.compile(source);
-    const replacements = {
-      name: user.firstName + " " + user.lastName,
-      email: user.email,
-      action_url: STRINGS.QUOTEREDIRECT + requestedQuote._id,
-    };
-    const htmlToSend = template(replacements);
-
-    await this.transporter.sendMail({
-      from,
-      to: Array.isArray(user.email) ? user.email.join() : user.email,
-      subject,
+      subject: STRINGS.TEXTS.sendPasswordResetConfirmationSubject,
       html: htmlToSend,
     });
 

@@ -3,11 +3,11 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title></title>
+    <title>Subscription</title>
     <style type="text/css" rel="stylesheet" media="all">
       /* Base ------------------------------ */
 
-      @import url('https://fonts.googleapis.com/css?family=Nunito+Sans:400,700&display=swap');
+      @import url("https://fonts.googleapis.com/css?family=Nunito+Sans:400,700&display=swap");
       body {
         width: 100% !important;
         height: 100%;
@@ -34,7 +34,7 @@
       body,
       td,
       th {
-        font-family: 'Nunito Sans', Helvetica, Arial, sans-serif;
+        font-family: "Nunito Sans", Helvetica, Arial, sans-serif;
       }
 
       h1 {
@@ -143,8 +143,8 @@
   </head>
   <body>
     <span class="preheader"
-      >Use this link to reset your password. The link is only valid for 24
-      hours.</span
+      >You requested for a subscription on OrgaPlan. Follow the link below to
+      complete your registration.</span
     >
     <table
       class="email-wrapper"
@@ -181,39 +181,25 @@
                     <td class="content-cell">
                       <div class="f-fallback">
                         <h1>Hi {{name}},</h1>
-                        <p>
-                          Your subscription has been validated.
-                          <!--  Use the button below to reset it. If you did
-                          not request a password reset, please ignore this
-                          email.
-                        </br>
-                          <strong
-                            >This password reset is only valid for the next 24
-                            hours.</strong
-                          > -->
+                        <p>Your subscription has been validated.</p>
+
+                        <p class="f-fallback sub">
+                          Complete your registration by clicking the link below
                         </p>
-                   
-                              <p class="f-fallback sub">
-                                Complete your registration by clicking the link below
-                              </p>
-                              <p
-                                class="f-fallback sub"
-                                style="
-                                  text-decoration: underline;
-                                  cursor: pointer;
-                                "
-                              >
-                                {{action_url}}
-                              </p>
+                        <p
+                          class="f-fallback sub"
+                          style="text-decoration: underline; cursor: pointer"
+                        >
+                          {{action_url}}
+                        </p>
                         <table class="body-sub" role="presentation">
                           <tr>
                             <td>
                               <strong
-                          ><p>
-                            Department of Computer Science<br />Government
-                            College University<br />Lahore
-                          </p></strong
-                        >
+                                ><p>
+                                  <br />© 2020, OrgaPlan Pvt Ltd, France
+                                </p></strong
+                              >
                             </td>
                           </tr>
                         </table>
