@@ -27,11 +27,11 @@ class AuthContoller {
       const hash = await bcrypt.hash(verifyToken, +ENV.BCRYPT_SALT);
       const verifyLink = `${ENV.BASE_URL}/email-verification?uid=${user._id}&verifyToken=${verifyToken}`;
 
-      await new Token({
-        userId: user._id,
-        token: hash,
-        createdAt: Date.now(),
-      }).save();
+      // await new Token({
+      //   userId: user._id,
+      //   token: hash,
+      //   createdAt: Date.now(),
+      // }).save();
 
       // send email
       let emailService = new MailService();

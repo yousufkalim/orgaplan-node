@@ -19,7 +19,6 @@ class MailService {
 
   async requestEmailVerification(to) {
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
-
     if (!to) throw new CustomError("Recipient is required");
 
     // Email Starts
@@ -32,13 +31,13 @@ class MailService {
     const replacements = {
       name: to.firstName + " " + to.lastName,
       email: to.email,
-      link,
+      //link,
     };
     const htmlToSend = template(replacements);
 
     await this.transporter.sendMail({
       from,
-      to: Array.isArray(to) ? to.join() : to,
+      to: Array.isArray(to.email) ? to.join() : to.email,
       subject: "Email Verification",
       html: htmlToSend,
     });
@@ -66,7 +65,7 @@ class MailService {
 
     await this.transporter.sendMail({
       from,
-      to: Array.isArray(to) ? to.join() : to,
+      to: Array.isArray(to.email) ? to.join() : to.email,
       subject: "Email Verified Successfully",
       html: htmlToSend,
     });
@@ -76,7 +75,6 @@ class MailService {
 
   async sendQuoteActivation(to) {
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
-
     if (!to) throw new CustomError("Recipient is required");
 
     // Email Starts
@@ -94,7 +92,7 @@ class MailService {
 
     await this.transporter.sendMail({
       from,
-      to: Array.isArray(to) ? to.join() : to,
+      to: Array.isArray(to.email) ? to.join() : to.email,
       subject: "Quote activated successfully",
       html: htmlToSend,
     });
@@ -117,13 +115,13 @@ class MailService {
     const replacements = {
       name: to.firstName + " " + to.lastName,
       email: to.email,
-      link,
+      //link,
     };
     const htmlToSend = template(replacements);
 
     await this.transporter.sendMail({
       from,
-      to: Array.isArray(to) ? to.join() : to,
+      to: Array.isArray(to.email) ? to.join() : to.email,
       subject: "Password Reset",
       html: htmlToSend,
     });
@@ -151,7 +149,7 @@ class MailService {
 
     await this.transporter.sendMail({
       from,
-      to: Array.isArray(to) ? to.join() : to,
+      to: Array.isArray(to.email) ? to.join() : to.email,
       subject: "Password was reset successfully",
       html: htmlToSend,
     });

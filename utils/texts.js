@@ -2,6 +2,7 @@ module.exports = {
   ERRORS: {
     error: "There was an error!",
     siteNotFound: "No Site Found",
+    contractNotFound: "No Contract Found",
     zacNotFound: "No Zac Found",
     buildingNotFound: "No Building Found",
     buildingNameAlreadyExists: "This building name already exists.",
@@ -22,6 +23,8 @@ module.exports = {
     subscriptionPending: "Your Subscription Request Is Pending.",
     siteCompanyNotFound: "No Site Company Found",
     companyAlreadyAdded: "Company Already Added",
+    companyLogoRequired: "Company Logo Is Requried",
+    companyInchargeIsRequired: "Company Incharge Is Required",
     userIdRequired: "User ID Is Required",
     userRoleRequired: "User Role Is Required",
     passwordRequired: "Password is required",
@@ -34,6 +37,10 @@ module.exports = {
     clientRequestNotFound: "Client Request Not Found",
     invalidToken: "Invalid or expired password reset token",
     inactiveAccount: "Your account is not active! Kindly contact support!",
+    startDateCannotBeFromPast: "Start Date Cannot Be From The Past",
+    endDateCannotBeFromPast: "End Date Cannot Be From Past",
+    startDateShoudBeBeforeEndDate: "Start Date Should Be Before End Date",
+    endDateShouldBeAfeterStartDate: "End Date Should Be After Start Date",
   },
   TEXTS: {
     allUsers: "All users",
@@ -46,6 +53,11 @@ module.exports = {
     buildingDeleted: "Building Deleted",
     buildingRequested: "Building Requested",
     buildingUpdated: "Building Updated",
+
+    contractCreated: "Contract Created",
+    contractDeleted: "Contract Deleted",
+    contractRequested: "Contract Requested",
+    contractUpdated: "Contract Updated",
 
     levelCreated: "Level Created",
     levelDeleted: "Level Deleted",
@@ -84,6 +96,7 @@ module.exports = {
     passwordResetSent: "Password reset link sent",
     allRequestedSubscriptions: "All Subscriptions",
     allZacs: "All Zacs",
+    allContracts: "All Contracts",
     allBuildings: "All Buildings",
     allLevels: "All Levels",
 
@@ -130,10 +143,15 @@ module.exports = {
     ROUTING: "ROUTING",
     BOTH: "BOTH",
   },
+  CONTRACTTYPES: {
+    CLIENTPERSITE: "CLIENTPERSITE",
+    MASTERCLIENT: "MASTERCLIENT",
+  },
   MODALS: {
     USER: "User",
     ALERT: "Alert",
     COMPANY: "Company",
+    CONTRACT: "Contract",
     BUILDING: "Building",
     DELIVERY: "Delivery",
     DELIVERYAREA: "DeliveryArea",
