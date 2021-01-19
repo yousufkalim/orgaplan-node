@@ -26,10 +26,10 @@ const companySchema = new Schema(
       },
     ],
     incharge: {
-      firstName: { type: String },
-      lastName: { type: String },
-      phone: { type: Number },
-      email: { type: String },
+      firstName: String,
+      lastName: String,
+      email: String,
+      phone: Number,
     },
     users: [
       {

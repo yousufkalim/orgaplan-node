@@ -19,6 +19,10 @@ const buildingSchema = new Schema(
         ref: STRINGS.MODALS.LEVEL,
       },
     ],
+    siteId: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.SITE,
+    },
     status: {
       type: String,
       enum: [STRINGS.STATUS.ACTIVE, STRINGS.STATUS.INACTIVE],

@@ -32,7 +32,7 @@ class MailService {
     const replacements = {
       name: to.firstName + " " + to.lastName,
       email: to.email,
-      link,
+      //link,
     };
     const htmlToSend = template(replacements);
 

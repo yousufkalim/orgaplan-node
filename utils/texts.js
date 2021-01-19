@@ -2,6 +2,14 @@ module.exports = {
   ERRORS: {
     error: "There was an error!",
     siteNotFound: "No Site Found",
+    contractNotFound: "No Contract Found",
+    zacNotFound: "No Zac Found",
+    buildingNotFound: "No Building Found",
+    buildingNameAlreadyExists: "This building name already exists.",
+    levelExists: "Level Already Exists",
+    levelNotFouned: "No Level Found",
+    buildingIdRequired: "Building Id Required",
+    levelNameRequired: "Level Name Required",
     userSitesNotFound: "No Site Found",
     emailRequired: "Email is required",
     imageRequired: "Image is required",
@@ -17,6 +25,15 @@ module.exports = {
     subscriptionExpired: "Subscription Expired",
     siteCompanyNotFound: "No Site Company Found",
     companyAlreadyAdded: "Company Already Added",
+<<<<<<< HEAD
+=======
+    companyLogoRequired: "Company Logo Is Requried",
+    companyInchargeIsRequired: "Company Incharge Is Required",
+    userIdRequired: "User ID Is Required",
+    userRoleRequired: "User Role Is Required",
+    passwordRequired: "Password is required",
+    passwordInvalid: "Password is incorrect!",
+>>>>>>> e5a59bf83559213357f04a46d72ac9a4162466f4
     userNameExists: "Username is not available!",
     alreadyVerified: "Email is already verified",
     subscriptionNotFound: "No Subscription Found",
@@ -28,6 +45,10 @@ module.exports = {
     invalidToken: "Invalid or expired password reset token",
     subscriptionPending: "Your Subscription Request Is Pending.",
     inactiveAccount: "Your account is not active! Kindly contact support!",
+    startDateCannotBeFromPast: "Start Date Cannot Be From The Past",
+    endDateCannotBeFromPast: "End Date Cannot Be From Past",
+    startDateShoudBeBeforeEndDate: "Start Date Should Be Before End Date",
+    endDateShouldBeAfeterStartDate: "End Date Should Be After Start Date",
   },
   TEXTS: {
     allUsers: "All users",
@@ -36,9 +57,32 @@ module.exports = {
     userCreated: "User created",
     userUpdated: "User updated",
     userDeleted: "User deleted",
+
+    buildingCreated: "Building Created",
+    buildingDeleted: "Building Deleted",
+    buildingRequested: "Building Requested",
+    buildingUpdated: "Building Updated",
+
+    contractCreated: "Contract Created",
+    contractDeleted: "Contract Deleted",
+    contractRequested: "Contract Requested",
+    contractUpdated: "Contract Updated",
+
+    levelCreated: "Level Created",
+    levelDeleted: "Level Deleted",
+    levelRequested: "Level Requested",
+    levelUpdated: "Level Updated",
+
     siteUpdated: "Site Updated",
     siteDeleted: "Site deleted",
+<<<<<<< HEAD
     clientUpdated: "Client Updated",
+=======
+    zacDeleted: "Zac Deleted",
+    zacCreated: "Zac Created",
+    zacRequested: "Zac Requested",
+    zacUpdated: "Zac Updated",
+>>>>>>> e5a59bf83559213357f04a46d72ac9a4162466f4
     siteRequested: "Site Requested",
     clientDeleted: "Client deleted",
     userSitesUpdated: "Site Updated",
@@ -59,9 +103,18 @@ module.exports = {
     passwordResetSent: "Password reset link sent",
     siteCompanyRequested: "Site Company Requested",
     allRequestedSubscriptions: "All Subscriptions",
+<<<<<<< HEAD
     sendSubscriptionActivationConfirmationSubject:
       "Subscription activated successfully",
     requestEmailVerificationSubject: "Verify your email",
+=======
+    allZacs: "All Zacs",
+    allContracts: "All Contracts",
+    allBuildings: "All Buildings",
+    allLevels: "All Levels",
+
+    clientUpdated: "Client Updated",
+>>>>>>> e5a59bf83559213357f04a46d72ac9a4162466f4
     emailVerificationSent: "Email verfication link sent",
     subscriptionStatusChanged: "Subscription Status Changed",
     sendEmailConfirmationSubject: "Email verified successfully",
@@ -108,6 +161,10 @@ module.exports = {
     LIFTING: "LIFTING",
     ROUTING: "ROUTING",
   },
+  CONTRACTTYPES: {
+    CLIENTPERSITE: "CLIENTPERSITE",
+    MASTERCLIENT: "MASTERCLIENT",
+  },
   MODALS: {
     ZAC: "Zac",
     MEAN: "Mean",
@@ -119,7 +176,11 @@ module.exports = {
     TOKEN: "Token",
     QUOTE: "Client",
     COMPANY: "Company",
+<<<<<<< HEAD
     INVOICE: "Invoice",
+=======
+    CONTRACT: "Contract",
+>>>>>>> e5a59bf83559213357f04a46d72ac9a4162466f4
     BUILDING: "Building",
     DELIVERY: "Delivery",
     MATERIAL: "Material",

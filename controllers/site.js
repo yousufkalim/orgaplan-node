@@ -2,10 +2,20 @@ const Site = require("../models/site");
 const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
+const UserSites = require("../models/userSites");
 class SiteController {
   async create(req, res) {
+    const body = req.body;
+    if (req.file) {
+      body.logo = req.file.path;
+    }
     const result = await new Site(req.body).save();
-    res.status(200).send(response(STRINGS.TEXTS.siteRequested, result));
+
+    if (result) {
+      const sites = [{ siteId: result._id, role: STRINGS.ROLES.ADMIN }];
+      await new UserSites({ sites: sites, adminId: body.adminId }).save();
+      res.status(200).send(response(STRINGS.TEXTS.siteRequested, result));
+    }
   }
 
   async getAll(req, res) {
