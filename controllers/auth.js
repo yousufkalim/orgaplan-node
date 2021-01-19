@@ -15,7 +15,7 @@ class AuthContoller {
     if (user) {
       // send email
       let emailService = new MailService();
-      await emailService.sendQuoteActivation(user);
+      await emailService.sendEmailConfirmation(user);
       return {
         user,
         exists: true,

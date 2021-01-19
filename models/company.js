@@ -31,6 +31,21 @@ const companySchema = new Schema(
       email: String,
       phone: Number,
     },
+    trades: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: STRINGS.MODALS.TRADES,
+      },
+    ],
+    type: {
+      type: String,
+      enum: [
+        STRINGS.COMPANYTYPE.CLIENTPERSITE,
+        STRINGS.COMPANYTYPE.MASTERCLIENT,
+        STRINGS.COMPANYTYPE.NOCLIENTS,
+      ],
+      default: STRINGS.COMPANYTYPE.NOCLIENTS,
+    },
     users: [
       {
         userId: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.USER },

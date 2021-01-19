@@ -8,6 +8,7 @@ router.use("/v1/site", require("./site"));
 router.use("/v1/zac", require("./zac"));
 router.use("/v1/building", require("./building"));
 router.use("/v1/contract", require("./contract"));
+router.use("/v1/trades", require("./trades"));
 
 router.use("/v1/level", require("./level"));
 router.use("/v1/user-sites", require("./userSites"));

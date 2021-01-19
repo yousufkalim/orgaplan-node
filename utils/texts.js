@@ -4,6 +4,7 @@ module.exports = {
     siteNotFound: "No Site Found",
     contractNotFound: "No Contract Found",
     zacNotFound: "No Zac Found",
+    tradeNotFount: "No Trade Found",
     buildingNotFound: "No Building Found",
     buildingNameAlreadyExists: "This building name already exists.",
     levelExists: "Level Already Exists",
@@ -25,15 +26,16 @@ module.exports = {
     subscriptionExpired: "Subscription Expired",
     siteCompanyNotFound: "No Site Company Found",
     companyAlreadyAdded: "Company Already Added",
-<<<<<<< HEAD
-=======
+    companyLogoRequired: "Company Logo Is Requried",
+    startDateIsRequred: "Start Date Is Requried",
+    endDateIsRequired: "End Date Is Requried",
+
     companyLogoRequired: "Company Logo Is Requried",
     companyInchargeIsRequired: "Company Incharge Is Required",
     userIdRequired: "User ID Is Required",
     userRoleRequired: "User Role Is Required",
     passwordRequired: "Password is required",
     passwordInvalid: "Password is incorrect!",
->>>>>>> e5a59bf83559213357f04a46d72ac9a4162466f4
     userNameExists: "Username is not available!",
     alreadyVerified: "Email is already verified",
     subscriptionNotFound: "No Subscription Found",
@@ -75,14 +77,17 @@ module.exports = {
 
     siteUpdated: "Site Updated",
     siteDeleted: "Site deleted",
-<<<<<<< HEAD
     clientUpdated: "Client Updated",
-=======
     zacDeleted: "Zac Deleted",
     zacCreated: "Zac Created",
     zacRequested: "Zac Requested",
     zacUpdated: "Zac Updated",
->>>>>>> e5a59bf83559213357f04a46d72ac9a4162466f4
+
+    tradeDeleted: "Trade Deleted",
+    tradeCreated: "Trade Created",
+    tradeRequested: "Trade Requested",
+    tradeUpdated: "Trade Updated",
+
     siteRequested: "Site Requested",
     clientDeleted: "Client deleted",
     userSitesUpdated: "Site Updated",
@@ -103,18 +108,16 @@ module.exports = {
     passwordResetSent: "Password reset link sent",
     siteCompanyRequested: "Site Company Requested",
     allRequestedSubscriptions: "All Subscriptions",
-<<<<<<< HEAD
     sendSubscriptionActivationConfirmationSubject:
       "Subscription activated successfully",
     requestEmailVerificationSubject: "Verify your email",
-=======
     allZacs: "All Zacs",
+    allTrades: "All Trades",
     allContracts: "All Contracts",
     allBuildings: "All Buildings",
     allLevels: "All Levels",
 
     clientUpdated: "Client Updated",
->>>>>>> e5a59bf83559213357f04a46d72ac9a4162466f4
     emailVerificationSent: "Email verfication link sent",
     subscriptionStatusChanged: "Subscription Status Changed",
     sendEmailConfirmationSubject: "Email verified successfully",
@@ -165,6 +168,11 @@ module.exports = {
     CLIENTPERSITE: "CLIENTPERSITE",
     MASTERCLIENT: "MASTERCLIENT",
   },
+  COMPANYTYPE: {
+    CLIENTPERSITE: "CLIENTPERSITE",
+    MASTERCLIENT: "MASTERCLIENT",
+    NOCLIENTS: "NOCLIENTS",
+  },
   MODALS: {
     ZAC: "Zac",
     MEAN: "Mean",
@@ -174,13 +182,11 @@ module.exports = {
     ALERT: "Alert",
     LEVEL: "Level",
     TOKEN: "Token",
+    TRADES: "Trades",
     QUOTE: "Client",
     COMPANY: "Company",
-<<<<<<< HEAD
     INVOICE: "Invoice",
-=======
     CONTRACT: "Contract",
->>>>>>> e5a59bf83559213357f04a46d72ac9a4162466f4
     BUILDING: "Building",
     DELIVERY: "Delivery",
     MATERIAL: "Material",

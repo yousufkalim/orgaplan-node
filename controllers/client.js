@@ -12,7 +12,6 @@ const Contract = require("../models/contract");
 class ClientController {
   async create(req, res) {
     const params = req.body;
-
     const companyName = params.companyName;
     if (!params.incharge)
       throw new CustomError(STRINGS.ERRORS.companyInchargeIsRequired);
@@ -21,10 +20,23 @@ class ClientController {
     if (!req.file) throw new CustomError(STRINGS.ERRORS.companyLogoRequired);
     companyLogo = req.file.path;
 
+    if (params.contractType == STRINGS.CONTRACTTYPES.MASTERCLIENT) {
+      if (!params.contractStartDate)
+        throw new CustomError(STRINGS.ERRORS.startDateIsRequred);
+      if (!params.contractEndDate)
+        throw new CustomError(STRINGS.ERRORS.endDateIsRequired);
+
+      isDateOccuranceChronological(
+        params.contractStartDate,
+        params.contractEndDate
+      );
+    }
+
     const companyColor = !params.companyColor
       ? randomColor
       : params.companyColor;
 
+    // Create User
     const userData = {
       firstName: params.firstName,
       lastName: params.lastName,
@@ -32,16 +44,10 @@ class ClientController {
       phone: params.phone,
     };
 
-    // Create User & User Contract
     const user = await Auth.signup(userData);
     const userId = user.user._id;
 
     params["userId"] = userId;
-    if (params.contractType == STRINGS.CONTRACTTYPES.MASTERCLIENT)
-      isDateOccuranceChronological(
-        params.contractStartDate,
-        params.contractEndDate
-      );
 
     await new Contract(params).save();
 
@@ -55,7 +61,7 @@ class ClientController {
     // Create User Company if id does not exist
     const companyConnection = [];
     companyConnection.push({ color: companyColor });
-    const companyUsers = [{ userId: userId }];
+    const companyUsers = [{ userId: userId, role: STRINGS.ROLES.ADMIN }];
     const companyResult = await Company.findOne({ name: companyName });
     if (companyResult)
       throw new CustomError(STRINGS.ERRORS.companyAlreadyAdded);
@@ -65,9 +71,9 @@ class ClientController {
       connection: companyConnection,
       incharge: JSON.parse(params.incharge),
       users: companyUsers,
+      type: params.contractType,
     };
     const company = await new Company(companyData).save();
-    console.log("\n\n\nHERE\n\n\n");
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       {
@@ -75,12 +81,13 @@ class ClientController {
       },
       { new: true }
     );
+
     await Client({
       companyId: company._id,
       userId: user._id,
-      contractStartDate: user.contractStartDate,
-      contractEndDate: user.contractEndDate,
-      additionalInfo: user.additionalInfo,
+      contractStartDate: params.contractStartDate,
+      contractEndDate: params.contractEndDate,
+      additionalInfo: params.additionalInfo,
     }).save();
     await res
       .status(200)
@@ -135,7 +142,7 @@ class ClientController {
     if (!result)
       throw new CustomError(STRINGS.ERRORS.clientRequestNotFound, 404);
     let emailService = new MailService();
-    await emailService.sendSubscriptionActivationConfirmation(result);
+    await emailService.sendEmailConfirmation(result);
     res.status(200).send(response(STRINGS.TEXTS.clientUpdated, result));
   }
 

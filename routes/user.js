@@ -10,6 +10,7 @@ router.get("/:userId", userController.getOne);
 
 //POSTS
 router.post("/", upload("user", "image"), userController.create);
+router.post("/register", upload("user", "image"), userController.register);
 
 //PUTS
 router.put(

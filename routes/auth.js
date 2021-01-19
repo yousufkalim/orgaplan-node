@@ -3,7 +3,7 @@ const router = require("express").Router();
 const upload = require("../middlewares/multer");
 const authController = require("../controllers/auth");
 
-// router.post("/sign-up", upload("image"), authController.signup);
+router.post("/sign-up", authController.signup);
 router.post("/sign-in", authController.signin);
 router.post(
   "/request-email-verification",

@@ -15,6 +15,19 @@ class UserContoller {
     res.status(200).send(response(STRINGS.TEXTS.userCreated, result));
   }
 
+  async register(req, res) {
+    const body = req.body;
+    body.address = JSON.parse(body.address);
+    body.password = await bcrypt.hash(body.password, +ENV.BCRYPT_SALT);
+    const user = await User.findOne({ email: body.email });
+    user.password = body.password;
+    user.isVerified = true;
+    if (!user) throw new CustomError(STRINGS.ERRORS.userNotFound);
+    console.log(JSON.stringify(user, null, 2));
+    const result = await user.update(user);
+    res.status(200).send(response(STRINGS.TEXTS.userCreated, result));
+  }
+
   async getAll(req, res) {
     const result = await User.find({}, { password: 0, __v: 0 });
     res.status(200).send(response(STRINGS.TEXTS.allUsers, result));

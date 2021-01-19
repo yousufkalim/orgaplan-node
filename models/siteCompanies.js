@@ -7,6 +7,7 @@ const siteCompaniesSchema = new Schema(
     siteId: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.SITE,
+      unique: true,
     },
     companies: [
       {
@@ -20,7 +21,6 @@ const siteCompaniesSchema = new Schema(
     timestamps: true,
   }
 );
-
 module.exports = mongoose.model(
   STRINGS.MODALS.SITECOMPANIES,
   siteCompaniesSchema

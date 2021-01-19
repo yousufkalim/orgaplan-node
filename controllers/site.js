@@ -2,9 +2,12 @@ const Site = require("../models/site");
 const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
+const Company = require("../models/company");
 const UserSites = require("../models/userSites");
+const SiteCompanies = require("../models/SiteCompanies");
 class SiteController {
   async create(req, res) {
+    console.log("HERE");
     const body = req.body;
     if (req.file) {
       body.logo = req.file.path;
@@ -14,6 +17,14 @@ class SiteController {
     if (result) {
       const sites = [{ siteId: result._id, role: STRINGS.ROLES.ADMIN }];
       await new UserSites({ sites: sites, adminId: body.adminId }).save();
+      const adminCompany = await Company.findOne({
+        "users.userId": body.adminId,
+        "users.role": STRINGS.ROLES.ADMIN,
+      });
+      await new SiteCompanies({
+        siteId: result._id,
+        companies: [adminCompany._id],
+      }).save();
       res.status(200).send(response(STRINGS.TEXTS.siteRequested, result));
     }
   }

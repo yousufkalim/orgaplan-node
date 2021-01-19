@@ -17,28 +17,27 @@ class MailService {
     });
   }
 
-  async requestEmailVerification(to) {
+  async requestEmailVerification(to, link) {
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
-
     if (!to) throw new CustomError(STRINGS.ERRORS.recipientRequired);
 
     // Email Starts
     const filePath = path.join(
       __dirname,
-      "./html_templates/requestEmailVerification.html"
+      "../html_templates/requestEmailVerification.html"
     );
     const source = fs.readFileSync(filePath, "utf-8").toString();
     const template = handlebars.compile(source);
     const replacements = {
       name: to.firstName + " " + to.lastName,
       email: to.email,
-      //link,
+      link,
     };
     const htmlToSend = template(replacements);
 
     await this.transporter.sendMail({
       from,
-      to: Array.isArray(to) ? to.join() : to,
+      to: Array.isArray(to.email) ? to.join() : to.email,
       subject: STRINGS.TEXTS.requestEmailVerificationSubject,
       html: htmlToSend,
     });
@@ -54,7 +53,7 @@ class MailService {
     // Email Starts
     const filePath = path.join(
       __dirname,
-      "./html_templates/sendEmailVerificationConfirmation.html"
+      "../html_templates/sendEmailVerificationConfirmation.html"
     );
     const source = fs.readFileSync(filePath, "utf-8").toString();
     const template = handlebars.compile(source);
@@ -66,7 +65,7 @@ class MailService {
 
     await this.transporter.sendMail({
       from,
-      to: Array.isArray(to) ? to.join() : to,
+      to: Array.isArray(to.email) ? to.join() : to.email,
       subject: STRINGS.TEXTS.sendEmailConfirmationSubject,
       html: htmlToSend,
     });
@@ -82,7 +81,7 @@ class MailService {
     // Email Starts
     const filePath = path.join(
       __dirname,
-      "./html_templates/requestSubscriptionActivation.html"
+      "../html_templates/requestSubscriptionActivation.html"
     );
     const source = fs.readFileSync(filePath, "utf-8").toString();
     const template = handlebars.compile(source);
@@ -94,7 +93,7 @@ class MailService {
 
     await this.transporter.sendMail({
       from,
-      to: Array.isArray(to) ? to.join() : to,
+      to: Array.isArray(to.email) ? to.join() : to.email,
       subject: STRINGS.TEXTS.requestSubscriptionActivationSubject,
       html: htmlToSend,
     });
@@ -110,7 +109,7 @@ class MailService {
     // Email Starts
     const filePath = path.join(
       __dirname,
-      "./html_templates/sendSubscriptionActivationConfirmation.html"
+      "../html_templates/sendSubscriptionActivationConfirmation.html"
     );
     const source = fs.readFileSync(filePath, "utf-8").toString();
     const template = handlebars.compile(source);
@@ -122,7 +121,7 @@ class MailService {
 
     await this.transporter.sendMail({
       from,
-      to: Array.isArray(to) ? to.join() : to,
+      to: Array.isArray(to.email) ? to.join() : to.email,
       subject: STRINGS.TEXTS.sendSubscriptionActivationConfirmationSubject,
       html: htmlToSend,
     });
@@ -138,7 +137,7 @@ class MailService {
     // Email Starts
     const filePath = path.join(
       __dirname,
-      "./html_templates/requestResetPassword.html"
+      "../html_templates/requestResetPassword.html"
     );
     const source = fs.readFileSync(filePath, "utf-8").toString();
     const template = handlebars.compile(source);
@@ -151,7 +150,7 @@ class MailService {
 
     await this.transporter.sendMail({
       from,
-      to: Array.isArray(to) ? to.join() : to,
+      to: Array.isArray(to.email) ? to.join() : to.email,
       subject: STRINGS.TEXTS.requestResetPasswordSubject,
       html: htmlToSend,
     });
@@ -167,7 +166,7 @@ class MailService {
     // Email Starts
     const filePath = path.join(
       __dirname,
-      "./html_templates/sendPasswordResetConfirmation.html"
+      "../html_templates/sendPasswordResetConfirmation.html"
     );
     const source = fs.readFileSync(filePath, "utf-8").toString();
     const template = handlebars.compile(source);
@@ -179,7 +178,7 @@ class MailService {
 
     await this.transporter.sendMail({
       from,
-      to: Array.isArray(to) ? to.join() : to,
+      to: Array.isArray(to.email) ? to.join() : to.email,
       subject: STRINGS.TEXTS.sendPasswordResetConfirmationSubject,
       html: htmlToSend,
     });
