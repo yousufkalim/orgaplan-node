@@ -9,11 +9,16 @@ router.get("/:id", auth(), companyController.getOne);
 
 // POSTS
 // router.post("/", auth(), upload("logo"), companyController.create);
-router.post("/", auth(), upload("company", "logo"), companyController.create);
+router.post("/", upload("company", "logo"), companyController.create);
+router.post(
+  "/add_user",
+  auth(),
+  upload("user", "image"),
+  companyController.addUser
+);
 
 // PUTS
 // router.put("/:id", auth(), upload("logo"), companyController.update);
-router.put("/add_user/:id", auth(), companyController.addUser);
 // DELETES
 router.delete("/:id", auth(), companyController.delete);
 

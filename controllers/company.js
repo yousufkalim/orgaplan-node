@@ -2,11 +2,12 @@ const Company = require("../models/company");
 const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
-
+const Auth = require("../controllers/auth");
+const UserSites = require("../models/userSites");
 class CompanyController {
   async create(req, res) {
     const data = req.body;
-    console.log(data.isSubcontractor);
+    if (data.trades) data.trades = JSON.parse(data.trades);
     if (data.isSubcontractor == "true") {
       if (data.childCompanyId) {
         // if the subcontractor exists
@@ -94,11 +95,50 @@ class CompanyController {
           .send(response(STRINGS.TEXTS.companyRequested, mainCompany));
       } else {
         if (data.users) data.users = JSON.parse(data.users);
-        const connection = [{ siteId: data.siteId }];
+        const connection = [{ siteId: data.siteId, isSubContractor: false }];
         data["connection"] = connection;
         const company = await Company(data).save(); // Create child company
         res.status(200).send(response(STRINGS.TEXTS.companyRequested, company));
       }
+    }
+  }
+
+  async addUser(req, res) {
+    const body = req.body;
+
+    body["company"] = [body.companyId];
+    if (req.file) body["image"] = req.file.path;
+    const user = await Auth.signup(body);
+    const userId = user.user._id;
+    await user.user.update({ $addToSet: { company: body.companyId } });
+
+    body.sites = JSON.parse(body.sites);
+    const sitesObj = [];
+    body.sites.map((item, index) => {
+      const obj = { siteId: item, role: body.userRole };
+      sitesObj.push(obj);
+    });
+
+    if (user.exists) {
+      // Add user to the sites
+      // const userSites = await UserSites.findOne({ userId: userId });
+      // const sitesClone = [...userSites.sites];
+      // sitesClone.concat(sitesObj);
+      // console.log(JSON.stringify(sitesClone, null, 2));
+
+      await UserSites.findOneAndUpdate({
+        userId: userId,
+        $addToSet: { sites: sitesObj },
+        upsert: true,
+      });
+      res.status(200).send(response(STRINGS.TEXTS.userAdded, user));
+    } else {
+      console.log(JSON.stringify(sitesObj, null, 2));
+      await new UserSites({
+        userId: userId,
+        sites: sitesObj,
+      }).save();
+      res.status(200).send(response(STRINGS.TEXTS.userAdded, user));
     }
   }
 
@@ -133,23 +173,6 @@ class CompanyController {
     res.status(200).send(response(STRINGS.TEXTS.companyUpdated, result));
   }
 
-  async addUser(req, res) {
-    const id = req.params.id;
-    const data = req.body;
-
-    const result = await Company.findById({ _id: id });
-
-    if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound, 404);
-    const resultClone = [...result.users];
-    if (!data.userId) throw new CustomError(STRINGS.ERRORS.userIdRequired, 404);
-    if (!data.role) throw new CustomError(STRINGS.ERRORS.userRoleRequired, 404);
-
-    const usersClone = [...result.users];
-    usersClone.push(data);
-    result.users = usersClone;
-    await result.updateOne(result);
-    res.status(200).send(response(STRINGS.TEXTS.userAdded, result));
-  }
   async delete(req, res) {
     const id = req.params.id;
 

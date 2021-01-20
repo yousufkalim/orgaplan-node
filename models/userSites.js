@@ -10,6 +10,7 @@ const userSitesSchema = new Schema(
     },
     sites: [
       {
+        _id: false,
         siteId: {
           type: Schema.Types.ObjectId,
           ref: STRINGS.MODALS.SITE,
@@ -22,7 +23,6 @@ const userSitesSchema = new Schema(
             STRINGS.ROLES.BUFFER,
             STRINGS.ROLES.ENTERPRISE,
           ],
-          required: true,
         },
         status: String,
       },

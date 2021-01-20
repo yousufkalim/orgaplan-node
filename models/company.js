@@ -8,6 +8,7 @@ const companySchema = new Schema(
     name: String,
     color: String,
     description: String,
+    website: String,
     connection: [
       {
         childCompanyId: [
@@ -21,6 +22,10 @@ const companySchema = new Schema(
           // Represents company's main company if the company us subcontractor
           type: Schema.Types.ObjectId,
           ref: STRINGS.MODALS.COMPANY,
+        },
+        isSubContractor: {
+          type: Boolean,
+          default: false,
         },
         siteId: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.SITE },
       },

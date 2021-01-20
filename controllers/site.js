@@ -16,7 +16,7 @@ class SiteController {
 
     if (result) {
       const sites = [{ siteId: result._id, role: STRINGS.ROLES.ADMIN }];
-      await new UserSites({ sites: sites, adminId: body.adminId }).save();
+      await new UserSites({ sites: sites, userId: body.adminId }).save();
       const adminCompany = await Company.findOne({
         "users.userId": body.adminId,
         "users.role": STRINGS.ROLES.ADMIN,

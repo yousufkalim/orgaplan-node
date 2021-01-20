@@ -8,6 +8,7 @@ const Company = require("../models/company");
 const Auth = require("../controllers/auth");
 const randomColor = require("../utils/colorGenerator");
 const isDateOccuranceChronological = require("../utils/date");
+const UserSites = require("../models/userSites");
 const Contract = require("../models/contract");
 class ClientController {
   async create(req, res) {
@@ -84,7 +85,7 @@ class ClientController {
 
     await Client({
       companyId: company._id,
-      userId: user._id,
+      userId: userId,
       contractStartDate: params.contractStartDate,
       contractEndDate: params.contractEndDate,
       additionalInfo: params.additionalInfo,
@@ -92,6 +93,48 @@ class ClientController {
     await res
       .status(200)
       .send(response(STRINGS.TEXTS.clientUpdated, updatedUser));
+  }
+
+  async updateAdmin(req, res) {
+    const clientId = req.params.id;
+    const body = req.body;
+    let image = null;
+    if (req.file) image = req.file.path;
+    const admin = await Client.findOne({ userId: clientId });
+    if (!admin)
+      throw new CustomError(STRINGS.ERRORS.clientRequestNotFound, 404);
+
+    if (body.companyId) {
+      // Remove Admin From Current Company
+      const clientCompany = await Company.findOneAndUpdate(
+        {
+          _id: admin.companyId,
+        },
+        { $pull: { users: { userId: clientId } } },
+        { new: true }
+      );
+
+      //Push Admin To New Company
+      const newClientCompany = await Company.findByIdAndUpdate(
+        {
+          _id: body.companyId,
+        },
+        {
+          $addToSet: {
+            users: {
+              userId: clientId,
+              role: STRINGS.ROLES.ADMIN,
+            },
+          },
+        },
+        { new: true }
+      );
+      const updatedAdmin = await admin.updateOne({ companyId: body.companyId });
+
+      res
+        .status(200)
+        .send(response(STRINGS.TEXTS.clientUpdated, newClientCompany));
+    }
   }
 
   async getAll(req, res) {
@@ -148,7 +191,8 @@ class ClientController {
 
   async delete(req, res) {
     const id = req.params.id;
-
+    const userSites = await UserSites.findOne({ userId: id });
+    if (userSites) throw new CustomError(STRINGS.ERRORS.delteSiteFirst, 404);
     const result = await Client.findOne({
       _id: id,
     });

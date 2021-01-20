@@ -15,10 +15,16 @@ router.post(
 );
 
 // PUTS
-router.put("/:id", auth("admin"), requestQuoteController.update);
+router.put("/:id", auth(), requestQuoteController.update);
+router.put(
+  "/update-admin/:id",
+  upload("user", "image"),
+  requestQuoteController.updateAdmin
+);
+
 router.put("/send-quote/:id", requestQuoteController.sendQuote);
 
 // DELETES
-router.delete("/:id", auth("admin"), requestQuoteController.delete);
+router.delete("/:id", auth(), requestQuoteController.delete);
 
 module.exports = router;

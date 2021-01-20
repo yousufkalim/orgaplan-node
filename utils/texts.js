@@ -51,6 +51,7 @@ module.exports = {
     endDateCannotBeFromPast: "End Date Cannot Be From Past",
     startDateShoudBeBeforeEndDate: "Start Date Should Be Before End Date",
     endDateShouldBeAfeterStartDate: "End Date Should Be After Start Date",
+    delteSiteFirst: "You need to delete user sites before deleting the user",
   },
   TEXTS: {
     allUsers: "All users",
