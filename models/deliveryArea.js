@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const STRINGS = require("../utils/texts");
-
+const randomColor = require("../utils/colorGenerator");
 const deliveryArea = new Schema(
   {
     name: String,
-    start: Date,
-    end: Date,
+    document: String,
+    addresses: [{ lat: Number, long: Number }],
     means: [
       {
         type: Schema.Types.ObjectId,
@@ -17,15 +17,28 @@ const deliveryArea = new Schema(
       type: String,
       enum: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],
     },
-    unavailable: {
-      reason: String,
+    unavailability: [
+      { date: Date, reason: String, startingHour: Number, endingHour: Number },
+    ],
+    color: {
+      type: String,
+      default: randomColor,
+    },
+    availability: {
       start: Date,
       end: Date,
-      siteId: {
-        type: Schema.Types.ObjectId,
-        ref: STRINGS.MODALS.SITE,
-      },
     },
+    vehicles: [{ name: String }],
+    picCoordinates: {
+      x: { type: Number },
+      y: { type: Number },
+    },
+
+    siteId: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.SITE,
+    },
+    deliveryAreaEndNotificaionTime: Number,
   },
   {
     timestamps: true,

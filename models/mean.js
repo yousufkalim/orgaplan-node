@@ -5,9 +5,10 @@ const STRINGS = require("../utils/texts");
 const meanSchema = new Schema(
   {
     name: String,
-    description: String,
     sheet: String,
     pricePerHour: Number,
+    additionalInfo: String,
+
     meanType: {
       type: String,
       enum: [STRINGS.MEANTYPES.LIFTING, STRINGS.MEANTYPES.ROUTING],
@@ -16,18 +17,28 @@ const meanSchema = new Schema(
       type: String,
       enum: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],
     },
-    availability: [
+    picCoordinates: {
+      x: Number,
+      y: Number,
+    },
+    location: [
       {
-        start: Date,
-        end: Date,
+        deliveryArea: {
+          type: Schema.Types.ObjectId,
+          ref: STRINGS.MODALS.DELIVERYAREA,
+        },
+        storageArea: {
+          type: Schema.Types.ObjectId,
+          ref: STRINGS.MODALS.STORAGEAREA,
+        },
       },
     ],
-    unavailable: [
-      {
-        reason: String,
-        start: Date,
-        end: Date,
-      },
+    availability: {
+      start: Date,
+      end: Date,
+    },
+    unavailability: [
+      { date: Date, reason: String, startingHour: Number, endingHour: Number },
     ],
   },
 

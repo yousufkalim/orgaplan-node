@@ -18,7 +18,7 @@ router.post(
 );
 
 // PUTS
-// router.put("/:id", auth(), upload("logo"), companyController.update);
+router.put("/:id", auth(), companyController.update);
 // DELETES
 router.delete("/:id", auth(), companyController.delete);
 

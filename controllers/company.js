@@ -7,6 +7,12 @@ const UserSites = require("../models/userSites");
 class CompanyController {
   async create(req, res) {
     const data = req.body;
+
+    // Check if company name exists
+
+    const companyName = await Company.findOne({ name: data.name });
+    if (companyName) throw new CustomError(STRINGS.ERRORS.companyAlreadyAdded);
+
     if (data.trades) data.trades = JSON.parse(data.trades);
     if (data.isSubcontractor == "true") {
       if (data.childCompanyId) {
@@ -55,7 +61,11 @@ class CompanyController {
           const siteId = data.siteId;
 
           const connection = [
-            { parentCompanyId: parentCompanyId, siteId: siteId },
+            {
+              parentCompanyId: parentCompanyId,
+              siteId: siteId,
+              isSubContractor: true,
+            },
           ];
           data["connection"] = connection;
           if (data.users) data.users = JSON.parse(data.users);
@@ -67,8 +77,13 @@ class CompanyController {
               _id: data.parentCompanyId,
               "connection.siteId": data.siteId,
             },
-            { $addToSet: { "connection.$.childCompanyId": childCompanyId } }
+            {
+              $addToSet: {
+                "connection.$.childCompanyId": childCompanyId,
+              },
+            }
           ); //Get parent company id and add child to that company
+          console.log("\n\n\n HERE \n\n\n");
           res
             .status(200)
             .send(response(STRINGS.TEXTS.companyRequested, childCompany));
@@ -161,16 +176,63 @@ class CompanyController {
   async update(req, res) {
     const id = req.params.id;
     const data = req.body;
-    if (data.incharge) data.incharge = JSON.parse(data.incharge);
-    const result = await Company.findByIdAndUpdate(
-      { _id: id },
-      { $set: data },
-      { new: true }
-    );
 
-    if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound, 404);
+    if (!data.isSubcontractor) {
+      const connection = [
+        { parentCompanyId: null, isSubContractor: false, siteId: data.siteId },
+      ];
+      const company = await Company.findOneAndUpdate(
+        {
+          _id: id,
+          "connection.siteId": data.siteId,
+        },
+        { $set: { connection: [...connection] } },
+        { new: true }
+      );
+      res.status(200).send(response(STRINGS.TEXTS.companyUpdated, company));
+    }
+    if (data.isSubcontractor) {
+      if (data.parentCompanyId == undefined)
+        throw new CustomError(STRINGS.ERRORS.parentCompanyNotFound, 404);
 
-    res.status(200).send(response(STRINGS.TEXTS.companyUpdated, result));
+      const connection = [
+        {
+          isSubContractor: true,
+          childCompanyId: [],
+          siteId: data.siteId,
+          parentCompanyId: data.parentCompanyId,
+        },
+      ];
+      const childCompany = await Company.findOneAndUpdate(
+        {
+          _id: id,
+          "connection.siteId": data.siteId,
+        },
+        { $set: { connection: connection } },
+        { new: true }
+      );
+
+      const parentCompany = await Company.findOneAndUpdate(
+        {
+          _id: data.parentCompanyId,
+          "connection.siteId": data.siteId,
+        },
+        { $addToSet: { "connection.$.childCompanyId": childCompany.id } }
+      ); //Get parent company id and add child to that company
+      res
+        .status(200)
+        .send(response(STRINGS.TEXTS.companyUpdated, parentCompany));
+    }
+
+    // const result = await Company.findByIdAndUpdate(
+    //   { _id: id },
+    //   { $set: data },
+    //   { new: true }
+    // );
+
+    // if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound, 404);
+
+    // res.status(200).send(response(STRINGS.TEXTS.companyUpdated, result));
   }
 
   async delete(req, res) {

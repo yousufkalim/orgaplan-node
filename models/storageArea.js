@@ -5,8 +5,7 @@ const STRINGS = require("../utils/texts");
 const storageArea = new Schema(
   {
     name: String,
-    startDate: Date,
-    endDate: Date,
+
     level: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.LEVEL,
@@ -19,6 +18,16 @@ const storageArea = new Schema(
       type: Boolean,
       default: false,
     },
+    unavailability: [
+      { date: Date, reason: String, startingHour: Number, endingHour: Number },
+    ],
+    availability: {
+      start: Date,
+      end: Date,
+    },
+    deliveryArea: [
+      { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.DELIVERYAREA },
+    ],
     companies: [
       {
         type: Schema.Types.ObjectId,
@@ -41,18 +50,13 @@ const storageArea = new Schema(
       type: String,
       enum: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],
     },
-    unavailable: {
-      reason: {
-        type: String,
-      },
-      startDate: {
-        type: Date,
-      },
-      endDate: {
-        type: Date,
-      },
+
+    picCoordinates: {
+      x: { type: Number },
+      y: { type: Number },
     },
   },
+
   {
     timestamps: true,
   }

@@ -35,7 +35,12 @@ async function addPathToBody(req, res, next) {
 const uploadCompany = (folder) =>
   multer({
     storage: storage(folder),
-    fileFilter: fileFilter(["image/png", "image/jpg", "image/jpeg"]),
+    fileFilter: fileFilter([
+      "image/png",
+      "image/jpg",
+      "image/jpeg",
+      "application/pdf",
+    ]),
   });
 
 module.exports = (folder, field, type = "single") => {
