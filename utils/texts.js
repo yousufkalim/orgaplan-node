@@ -19,6 +19,7 @@ module.exports = {
     emailExists: "Email already exists",
     userNotFound: "User does not exist",
     meanNotFound: "Mean Does Not Exist",
+    indcidentNotFound: "Indcident Does Not Exist",
     companyNotFound: "No Company Found",
     storageAreaNotFount: "No Storage Area Found",
     userIdRequired: "User ID Is Required",
@@ -108,6 +109,12 @@ module.exports = {
     tradeCreated: "Trade Created",
     tradeRequested: "Trade Requested",
     tradeUpdated: "Trade Updated",
+
+    incidentDeleted: "Incident Deleted",
+    incidentCreated: "Incident Created",
+    incidentRequested: "Incident Requested",
+    incidentUpdated: "Incident Updated",
+    allIncidents: "All Incidents",
 
     meanCreated: "Mean Created",
     meanRequested: "Mean Requested",
@@ -199,6 +206,10 @@ module.exports = {
     MASTERCLIENT: "MASTERCLIENT",
     NOCLIENTS: "NOCLIENTS",
   },
+  INCIDENTTYPE: {
+    DELAY: "DELAY",
+    LETIGATON: "LETIGATION",
+  },
   MODALS: {
     ZAC: "Zac",
     MEAN: "Mean",
@@ -206,6 +217,7 @@ module.exports = {
     SITE: "Site",
     USER: "User",
     ALERT: "Alert",
+    INCIDENT: "Incident",
     LEVEL: "Level",
     TOKEN: "Token",
     VECHICLES: "Vehicles",

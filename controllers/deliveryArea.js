@@ -26,8 +26,14 @@ class DeliveryAreaController {
 
     if (body.picCoordinates)
       body.picCoordinates = JSON.parse(body.picCoordinates);
-
-    const result = await new DeliveryArea(body).save();
+    let result = null;
+    if (body.deliveryAreaId)
+      result = await DeliveryArea.findOneAndUpdate(
+        { _id: body.deliveryAreaId },
+        { $set: body },
+        { new: true }
+      );
+    result = await new DeliveryArea(body).save();
     res.status(200).send(response(STRINGS.TEXTS.deliveryAreaCreated, result));
   }
 

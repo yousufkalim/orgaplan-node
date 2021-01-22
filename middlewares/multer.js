@@ -20,13 +20,21 @@ const fileFilter = (filters) => (req, file, cb) => {
 
 async function addPathToBody(req, res, next) {
   if (req.files) {
-    let files = [];
-    Object.entries(req.files).map((item) =>
-      files.push({
-        [item[0]]: item[1].map((file) => file.path.replace("\\", "/")),
-      })
-    );
-    req.body["images"] = files;
+    for (var key in req.files) {
+      //  console.log("Key: " + key);
+      //     console.log(JSON.stringify(req.files[key], null, 2));
+
+      let files = [];
+      Object.entries(
+        req.files[key].map((file) => {
+          //          console.log(JSON.stringify(item, null, 2));
+          return files.push(
+            file.path != undefined ? file.path.replace("\\", "/") : null
+          );
+        })
+      );
+      req.body["images"] = files;
+    }
   }
   if (req.file) req.body["image"] = req.file.path.replace("\\", "/");
   next();
