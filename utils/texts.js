@@ -4,6 +4,7 @@ module.exports = {
     siteNotFound: "No Site Found",
     contractNotFound: "No Contract Found",
     zacNotFound: "No Zac Found",
+    sitePenaltyNotFound: "No Site Panelty Found",
     deliveyAreaNotFount: "No Delivery Area Found",
     tradeNotFount: "No Trade Found",
     buildingNotFound: "No Building Found",
@@ -104,6 +105,18 @@ module.exports = {
     zacCreated: "Zac Created",
     zacRequested: "Zac Requested",
     zacUpdated: "Zac Updated",
+
+    sitePenaltyCreated: "Site Penalty Created",
+    sitePenaltyDeleted: "Site Penalty Deleted",
+    sitePenaltyUpdated: "Site Penalty Updated",
+    sitePenaltyRequested: "Site Penalty Requested",
+    allSitePenalties: "All Site Penalty",
+
+    reinvoicingCreated: "Re-Invoicing Created",
+    reinvoicingDeleted: "Re-Invoicing Deleted",
+    reinvoicingUpdated: "Re-Invoicing Updated",
+    reinvoicingRequested: "Re-Invoicing Requested",
+    allReinvoicing: "All Re-Invoicing",
 
     tradeDeleted: "Trade Deleted",
     tradeCreated: "Trade Created",
@@ -210,6 +223,10 @@ module.exports = {
     DELAY: "DELAY",
     LETIGATON: "LETIGATION",
   },
+  SITEPENALTY: {
+    LATE: "LATE",
+    UNEXPRECTED: "UNEXPECTED",
+  },
   MODALS: {
     ZAC: "Zac",
     MEAN: "Mean",
@@ -230,6 +247,7 @@ module.exports = {
     DELIVERY: "Delivery",
     MATERIAL: "Material",
     USERSITES: "UserSites",
+    SITEPENALTIES: "SitePenalties",
     STORAGEAREA: "StorageArea",
     DELIVERYAREA: "DeliveryArea",
     SUBSCRIPTION: "Subscription",

@@ -5,6 +5,7 @@ const CustomError = require("../utils/customError");
 const Company = require("../models/company");
 const UserSites = require("../models/userSites");
 const SiteCompanies = require("../models/SiteCompanies");
+const SitePenalties = require("../models/sitePenalties");
 class SiteController {
   async create(req, res) {
     console.log("HERE");
@@ -12,6 +13,7 @@ class SiteController {
     if (req.file) {
       body.logo = req.file.path;
     }
+    if (body.trades) body.trades = JSON.parse(body.trades);
     const result = await new Site(req.body).save();
 
     if (result) {
@@ -21,6 +23,11 @@ class SiteController {
         "users.userId": body.adminId,
         "users.role": STRINGS.ROLES.ADMIN,
       });
+      await new SitePenalties({
+        siteId: result._id,
+        lateCost: body.lateCost,
+        unexptectedCost: body.unexptectedCost,
+      }).save();
       await new SiteCompanies({
         siteId: result._id,
         companies: [adminCompany._id],
@@ -48,7 +55,7 @@ class SiteController {
   async update(req, res) {
     const id = req.params.id;
     const data = req.body;
-
+    if (data.trades) data.trades = JSON.parse(data.trades);
     const result = await Site.findByIdAndUpdate(
       { _id: id },
       { $set: data },

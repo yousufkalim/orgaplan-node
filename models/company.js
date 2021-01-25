@@ -36,12 +36,7 @@ const companySchema = new Schema(
       email: String,
       phone: Number,
     },
-    trades: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: STRINGS.MODALS.TRADES,
-      },
-    ],
+
     type: {
       type: String,
       enum: [

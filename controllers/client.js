@@ -16,7 +16,6 @@ class ClientController {
     const companyName = params.companyName;
     if (!params.incharge)
       throw new CustomError(STRINGS.ERRORS.companyInchargeIsRequired);
-
     let companyLogo = null;
     if (!req.file) throw new CustomError(STRINGS.ERRORS.companyLogoRequired);
     companyLogo = req.file.path;

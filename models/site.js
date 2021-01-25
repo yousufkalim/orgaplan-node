@@ -34,6 +34,12 @@ const siteSchema = new Schema(
         ref: STRINGS.MODALS.MEAN,
       },
     ],
+    trades: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: STRINGS.MODALS.TRADES,
+      },
+    ],
     buildings: [
       {
         type: Schema.Types.ObjectId,

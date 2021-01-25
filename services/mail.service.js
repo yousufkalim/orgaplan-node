@@ -31,7 +31,7 @@ class MailService {
     const replacements = {
       name: to.firstName + " " + to.lastName,
       email: to.email,
-      link,
+      link: link,
     };
     const htmlToSend = template(replacements);
 
@@ -45,7 +45,7 @@ class MailService {
     return;
   }
 
-  async sendEmailConfirmation(to) {
+  async sendEmailConfirmation(to, link) {
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
 
     if (!to) throw new CustomError(STRINGS.ERRORS.recipientRequired);
@@ -60,6 +60,7 @@ class MailService {
     const replacements = {
       name: to.firstName + " " + to.lastName,
       email: to.email,
+      link: link,
     };
     const htmlToSend = template(replacements);
 
@@ -144,7 +145,7 @@ class MailService {
     const replacements = {
       name: to.firstName + " " + to.lastName,
       email: to.email,
-      link,
+      link: link,
     };
     const htmlToSend = template(replacements);
 

@@ -5,6 +5,7 @@ router.use("/v1/users", require("./user"));
 router.use("/v1/client", require("./client"));
 router.use("/v1/subscription", require("./subscription"));
 router.use("/v1/site", require("./site"));
+router.use("/v1/site-panelty", require("./sitePenalties"));
 router.use("/v1/zac", require("./zac"));
 router.use("/v1/building", require("./building"));
 router.use("/v1/contract", require("./contract"));

@@ -13,7 +13,6 @@ class CompanyController {
     const companyName = await Company.findOne({ name: data.name });
     if (companyName) throw new CustomError(STRINGS.ERRORS.companyAlreadyAdded);
 
-    if (data.trades) data.trades = JSON.parse(data.trades);
     if (data.isSubcontractor == "true") {
       if (data.childCompanyId) {
         // if the subcontractor exists
