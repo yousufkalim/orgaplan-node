@@ -18,6 +18,7 @@ const companySchema = new Schema(
             ref: STRINGS.MODALS.COMPANY,
           },
         ],
+        trades: [{ type: Schema.Types.ObjectId, ref: STRINGS.MODALS.TRADES }],
         parentCompanyId: {
           // Represents company's main company if the company us subcontractor
           type: Schema.Types.ObjectId,

@@ -12,11 +12,14 @@ router.use("/v1/contract", require("./contract"));
 router.use("/v1/trades", require("./trades"));
 router.use("/v1/mean", require("./mean"));
 router.use("/v1/incidents", require("./incidents"));
+router.use("/v1/delivery", require("./delivery"));
 router.use("/v1/delivery-area", require("./deliveryArea"));
 router.use("/v1/storage-area", require("./storageArea"));
 router.use("/v1/level", require("./level"));
 router.use("/v1/user-sites", require("./userSites"));
 router.use("/v1/company", require("./company"));
+router.use("/v1/company_trades", require("./companyTrades"));
+
 router.use("/v1/company-sites", require("./siteCompanies"));
 
 module.exports = router;

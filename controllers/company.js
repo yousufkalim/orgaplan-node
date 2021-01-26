@@ -145,6 +145,13 @@ class CompanyController {
         $addToSet: { sites: sitesObj },
         upsert: true,
       });
+      await Company.findByIdAndUpdate(
+        {
+          _id: body.companyId,
+        },
+        { $addToSet: { users: { userId: userId, role: body.userRole } } },
+        { upsert: true }
+      );
       res.status(200).send(response(STRINGS.TEXTS.userAdded, user));
     } else {
       console.log(JSON.stringify(sitesObj, null, 2));
@@ -167,6 +174,18 @@ class CompanyController {
     const id = req.params.id;
 
     const result = await Company.findOne({ _id: id }, { password: 0, __v: 0 });
+    if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.companyRequested, result));
+  }
+
+  async getUserCompany(req, res) {
+    const id = req.params.id;
+
+    const result = await Company.findOne(
+      { "users.userId": id },
+      { password: 0, __v: 0 }
+    );
     if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.companyRequested, result));

@@ -6,6 +6,7 @@ const Company = require("../models/company");
 const UserSites = require("../models/userSites");
 const SiteCompanies = require("../models/SiteCompanies");
 const SitePenalties = require("../models/sitePenalties");
+const CompanyTrades = require("../models/companyTrades");
 class SiteController {
   async create(req, res) {
     console.log("HERE");
@@ -32,6 +33,14 @@ class SiteController {
         siteId: result._id,
         companies: [adminCompany._id],
       }).save();
+      if (body.trades) {
+        await new CompanyTrades({
+          siteId: result._id,
+          companyId: adminCompany._id,
+          trades: body.trades,
+        });
+      }
+
       res.status(200).send(response(STRINGS.TEXTS.siteRequested, result));
     }
   }

@@ -9,53 +9,35 @@ const deliverySchema = new Schema(
       enum: [STRINGS.STATUS.SCHEDULED, STRINGS.STATUS.UNSCHEDULED],
       default: STRINGS.STATUS.SCHEDULED,
     },
-    enterpriseUser: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: STRINGS.MODALS.USER,
-      },
-    ],
-    materials: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: STRINGS.MODALS.MATERIAL,
-      },
-    ],
-    means: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: STRINGS.MODALS.MEAN,
-      },
-    ],
-    storage: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: STRINGS.MODALS.STORAGEAREA,
-      },
-    ],
-    delivery: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: STRINGS.MODALS.DELIVERYAREA,
-      },
-    ],
-    images: [
-      {
-        type: String,
-      },
-    ],
-    comments: [
-      {
-        comment: String,
-        user: {
-          role: {
-            type: String,
-            enum: [STRINGS.ROLES.ADMIN, STRINGS.ROLES.TRAFFIC],
-          },
-          id: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.USER },
-        },
-      },
-    ],
+
+    deliveryArea: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.DELIVERYAREA,
+    },
+    siteId: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.SITE,
+    },
+    companyId: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.COMPANY,
+    },
+    storageArea: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.STORAGEAREA,
+    },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.USER,
+    },
+    comment: String,
+    trades: [{ type: Schema.Types.ObjectId, ref: STRINGS.MODALS.TRADES }],
+    means: [{ type: Schema.Types.ObjectId, ref: STRINGS.MODALS.MEAN }],
+    materials: [String],
+    isExterior: Boolean,
+    building: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.BUILDING },
+    level: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.LEVEL },
+    dateTime: Date,
     status: {
       type: String,
       enum: [

@@ -6,6 +6,7 @@ const companyController = require("../controllers/company");
 // GETS
 router.get("/", auth(), companyController.getAll);
 router.get("/:id", auth(), companyController.getOne);
+router.get("/user_company/:id", auth(), companyController.getUserCompany);
 
 // POSTS
 // router.post("/", auth(), upload("logo"), companyController.create);
