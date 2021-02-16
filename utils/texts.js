@@ -42,6 +42,7 @@ module.exports = {
     startDateIsRequred: "Start Date Is Requried",
     endDateIsRequired: "End Date Is Requried",
     deliveryNotFound: "Delivery Not Found",
+    siteIncidentsNotFound: "Incidents Not Found",
     companyLogoRequired: "Company Logo Is Requried",
     companyInchargeIsRequired: "Company Incharge Is Required",
     userIdRequired: "User ID Is Required",
@@ -115,6 +116,12 @@ module.exports = {
     storateAreaRequested: "Storage Area Requested",
     storateAreaUpdated: "Storage Area Updated",
     allStorateAreas: "All Storage Areas",
+
+    siteIncidentsCreated: "Incidents Created",
+    siteIncidentsDeleted: "Incidents Deleted",
+    siteIncidentsRequested: "Incidents Requested",
+    siteIncidentsUpdated: "Incidents Updated",
+    allSiteIncident: "All Incidents",
 
     siteUpdated: "Site Updated",
     siteDeleted: "Site deleted",
@@ -204,6 +211,7 @@ module.exports = {
     UNPAID: "UNPAID",
     INSIDE: "INSIDE",
     PENDING: "PENDING",
+    REJECTED: "REJECTED",
     OUTSIDE: "OUTSIDE",
     INACTIVE: "INACTIVE",
     COMPLETED: "COMPLETED",
@@ -211,6 +219,8 @@ module.exports = {
     AVAILABLE: "AVAILABLE",
     UNAVAILABLE: "UNAVAILABLE",
     UNSCHEDULED: "UNSCHEDULED",
+    APPROVED: "APPROVED",
+    UNAPPROVED: "UNAPPROVED",
   },
   INVOICETYPES: {
     WAYS: "WAYS",
@@ -271,6 +281,7 @@ module.exports = {
     DELIVERYAREA: "DeliveryArea",
     SUBSCRIPTION: "Subscription",
     SITECOMPANIES: "SiteCompanies",
+    SITEINCIDENTS: "SITEINCIDENTS",
   },
   FORMATS: {
     DATE: "DD-MM-YYYY hh:mm",

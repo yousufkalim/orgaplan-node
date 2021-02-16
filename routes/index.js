@@ -19,7 +19,8 @@ router.use("/v1/level", require("./level"));
 router.use("/v1/user-sites", require("./userSites"));
 router.use("/v1/company", require("./company"));
 router.use("/v1/company_trades", require("./companyTrades"));
-
+router.use("/v1/dashboard", require("./dashboard"));
+router.use("/v1/site-incidents", require("./siteIncidents"));
 router.use("/v1/company-sites", require("./siteCompanies"));
 
 module.exports = router;

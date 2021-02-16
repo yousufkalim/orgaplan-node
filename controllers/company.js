@@ -182,9 +182,8 @@ class CompanyController {
   async getUserCompany(req, res) {
     const id = req.params.id;
 
-    const result = await Company.findOne(
-      { "users.userId": id },
-      { password: 0, __v: 0 }
+    const result = await Company.findOne({ "users.userId": id }).populate(
+      "connection.parentCompanyId"
     );
     if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound);
 

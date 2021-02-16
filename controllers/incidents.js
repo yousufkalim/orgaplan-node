@@ -1,6 +1,7 @@
 const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
+const SiteIncidents = require("../models/siteincidents");
 const Incidents = require("../models/incidents");
 class IncidentsController {
   async create(req, res) {
@@ -19,6 +20,13 @@ class IncidentsController {
     }
     if (body.location) body.location = JSON.parse(body.location);
     const result = await new Incidents(req.body).save();
+
+    await SiteIncidents.findOneAndUpdate(
+      { siteId: body.siteId },
+      { $addToSet: { indicents: result._id } },
+      { upsert: true, new: true }
+    );
+
     res.status(200).send(response(STRINGS.TEXTS.incidentCreated, result));
   }
 
