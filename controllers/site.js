@@ -14,6 +14,7 @@ class SiteController {
     if (req.file) {
       body.logo = req.file.path;
     }
+    if (body.means) body.means = JSON.parse(body.means);
     if (body.trades) body.trades = JSON.parse(body.trades);
     const result = await new Site(req.body).save();
 
@@ -65,6 +66,7 @@ class SiteController {
     const id = req.params.id;
     const data = req.body;
     if (data.trades) data.trades = JSON.parse(data.trades);
+    if (data.means) data.means = JSON.parse(data.means);
     const result = await Site.findByIdAndUpdate(
       { _id: id },
       { $set: data },

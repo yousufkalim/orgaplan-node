@@ -41,12 +41,12 @@ const deliverySchema = new Schema(
     status: {
       type: String,
       enum: [
-        STRINGS.STATUS.ACTIVE,
-        STRINGS.STATUS.INACTIVE,
-        STRINGS.STATUS.UNAVAILABLE,
+        STRINGS.STATUS.PENDING,
+        STRINGS.STATUS.APPROVED,
+        STRINGS.STATUS.REJECTED,
         STRINGS.STATUS.COMPLETED,
       ],
-      default: STRINGS.STATUS.ACTIVE,
+      default: STRINGS.STATUS.PENDING,
     },
     statusReason: String,
   },
