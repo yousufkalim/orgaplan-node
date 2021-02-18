@@ -40,7 +40,7 @@ async function addPathToBody(req, res, next) {
   next();
 }
 
-const uploadCompany = (folder) =>
+const uploader = (folder) =>
   multer({
     storage: storage(folder),
     fileFilter: fileFilter([
@@ -54,10 +54,10 @@ const uploadCompany = (folder) =>
 module.exports = (folder, field, type = "single") => {
   return [
     type === "array"
-      ? uploadCompany(folder).array(field)
+      ? uploader(folder).array(field)
       : type === "fields"
-      ? uploadCompany(folder).fields(field)
-      : uploadCompany(folder).single(field),
+      ? uploader(folder).fields(field)
+      : uploader(folder).single(field),
     addPathToBody,
   ];
 };

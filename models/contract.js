@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const STRINGS = require("../utils/texts");
-const { ref } = require("joi");
 
 const ContractSchema = new Schema(
   {
@@ -9,7 +8,6 @@ const ContractSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.USER,
     },
-
     contractStartDate: {
       type: Date,
       default: new Date(),
@@ -20,6 +18,14 @@ const ContractSchema = new Schema(
     monthlyCost: {
       type: Number,
     },
+    notificationPriorToDays: {
+      type: Number,
+    },
+    notificationTo: [
+      {
+        type: String,
+      },
+    ],
     contractType: {
       type: String,
       enum: [

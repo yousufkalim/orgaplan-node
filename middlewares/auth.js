@@ -35,7 +35,8 @@ function auth(role = STRINGS.ROLES.USER) {
       );
     if (role !== user.role) throw new CustomError("Unauthorized access", 401);
 
-    // req.user = user;
+    req.user = user;
+    req.userId = user._id;
 
     next();
   };
