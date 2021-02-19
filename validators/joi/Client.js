@@ -6,44 +6,45 @@ const CustomError = require("../../utils/customError");
 const schemas = {
   create: (data) => {
     const Validation = Joi.object().keys({
-      image: Joi.string().required(),
-      companyName: Joi.string().required(),
-      companyColor: Joi.string().required(),
-      companyResponsibleFirstName: Joi.string().required(),
-      companyResponsibleLastName: Joi.string().required(),
-      companyResponsibleEmail: Joi.string().required(),
-      companyResponsiblePhone: Joi.number().required(),
-      typeOfContract: Joi.string()
+      logo: Joi.string().required(),
+      name: Joi.string().required(),
+      color: Joi.string().required(),
+      firstName: Joi.string().required(),
+      lastName: Joi.string().required(),
+      email: Joi.string().required(),
+      phone: Joi.number().required(),
+      contractType: Joi.string()
         .required()
         .valid(
           STRINGS.CONTRACTTYPES.CLIENTPERSITE,
           STRINGS.CONTRACTTYPES.MASTERCLIENT
         ),
-      contractStartDate: Joi.alternatives().conditional("typeOfContract", {
+      contractStartDate: Joi.any().when("contractType", {
         is: STRINGS.CONTRACTTYPES.MASTERCLIENT,
         then: Joi.string().required(),
       }),
-      contractEndDate: Joi.alternatives().conditional("typeOfContract", {
+      contractEndDate: Joi.any().when("contractType", {
         is: STRINGS.CONTRACTTYPES.MASTERCLIENT,
         then: Joi.string().required(),
       }),
-      functionalitySubscribed: Joi.string().required(),
-      additionalInformation: Joi.string().required(),
-      notificationPriorToDays: Joi.number().required(),
+      functionality: Joi.string().required(),
+      additionalInfo: Joi.string().allow(""),
+      notificationPriorToDays: Joi.number().allow(""),
       notificationTo: Joi.array().items(Joi.string()),
-      monthlyCost: Joi.number().allow(""),
+      monthlyCost: Joi.any(),
     });
 
-    if (data.typeOfContract === STRINGS.CONTRACTTYPES.MASTERCLIENT) {
+    if (data.contractType === STRINGS.CONTRACTTYPES.MASTERCLIENT) {
       Helpers.isDateOccuranceChronological(
         data.contractStartDate,
         data.contractEndDate
       );
     }
 
-    if (!data.companyColor) {
-      data.companyColor = Helpers.randomColor;
-    }
+    if (!data.color) data.color = Helpers.randomColor;
+    data.notificationTo = JSON.parse(data.notificationTo);
+    data.logo = data.image;
+    delete data.image;
 
     const { error, value } = Validation.validate(data);
     if (error) throw new CustomError(error);

@@ -1,14 +1,16 @@
 const Auth = require("../auth");
+const User = require("../../models/user");
 const STRINGS = require("../../utils/texts");
 const Client = require("../../models/client");
+const Company = require("../../models/company");
 const Validations = require("../../validators");
 const response = require("../../utils/response");
+const Contract = require("../../models/contract");
 const CustomError = require("../../utils/customError");
 const ENV = process.env;
 
 class SuperAdminClientsController {
   async create(req, res) {
-    console.log("req.body", req.body);
     const validatedData = Validations.client.create(req.body);
 
     // Create User
@@ -41,10 +43,11 @@ class SuperAdminClientsController {
     });
     if (companyResult)
       throw new CustomError(STRINGS.ERRORS.companyAlreadyAdded);
+
     const companyData = {
-      logo: validatedData.companyLogo,
-      name: validatedData.companyName,
-      color: validatedData.companyColor,
+      logo: validatedData.logo,
+      name: validatedData.name,
+      color: validatedData.color,
       connection: companyConnection,
       incharge: userData,
       users: companyUsers,
