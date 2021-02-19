@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const STRINGS = require("../utils/texts");
-const { ref } = require("joi");
 
 const ClientSchema = new Schema(
   {
@@ -13,7 +12,6 @@ const ClientSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.USER,
     },
-
     isPendingResponse: {
       type: Boolean,
       default: true,
@@ -28,10 +26,9 @@ const ClientSchema = new Schema(
       type: String,
     },
   },
-
   {
     timestamps: true,
   }
 );
 
-module.exports = mongoose.model(STRINGS.MODALS.QUOTE, ClientSchema);
+module.exports = mongoose.model(STRINGS.MODALS.CLIENT, ClientSchema);

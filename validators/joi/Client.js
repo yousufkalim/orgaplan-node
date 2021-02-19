@@ -1,0 +1,55 @@
+const Joi = require("joi");
+const STRINGS = require("../../utils/texts");
+const Helpers = require("../../utils/helpers");
+const CustomError = require("../../utils/customError");
+
+const schemas = {
+  create: (data) => {
+    const Validation = Joi.object().keys({
+      logo: Joi.string().required(),
+      name: Joi.string().required(),
+      color: Joi.string().required(),
+      firstName: Joi.string().required(),
+      lastName: Joi.string().required(),
+      email: Joi.string().required(),
+      phone: Joi.number().required(),
+      contractType: Joi.string()
+        .required()
+        .valid(
+          STRINGS.CONTRACTTYPES.CLIENTPERSITE,
+          STRINGS.CONTRACTTYPES.MASTERCLIENT
+        ),
+      contractStartDate: Joi.any().when("contractType", {
+        is: STRINGS.CONTRACTTYPES.MASTERCLIENT,
+        then: Joi.string().required(),
+      }),
+      contractEndDate: Joi.any().when("contractType", {
+        is: STRINGS.CONTRACTTYPES.MASTERCLIENT,
+        then: Joi.string().required(),
+      }),
+      functionality: Joi.string().required(),
+      additionalInfo: Joi.string().allow(""),
+      notificationPriorToDays: Joi.number().allow(""),
+      notificationTo: Joi.array().items(Joi.string()),
+      monthlyCost: Joi.any(),
+    });
+
+    if (data.contractType === STRINGS.CONTRACTTYPES.MASTERCLIENT) {
+      Helpers.isDateOccuranceChronological(
+        data.contractStartDate,
+        data.contractEndDate
+      );
+    }
+
+    if (!data.color) data.color = Helpers.randomColor;
+    data.notificationTo = JSON.parse(data.notificationTo);
+    data.logo = data.image;
+    delete data.image;
+
+    const { error, value } = Validation.validate(data);
+    if (error) throw new CustomError(error);
+    return value;
+  },
+};
+
+module.exports = schemas;

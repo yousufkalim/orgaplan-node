@@ -1,7 +1,9 @@
 const router = require("express").Router();
 
-const upload = require("../middlewares/multer");
+const auth = require("../middlewares/auth");
 const authController = require("../controllers/auth");
+
+router.get("/get-profile-by-jwt", auth(), authController.getProfile);
 
 router.post("/sign-up", authController.signup);
 router.post("/sign-in", authController.signin);

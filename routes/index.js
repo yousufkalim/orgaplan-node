@@ -19,9 +19,10 @@ router.use("/v1/level", require("./level"));
 router.use("/v1/user-sites", require("./userSites"));
 router.use("/v1/company", require("./company"));
 router.use("/v1/company_trades", require("./companyTrades"));
-router.use("/v1/dashboard", require("./dashboard"));
 router.use("/v1/site-incidents", require("./siteIncidents"));
 router.use("/v1/company-sites", require("./siteCompanies"));
 router.use("/v1/location", require("./location"));
+
+router.use("/v1/superadmin", require("./SuperAdmin"));
 
 module.exports = router;

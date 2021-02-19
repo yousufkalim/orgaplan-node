@@ -37,7 +37,6 @@ const companySchema = new Schema(
       email: String,
       phone: Number,
     },
-
     type: {
       type: String,
       enum: [

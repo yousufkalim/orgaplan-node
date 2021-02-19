@@ -1,5 +1,5 @@
-const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
+const bcrypt = require("bcryptjs");
 const JWT = require("jsonwebtoken");
 
 const User = require("../models/user");
@@ -70,6 +70,21 @@ class AuthContoller {
     const result = {
       user,
       token,
+    };
+
+    res.status(200).send(response(STRINGS.TEXTS.loginSuccess, result));
+  }
+
+  async getProfile(req, res) {
+    const userId = req.userId;
+    if (!userId) throw new CustomError(STRINGS.ERRORS.error);
+
+    // Check if user exist
+    const user = await User.findById(userId, { password: 0, __v: 0 });
+    if (!user) throw new CustomError(STRINGS.ERRORS.userNotFound);
+
+    const result = {
+      user,
     };
 
     res.status(200).send(response(STRINGS.TEXTS.loginSuccess, result));
