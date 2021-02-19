@@ -22,5 +22,6 @@ router.use("/v1/company_trades", require("./companyTrades"));
 router.use("/v1/dashboard", require("./dashboard"));
 router.use("/v1/site-incidents", require("./siteIncidents"));
 router.use("/v1/company-sites", require("./siteCompanies"));
+router.use("/v1/location", require("./location"));
 
 module.exports = router;

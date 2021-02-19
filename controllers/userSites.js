@@ -21,6 +21,7 @@ class UserSitesController {
         (sit) => String(sit.siteId) === String(data.siteId)
       );
       if (siteIndex == -1) {
+        console.log(data.siteId);
         result.sites.push({ siteId: data.siteId, role: data.role });
         await result.save(result);
         res.status(200).send(response(STRINGS.TEXTS.userSiteRequested, result));
@@ -48,7 +49,9 @@ class UserSitesController {
   async getSiteByUserId(req, res) {
     const userId = req.params.userId;
 
-    const result = await UserSites.findOne({ userId: userId });
+    const result = await UserSites.findOne({ userId: userId }).populate(
+      "sites.siteId"
+    );
     if (!result) throw new CustomError(STRINGS.ERRORS.userSitesNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.userSiteRequested, result));

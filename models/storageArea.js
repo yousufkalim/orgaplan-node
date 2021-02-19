@@ -10,6 +10,7 @@ const storageArea = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.LEVEL,
     },
+
     location: {
       type: String,
       enum: [STRINGS.STATUS.INSIDE, STRINGS.STATUS.OUTSIDE],
@@ -50,7 +51,10 @@ const storageArea = new Schema(
       type: String,
       enum: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],
     },
-
+    siteId: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.SITE,
+    },
     picCoordinates: {
       x: { type: Number },
       y: { type: Number },

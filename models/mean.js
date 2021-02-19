@@ -8,7 +8,10 @@ const meanSchema = new Schema(
     sheet: String,
     pricePerHour: Number,
     additionalInfo: String,
-
+    siteId: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.SITE,
+    },
     meanType: {
       type: String,
       enum: [STRINGS.MEANTYPES.LIFTING, STRINGS.MEANTYPES.ROUTING],

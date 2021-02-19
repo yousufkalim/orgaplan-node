@@ -9,7 +9,7 @@ router.get("/:id", auth(), userSitesController.getOne);
 router.get("/single/:userId", auth(), userSitesController.getSiteByUserId);
 
 // POSTS
-// router.post("/", auth(), upload("logo"), userSitesController.create);
+router.post("/", auth(), userSitesController.create);
 
 // PUTS
 // router.put("/:id", auth(), upload("logo"), userSitesController.update);
