@@ -16,9 +16,17 @@ router.post(
 );
 
 // PUTS
-router.put("/:id", superAdminClientsController.clientsController.update);
+router.put(
+  "/",
+  multer("company", "logo", "single"),
+  superAdminClientsController.clientsController.update
+);
+router.put(
+  "/verify/:clientId/:contractId",
+  superAdminClientsController.clientsController.verifyRequest
+);
 
 // DELETES
-router.delete("/:id", superAdminClientsController.clientsController.delete);
+router.delete("/", superAdminClientsController.clientsController.delete);
 
 module.exports = router;

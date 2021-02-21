@@ -18,6 +18,13 @@ const ContractSchema = new Schema(
     monthlyCost: {
       type: Number,
     },
+    isPendingResponse: {
+      type: Boolean,
+      default: true,
+    },
+    additionalInfo: {
+      type: String,
+    },
     notificationPriorToDays: {
       type: Number,
     },
@@ -26,6 +33,10 @@ const ContractSchema = new Schema(
         type: String,
       },
     ],
+    functionality: {
+      type: String,
+      enum: [STRINGS.FUNCTIONALITY.DELIVERY],
+    },
     contractType: {
       type: String,
       enum: [

@@ -12,18 +12,9 @@ const ClientSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.USER,
     },
-    isPendingResponse: {
-      type: Boolean,
-      default: true,
-    },
-    contractStartDate: {
-      type: Date,
-    },
-    contractEndDate: {
-      type: Date,
-    },
-    additionalInfo: {
-      type: String,
+    contract: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.CONTRACT,
     },
   },
   {

@@ -26,29 +26,24 @@ class SuperAdminClientsController {
 
     validatedData["userId"] = userId;
 
-    await new Contract(validatedData).save();
-
     if (user.exists) {
       await res
         .status(200)
-        .send(response(STRINGS.TEXTS.emailVerificationSent, user));
+        .send(response(STRINGS.TEXTS.clientExistsAlready, user));
       return;
     }
-
     // Create User Company if it does not exist
-    const companyConnection = [];
-    const companyUsers = [{ userId: userId, role: STRINGS.ROLES.ADMIN }];
-    const companyResult = await Company.findOne({
+    const companyCheck = await Company.findOne({
       name: validatedData.companyName,
     });
-    if (companyResult)
-      throw new CustomError(STRINGS.ERRORS.companyAlreadyAdded);
+    if (companyCheck) throw new CustomError(STRINGS.ERRORS.companyAlreadyAdded);
 
+    const companyUsers = [{ userId: userId, role: STRINGS.ROLES.ADMIN }];
     const companyData = {
       logo: validatedData.logo,
       name: validatedData.name,
       color: validatedData.color,
-      connection: companyConnection,
+      connection: [],
       incharge: userData,
       users: companyUsers,
       type: validatedData.contractType,
@@ -64,18 +59,17 @@ class SuperAdminClientsController {
       .populate("userId")
       .populate("companyId");
 
-    await Client({
-      companyId: company._id,
+    const contract = await new Contract(validatedData).save();
+
+    await new Client({
       userId: userId,
-      contractStartDate: validatedData.contractStartDate,
-      contractEndDate: validatedData.contractEndDate,
-      additionalInfo: validatedData.additionalInfo,
-      notificationPriorToDays: validatedData.notificationPriorToDays,
-      notificationTo: validatedData.notificationTo,
+      companyId: company._id,
+      contract: contract._id,
     }).save();
+
     await res
       .status(200)
-      .send(response(STRINGS.TEXTS.clientUpdated, updatedUser));
+      .send(response(STRINGS.TEXTS.clientCreated, updatedUser));
   }
 
   async getAll(req, res) {
@@ -87,9 +81,10 @@ class SuperAdminClientsController {
       .skip((page - 1) * ITEMS_PER_PAGE)
       .limit(ITEMS_PER_PAGE)
       .populate("userId")
-      .populate("companyId");
+      .populate("companyId")
+      .populate("contract");
 
-    if (!totalItems || !clients) throw new CustomError(STRINGS.ERRORS.error);
+    if (!clients) throw new CustomError(STRINGS.ERRORS.error);
 
     const result = {
       items: clients,
@@ -108,27 +103,64 @@ class SuperAdminClientsController {
 
     const result = await Client.findById(id, { password: 0, __v: 0 })
       .populate("userId")
-      .populate("companyId");
+      .populate("companyId")
+      .populate("contract");
+
     if (!result) throw new CustomError(STRINGS.ERRORS.error);
 
     res.status(200).send(response(STRINGS.TEXTS.clientRequested, result));
   }
 
-  async update(req, res) {
-    const id = req.params.id;
-    const data = req.body;
+  async verifyRequest(req, res) {
+    const clientId = req.params.clientId;
+    const contractId = req.params.contractId;
 
-    const result = await Client.findByIdAndUpdate(
-      { _id: id },
-      { $set: data },
-      { new: true }
-    )
+    await Contract.findByIdAndUpdate(contractId, { isPendingResponse: false });
+
+    const result = await Client.findById(clientId)
       .populate("userId")
-      .populate("companyId");
+      .populate("companyId")
+      .populate("contract");
 
-    if (!result) throw new CustomError(STRINGS.ERRORS.tradeNotFount, 404);
+    if (!result) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 
-    res.status(201).send(response(STRINGS.TEXTS.tradeUpdated, result));
+    res.status(201).send(response(STRINGS.TEXTS.clientUpdated, result));
+  }
+
+  async update(req, res) {
+    const validatedData = Validations.client.update(req.body);
+
+    const userData = {
+      firstName: validatedData.firstName,
+      lastName: validatedData.lastName,
+      email: validatedData.email,
+      phone: validatedData.phone,
+    };
+
+    await User.findByIdAndUpdate(validatedData.userId, {
+      $set: userData,
+    });
+    const companyData = {
+      color: validatedData.color,
+      incharge: userData,
+      type: validatedData.contractType,
+    };
+    validatedData.logo && (companyData.logo = validatedData.logo);
+    await Company.findByIdAndUpdate(validatedData.companyId, {
+      $set: companyData,
+    });
+    await Contract.findByIdAndUpdate(validatedData.contractId, {
+      $set: validatedData,
+    });
+
+    const result = await Client.findById({ _id: validatedData.clientId })
+      .populate("userId")
+      .populate("companyId")
+      .populate("contract");
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
+
+    res.status(201).send(response(STRINGS.TEXTS.clientUpdated, result));
   }
 
   async delete(req, res) {

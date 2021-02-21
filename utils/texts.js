@@ -80,9 +80,10 @@ module.exports = {
     userDeleted: "User deleted",
 
     clientCreated: "Client created",
-    clientsRequested: "Clients requested",
-    clientRequested: "Client requested",
     clientDeleted: "Client deleted",
+    clientRequested: "Client requested",
+    clientsRequested: "Clients requested",
+    clientExistsAlready: "Client exists already",
 
     allDeliveries: "All Deliveries",
     deliveryData: "Delivery Data",
@@ -266,6 +267,9 @@ module.exports = {
     CLIENTPERSITE: "CLIENTPERSITE",
     MASTERCLIENT: "MASTERCLIENT",
     NOCLIENTS: "NOCLIENTS",
+  },
+  FUNCTIONALITY: {
+    DELIVERY: "DELIVERY",
   },
   INCIDENTTYPE: {
     DELAY: "DELAY",

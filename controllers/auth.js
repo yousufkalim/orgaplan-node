@@ -19,7 +19,7 @@ class AuthContoller {
 
       //  const verifyLink = `${ENV.BASE_URL}/email-verification?uid=${user._id}&verifyToken=${verifyToken}`;
       const verifyLink = `${ENV.BASE_URL}/api/v1/users/${user._id}`;
-      await emailService.sendEmailConfirmation(user, verifyLink);
+      // await emailService.sendEmailConfirmation(user, verifyLink);
       return {
         user,
         exists: true,
@@ -40,7 +40,7 @@ class AuthContoller {
 
       // send email
       let emailService = new MailService();
-      await emailService.requestEmailVerification(user, verifyLink);
+      // await emailService.requestEmailVerification(user, verifyLink);
 
       return {
         user,
