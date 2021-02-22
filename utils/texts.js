@@ -8,6 +8,7 @@ module.exports = {
     sitePenaltyNotFound: "No Site Panelty Found",
     deliveyAreaNotFount: "No Delivery Area Found",
     tradeNotFount: "No Trade Found",
+    adminNotFound: "No Admin Found",
     locationNotFound: "No Location Found",
     buildingNotFound: "No Building Found",
     clientNotFound: "No Client Found",
@@ -80,10 +81,18 @@ module.exports = {
     userDeleted: "User deleted",
 
     clientCreated: "Client created",
+    clientUpdated: "Client deleted",
     clientDeleted: "Client deleted",
     clientRequested: "Client requested",
     clientsRequested: "Clients requested",
     clientExistsAlready: "Client exists already",
+
+    adminCreated: "Admin created",
+    adminUpdated: "Admin created",
+    adminDeleted: "Admin deleted",
+    adminRequested: "Admin requested",
+    adminsRequested: "Admins requested",
+    adminExistsAlready: "Admin exists already",
 
     allDeliveries: "All Deliveries",
     deliveryData: "Delivery Data",

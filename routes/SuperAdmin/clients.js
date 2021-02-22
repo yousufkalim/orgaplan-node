@@ -1,8 +1,8 @@
 const router = require("express").Router();
 
 const auth = require("../../middlewares/auth");
-const superAdminClientsController = require("../../controllers/SuperAdmin");
 const multer = require("../../middlewares/multer");
+const superAdminClientsController = require("../../controllers/SuperAdmin");
 
 // GETS
 router.get("/", superAdminClientsController.clientsController.getAll);
