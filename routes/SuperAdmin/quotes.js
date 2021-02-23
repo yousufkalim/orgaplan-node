@@ -11,6 +11,6 @@ router.get("/:id", superAdmin.quotesController.getById);
 router.post("/", superAdmin.quotesController.create);
 
 // DELETES
-router.delete("/", superAdmin.quotesController.delete);
+router.delete("/:id", superAdmin.quotesController.delete);
 
 module.exports = router;

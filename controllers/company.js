@@ -82,7 +82,7 @@ class CompanyController {
               },
             }
           ); //Get parent company id and add child to that company
-          console.log("\n\n\n HERE \n\n\n");
+
           res
             .status(200)
             .send(response(STRINGS.TEXTS.companyRequested, childCompany));
@@ -92,7 +92,6 @@ class CompanyController {
 
     if (data.isSubcontractor == "false") {
       // If its the
-      console.log("\n\n\nHERE1");
 
       if (data.parentCompanyId) {
         // It the company already exists then just assing it a site
@@ -138,7 +137,6 @@ class CompanyController {
       // const userSites = await UserSites.findOne({ userId: userId });
       // const sitesClone = [...userSites.sites];
       // sitesClone.concat(sitesObj);
-      // console.log(JSON.stringify(sitesClone, null, 2));
 
       await UserSites.findOneAndUpdate({
         userId: userId,
@@ -154,7 +152,6 @@ class CompanyController {
       );
       res.status(200).send(response(STRINGS.TEXTS.userAdded, user));
     } else {
-      console.log(JSON.stringify(sitesObj, null, 2));
       await new UserSites({
         userId: userId,
         sites: sitesObj,

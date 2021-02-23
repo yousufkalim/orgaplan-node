@@ -1,5 +1,6 @@
 const router = require("express").Router();
 
+router.use("/zacs", require("./zacs"));
 router.use("/admins", require("./admins"));
 router.use("/quotes", require("./quotes"));
 router.use("/clients", require("./clients"));

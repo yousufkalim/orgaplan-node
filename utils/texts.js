@@ -1,22 +1,33 @@
 module.exports = {
   ERRORS: {
     zacNotFound: "No Zac Found",
-    error: "There was an error!",
+
     siteNotFound: "No Site Found",
+
     tradeNotFount: "No Trade Found",
+
     adminNotFound: "No Admin Found",
+
     levelNotFouned: "No Level Found",
-    nameReqyured: "Name Is Required",
-    typeRequired: "Type Is Required",
+    levelExists: "Level Already Exists",
+
     userAlreadyExists: "User exists",
+
     clientNotFound: "No Client Found",
-    emailRequired: "Email is required",
+
     userSitesNotFound: "No Site Found",
+
+    invoiceNotFound: "No Invoice Found",
+
+    zacAlreadyExists: "Zac already exists",
+
+    error: "There was an error!",
+    nameRequired: "Name Is Required",
+    typeRequired: "Type Is Required",
+    emailRequired: "Email is required",
     imageRequired: "Image is required",
     emailExists: "Email already exists",
-    invoiceNotFound: "No Invoice Found",
     userNotFound: "User does not exist",
-    levelExists: "Level Already Exists",
     meanNotFound: "Mean Does Not Exist",
     companyNotFound: "No Company Found",
     locationNotFound: "No Location Found",
@@ -234,6 +245,7 @@ module.exports = {
   },
   QUOTEREDIRECT: "http://localhost:5000/api/v1/client/",
   ROLES: {
+    ALL: "ALL",
     USER: "USER",
     ADMIN: "ADMIN",
     BUFFER: "BUFFER",
@@ -323,6 +335,7 @@ module.exports = {
     STORAGEAREA: "StorageArea",
     DELIVERYAREA: "DeliveryArea",
     SUBSCRIPTION: "Subscription",
+    CLIENTINVOICE: "ClientInvoice",
     COMPANYTRADES: "CompanyTrades",
     SITEPENALTIES: "SitePenalties",
     SITECOMPANIES: "SiteCompanies",

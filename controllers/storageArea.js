@@ -7,7 +7,7 @@ const isDateChoronological = require("../utils/date");
 class StorageAreaController {
   async create(req, res) {
     const body = await new StorageArea(req.body).save();
-    if (!body.name) throw new CustomError(STRINGS.ERRORS.nameReqyured);
+    if (!body.name) throw new CustomError(STRINGS.ERRORS.nameRequired);
 
     if (body.location == STRINGS.STATUS.INSIDE && !body.level)
       throw new CustomError(STRINGS.ERRORS.leveRequired);

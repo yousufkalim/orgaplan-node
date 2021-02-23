@@ -23,7 +23,7 @@ class UserContoller {
     user.password = body.password;
     user.isVerified = true;
     if (!user) throw new CustomError(STRINGS.ERRORS.userNotFound);
-    console.log(JSON.stringify(user, null, 2));
+
     const result = await user.update(user);
     res.status(200).send(response(STRINGS.TEXTS.userCreated, result));
   }

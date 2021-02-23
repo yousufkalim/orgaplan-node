@@ -48,6 +48,16 @@ class AuthContoller {
       };
     }
   }
+  async registerUser(req, res) {
+    const data = req.body;
+    let user = await User.findOne({ email: data.email });
+    if (user) throw new CustomError(STRINGS.ERRORS.passwordInvalid);
+    const hash = await bcrypt.hash(data.password, +ENV.BCRYPT_SALT);
+    data.password = hash;
+    user = await new User(data).save();
+
+    res.status(200).send(response(STRINGS.TEXTS.userCreated, user));
+  }
 
   async signin(req, res) {
     const data = req.body;
