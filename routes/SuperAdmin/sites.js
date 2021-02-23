@@ -11,20 +11,15 @@ router.get("/:id", superAdmin.sitesController.getById);
 // POSTS
 router.post(
   "/",
-  multer("company", "logo", "single"),
+  multer("site", "logo", "single"),
   superAdmin.sitesController.create
 );
 
 // PUTS
 router.put(
   "/",
-  multer("company", "logo", "single"),
+  multer("site", "logo", "single"),
   superAdmin.sitesController.update
-);
-router.put(
-  "/verify",
-  multer("company", "logo", "single"),
-  superAdmin.sitesController.verifyRequest
 );
 
 // DELETES

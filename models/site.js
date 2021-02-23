@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { number } = require("joi");
 const Schema = mongoose.Schema;
 const STRINGS = require("../utils/texts");
 
@@ -7,11 +6,61 @@ const siteSchema = new Schema(
   {
     name: String,
     logo: String,
+    zacId: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.ZAC,
+    },
+    adminId: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.USER,
+    },
+    functionality: {
+      type: String,
+      enum: [STRINGS.FUNCTIONALITY.DELIVERY],
+    },
+    addresses: [
+      {
+        street: String,
+        city: String,
+        postal: String,
+      },
+    ],
+    trades: [{ type: String }],
+    penaltyforLateDelivery: Number,
+    penaltyforUnexpDelivery: Number,
     start: Date,
     end: Date,
-    openingHour: Number,
-    closingHour: Number,
-    siteEndAlertTime: Number,
+    openingHours: [
+      {
+        day: Number,
+        startHour: Number,
+        endHour: Number,
+      },
+    ],
+    unavailabilityDates: [
+      {
+        date: Date,
+        startHour: Number,
+        endHour: Number,
+        dayOff: { type: Boolean, default: false },
+        reason: String,
+      },
+    ],
+    additionalInfo: String,
+    notificationPriorToDays: Number,
+    notificationTo: [{ type: String }],
+    buildings: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: STRINGS.MODALS.BUILDING,
+      },
+    ],
+    means: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: STRINGS.MODALS.MEAN,
+      },
+    ],
     status: {
       type: String,
       enum: [
@@ -20,33 +69,8 @@ const siteSchema = new Schema(
         STRINGS.STATUS.INACTIVE,
         STRINGS.STATUS.COMPLETED,
       ],
+      default: STRINGS.STATUS.ACTIVE,
     },
-    adminId: {
-      type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.USER,
-    },
-    additionalInfo: String,
-    unAvailabilityDates: [{ type: Date }],
-    unavailabilityReason: String,
-    means: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: STRINGS.MODALS.MEAN,
-      },
-    ],
-    trades: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: STRINGS.MODALS.TRADES,
-      },
-    ],
-    buildings: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: STRINGS.MODALS.BUILDING,
-      },
-    ],
-    addresses: [{ type: String }],
   },
   {
     timestamps: true,

@@ -6,45 +6,82 @@ const CustomError = require("../../utils/customError");
 const schemas = {
   create: (data) => {
     const Validation = Joi.object().keys({
-      logo: Joi.string().required(),
       name: Joi.string().required(),
-      color: Joi.string().required(),
-      firstName: Joi.string().required(),
-      lastName: Joi.string().required(),
-      email: Joi.string().required(),
-      phone: Joi.number().integer().min(1000000000).max(9999999999).messages({
-        "number.min": STRINGS.ERRORS.phoneLength,
-        "number.max": STRINGS.ERRORS.phoneLength,
-      }),
-      contractType: Joi.string()
-        .required()
-        .valid(
-          STRINGS.CONTRACTTYPES.CLIENTPERSITE,
-          STRINGS.CONTRACTTYPES.MASTERCLIENT
-        ),
-      contractStartDate: Joi.any().when("contractType", {
-        is: STRINGS.CONTRACTTYPES.MASTERCLIENT,
-        then: Joi.string().required(),
-      }),
-      contractEndDate: Joi.any().when("contractType", {
-        is: STRINGS.CONTRACTTYPES.MASTERCLIENT,
-        then: Joi.string().required(),
-      }),
+      logo: Joi.string().required(),
+      zacId: Joi.string().optional(),
+      adminId: Joi.string().required(),
       functionality: Joi.string().required(),
-      additionalInfo: Joi.string().allow(""),
+      addresses: Joi.array()
+        .items(
+          Joi.object().keys({
+            street: Joi.string().required(),
+            city: Joi.string().required(),
+            postal: Joi.string().required(),
+          })
+        )
+        .min(1, "Min one address required"),
+      trades: Joi.array().items(Joi.string().optional()),
+      penaltyforLateDelivery: Joi.number().integer().min(1).max(9999).messages({
+        "number.min": "Min value of 1 required",
+        "number.max": "Max value of 1 required",
+      }),
+      penaltyforUnexpDelivery: Joi.number()
+        .integer()
+        .min(1)
+        .max(9999)
+        .messages({
+          "number.min": "Min value of 1 required",
+          "number.max": "Max value of 1 required",
+        }),
+      start: Joi.date().required(),
+      end: Joi.date().greater(Joi.ref("start")).required(),
+      openingHours: Joi.array()
+        .items(
+          Joi.object().keys({
+            day: Joi.number().required(),
+            startHour: Joi.number().required(),
+            endHour: Joi.number().required(),
+          })
+        )
+        .min(7, "All days are required"),
+      unavailabilityDates: Joi.array()
+        .items(
+          Joi.object().keys({
+            date: Joi.date().required(),
+            startHour: Joi.number().required(),
+            endHour: Joi.number().required(),
+            dayOff: Joi.bool().required(),
+            reason: Joi.string().optional(),
+          })
+        )
+        .optional(),
+      additionalInfo: Joi.string().optional(),
       notificationPriorToDays: Joi.number().allow(""),
       notificationTo: Joi.array().items(Joi.string()),
-      monthlyCost: Joi.any(),
+      // buildings: Joi.array()
+      //   .items(
+      //     Joi.object().keys({
+      //       name: Joi.number().required(),
+      //       buildingType: Joi.number().required(),
+      //     })
+      //   )
+      //   .optional(),
+      // levels: Joi.array().items(
+      //   Joi.object().keys({
+      //     name: Joi.string().required(),
+      //     number: Joi.number().required(),
+      //     levelType: Joi.number().required(),
+      //     image: Joi.string().optional(),
+      //   })
+      // ),
     });
 
-    if (data.contractType === STRINGS.CONTRACTTYPES.MASTERCLIENT) {
-      Helpers.isDateOccuranceChronological(
-        data.contractStartDate,
-        data.contractEndDate
-      );
-    }
+    Helpers.isDateOccuranceChronological(data.start, data.end);
 
-    if (!data.color) data.color = Helpers.randomColor;
+    data.addresses = JSON.parse(data.addresses);
+    data.trades = JSON.parse(data.trades);
+    data.openingHours = JSON.parse(data.openingHours);
+    data.unavailabilityDates = JSON.parse(data.unavailabilityDates);
     data.notificationTo = JSON.parse(data.notificationTo);
     data.logo = data.image;
     delete data.image;
@@ -59,104 +96,71 @@ const schemas = {
   },
   update: (data) => {
     const Validation = Joi.object().keys({
-      logo: Joi.string().allow(""),
-      color: Joi.string().required(),
-      userId: Joi.string().required(),
-      clientId: Joi.string().required(),
-      contractId: Joi.string().required(),
-      companyId: Joi.string().required(),
-      firstName: Joi.string().required(),
-      lastName: Joi.string().required(),
-      email: Joi.string().required(),
-      phone: Joi.number().integer().min(1000000000).max(9999999999).messages({
-        "number.min": STRINGS.ERRORS.phoneLength,
-        "number.max": STRINGS.ERRORS.phoneLength,
-      }),
-      contractType: Joi.string()
-        .required()
-        .valid(
-          STRINGS.CONTRACTTYPES.CLIENTPERSITE,
-          STRINGS.CONTRACTTYPES.MASTERCLIENT
-        ),
-      contractStartDate: Joi.any().when("contractType", {
-        is: STRINGS.CONTRACTTYPES.MASTERCLIENT,
-        then: Joi.string().required(),
-      }),
-      contractEndDate: Joi.any().when("contractType", {
-        is: STRINGS.CONTRACTTYPES.MASTERCLIENT,
-        then: Joi.string().required(),
-      }),
-      functionality: Joi.string().required(),
-      additionalInfo: Joi.string().allow(""),
-      monthlyCost: Joi.any(),
-    });
-
-    if (data.contractType === STRINGS.CONTRACTTYPES.MASTERCLIENT) {
-      Helpers.isDateOccuranceChronological(
-        data.contractStartDate,
-        data.contractEndDate
-      );
-    }
-
-    if (!data.color) data.color = Helpers.randomColor;
-
-    data.logo = data.image || "";
-    delete data.image;
-
-    const { error, value } = Validation.validate(data);
-    if (error) {
-      const { details } = error;
-      const message = details.map((i) => i.message).join(",");
-      throw new CustomError(message);
-    }
-    return value;
-  },
-  verify: (data) => {
-    const Validation = Joi.object().keys({
-      logo: Joi.string().allow(""),
-      color: Joi.string().required(),
-      clientId: Joi.string().required(),
-      companyId: Joi.string().required(),
       name: Joi.string().required(),
-      firstName: Joi.string().required(),
-      lastName: Joi.string().required(),
-      email: Joi.string().required(),
-      phone: Joi.number().integer().min(1000000000).max(9999999999).messages({
-        "number.min": STRINGS.ERRORS.phoneLength,
-        "number.max": STRINGS.ERRORS.phoneLength,
-      }),
-      contractType: Joi.string()
-        .required()
-        .valid(
-          STRINGS.CONTRACTTYPES.CLIENTPERSITE,
-          STRINGS.CONTRACTTYPES.MASTERCLIENT
-        ),
-      contractStartDate: Joi.any().when("contractType", {
-        is: STRINGS.CONTRACTTYPES.MASTERCLIENT,
-        then: Joi.string().required(),
-      }),
-      contractEndDate: Joi.any().when("contractType", {
-        is: STRINGS.CONTRACTTYPES.MASTERCLIENT,
-        then: Joi.string().required(),
-      }),
+      siteId: Joi.string().required(),
+      logo: Joi.string().required(),
+      zacId: Joi.string().optional(),
+      adminId: Joi.string().required(),
       functionality: Joi.string().required(),
-      additionalInfo: Joi.string().allow(""),
+      addresses: Joi.array()
+        .items(
+          Joi.object().keys({
+            street: Joi.string().required(),
+            city: Joi.string().required(),
+            postal: Joi.string().required(),
+          })
+        )
+        .min(1, "Min one address required"),
+      trades: Joi.array().items(Joi.string().optional()),
+      penaltyforLateDelivery: Joi.number().integer().min(1).max(9999).messages({
+        "number.min": "Min value of 1 required",
+        "number.max": "Max value of 1 required",
+      }),
+      penaltyforUnexpDelivery: Joi.number()
+        .integer()
+        .min(1)
+        .max(9999)
+        .messages({
+          "number.min": "Min value of 1 required",
+          "number.max": "Max value of 1 required",
+        }),
+      start: Joi.date().required(),
+      end: Joi.date().greater(Joi.ref("start")).required(),
+      openingHours: Joi.array()
+        .items(
+          Joi.object().keys({
+            day: Joi.number().required(),
+            startHour: Joi.number().required(),
+            endHour: Joi.number().required(),
+          })
+        )
+        .min(7, "All days are required"),
+      unavailabilityDates: Joi.array()
+        .items(
+          Joi.object().keys({
+            date: Joi.date().required(),
+            startHour: Joi.number().required(),
+            endHour: Joi.number().required(),
+            dayOff: Joi.bool().required(),
+            reason: Joi.string().optional(),
+          })
+        )
+        .optional(),
+      additionalInfo: Joi.string().optional(),
       notificationPriorToDays: Joi.number().allow(""),
       notificationTo: Joi.array().items(Joi.string()),
-      monthlyCost: Joi.any(),
     });
 
-    if (data.contractType === STRINGS.CONTRACTTYPES.MASTERCLIENT) {
-      Helpers.isDateOccuranceChronological(
-        data.contractStartDate,
-        data.contractEndDate
-      );
-    }
+    Helpers.isDateOccuranceChronological(data.start, data.end);
 
-    if (!data.color) data.color = Helpers.randomColor;
+    data.addresses = JSON.parse(data.addresses);
+    data.trades = JSON.parse(data.trades);
+    data.openingHours = JSON.parse(data.openingHours);
+    data.unavailabilityDates = JSON.parse(data.unavailabilityDates);
     data.notificationTo = JSON.parse(data.notificationTo);
     data.logo = data.image;
     delete data.image;
+
     const { error, value } = Validation.validate(data);
     if (error) {
       const { details } = error;

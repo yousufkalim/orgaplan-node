@@ -6,6 +6,7 @@ const levelSchema = new Schema(
   {
     name: String,
     number: String,
+    image: String,
     levelType: {
       type: String,
       enum: [
