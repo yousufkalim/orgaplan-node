@@ -12,10 +12,12 @@ const ClientSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.USER,
     },
-    contract: {
-      type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.CONTRACT,
-    },
+    contract: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: STRINGS.MODALS.CONTRACT,
+      },
+    ],
   },
   {
     timestamps: true,

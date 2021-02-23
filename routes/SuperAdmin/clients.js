@@ -2,31 +2,32 @@ const router = require("express").Router();
 
 const auth = require("../../middlewares/auth");
 const multer = require("../../middlewares/multer");
-const superAdminClientsController = require("../../controllers/SuperAdmin");
+const superAdmin = require("../../controllers/SuperAdmin");
 
 // GETS
-router.get("/", superAdminClientsController.clientsController.getAll);
-router.get("/:id", superAdminClientsController.clientsController.getById);
+router.get("/", superAdmin.clientsController.getAll);
+router.get("/:id", superAdmin.clientsController.getById);
 
 // POSTS
 router.post(
   "/",
   multer("company", "logo", "single"),
-  superAdminClientsController.clientsController.create
+  superAdmin.clientsController.create
 );
 
 // PUTS
 router.put(
   "/",
   multer("company", "logo", "single"),
-  superAdminClientsController.clientsController.update
+  superAdmin.clientsController.update
 );
 router.put(
-  "/verify/:clientId/:contractId",
-  superAdminClientsController.clientsController.verifyRequest
+  "/verify",
+  multer("company", "logo", "single"),
+  superAdmin.clientsController.verifyRequest
 );
 
 // DELETES
-router.delete("/", superAdminClientsController.clientsController.delete);
+router.delete("/", superAdmin.clientsController.delete);
 
 module.exports = router;

@@ -2,27 +2,27 @@ const router = require("express").Router();
 
 const auth = require("../../middlewares/auth");
 const multer = require("../../middlewares/multer");
-const superAdminClientsController = require("../../controllers/SuperAdmin");
+const superAdmin = require("../../controllers/SuperAdmin");
 
 // GETS
-router.get("/", superAdminClientsController.adminsController.getAll);
-router.get("/:id", superAdminClientsController.adminsController.getById);
+router.get("/", superAdmin.adminsController.getAll);
+router.get("/:id", superAdmin.adminsController.getById);
 
 // POSTS
 router.post(
   "/",
   multer("user", "image", "single"),
-  superAdminClientsController.adminsController.create
+  superAdmin.adminsController.create
 );
 
 // PUTS
 router.put(
   "/",
   multer("user", "image", "single"),
-  superAdminClientsController.adminsController.update
+  superAdmin.adminsController.update
 );
 
 // DELETES
-router.delete("/", superAdminClientsController.adminsController.delete);
+router.delete("/", superAdmin.adminsController.delete);
 
 module.exports = router;

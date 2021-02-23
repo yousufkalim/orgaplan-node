@@ -1,6 +1,8 @@
 const router = require("express").Router();
 
-router.use("/clients", require("./clients"));
 router.use("/admins", require("./admins"));
+router.use("/quotes", require("./quotes"));
+router.use("/clients", require("./clients"));
+router.use("/invoices", require("./invoices"));
 
 module.exports = router;

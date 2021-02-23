@@ -1,8 +1,10 @@
 const exportsObj = {
   alert: require("./Alert"),
-  building: require("./Building"),
-  client: require("./Client"),
+  quote: require("./Quote"),
   admin: require("./Admin"),
+  client: require("./Client"),
+  invoice: require("./Invoice"),
+  building: require("./Building"),
 };
 
 module.exports = exportsObj;

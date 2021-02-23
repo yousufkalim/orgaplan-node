@@ -16,16 +16,24 @@ const invoiceSchema = new Schema({
   invoiceType: {
     type: String,
     enum: [
+      STRINGS.INVOICETYPES.WAYS,
       STRINGS.INVOICETYPES.DELAY,
       STRINGS.INVOICETYPES.INCIDENT,
       STRINGS.INVOICETYPES.UNPLANNEDDELIVERY,
-      STRINGS.INVOICETYPES.WAYS,
     ],
     default: STRINGS.INVOICETYPES.DELAY,
   },
+  createdBy: {
+    type: Schema.Types.ObjectId,
+    ref: STRINGS.MODALS.USER,
+  },
   information: [
     {
-      name: { type: String },
+      userId: {
+        type: Schema.Types.ObjectId,
+        ref: STRINGS.MODALS.USER,
+      },
+      userName: String,
       images: [{ type: String }],
       site: {
         type: Schema.Types.ObjectId,

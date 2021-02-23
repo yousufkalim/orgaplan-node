@@ -16,7 +16,11 @@ const schemas = {
     if (!data.color) data.color = Helpers.randomColor;
 
     const { error, value } = Validation.validate(data);
-    if (error) throw new CustomError(error);
+    if (error) {
+      const { details } = error;
+      const message = details.map((i) => i.message).join(",");
+      throw new CustomError(message);
+    }
     return value;
   },
   update: (data) => {
@@ -35,7 +39,11 @@ const schemas = {
     data.image = data.image || "";
 
     const { error, value } = Validation.validate(data);
-    if (error) throw new CustomError(error);
+    if (error) {
+      const { details } = error;
+      const message = details.map((i) => i.message).join(",");
+      throw new CustomError(message);
+    }
     return value;
   },
 };
