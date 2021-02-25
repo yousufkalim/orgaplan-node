@@ -6,6 +6,7 @@ const meanController = require("../controllers/mean");
 // GETS
 router.get("/", auth(), meanController.getAll);
 router.get("/:id", auth(), meanController.getOne);
+
 // POSTS
 router.post("/", auth(), upload("mean", "sheet"), meanController.create);
 // PUTS
