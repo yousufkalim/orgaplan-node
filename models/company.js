@@ -7,8 +7,42 @@ const companySchema = new Schema(
     logo: String,
     name: String,
     color: String,
-    description: String,
     website: String,
+    description: String,
+    // Not in database (incharge)
+    incharge: {
+      firstName: String,
+      lastName: String,
+      email: String,
+      phone: Number,
+    },
+    // One admin per company
+    adminId: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.USER,
+    },
+    type: {
+      type: String,
+      enum: [
+        STRINGS.COMPANYTYPE.CLIENTPERSITE,
+        STRINGS.COMPANYTYPE.MASTERCLIENT,
+        STRINGS.COMPANYTYPE.NOCLIENTS,
+      ],
+      default: STRINGS.COMPANYTYPE.NOCLIENTS,
+    },
+    users: [
+      {
+        userId: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.USER },
+        role: {
+          type: String,
+          enum: [
+            STRINGS.ROLES.ENTERPRISE,
+            STRINGS.ROLES.TRAFFIC,
+            STRINGS.ROLES.BUFFER,
+          ],
+        },
+      },
+    ],
     connection: [
       {
         childCompanyId: [
@@ -29,35 +63,6 @@ const companySchema = new Schema(
           default: false,
         },
         siteId: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.SITE },
-      },
-    ],
-    incharge: {
-      firstName: String,
-      lastName: String,
-      email: String,
-      phone: Number,
-    },
-    type: {
-      type: String,
-      enum: [
-        STRINGS.COMPANYTYPE.CLIENTPERSITE,
-        STRINGS.COMPANYTYPE.MASTERCLIENT,
-        STRINGS.COMPANYTYPE.NOCLIENTS,
-      ],
-      default: STRINGS.COMPANYTYPE.NOCLIENTS,
-    },
-    users: [
-      {
-        userId: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.USER },
-        role: {
-          type: String,
-          enum: [
-            STRINGS.ROLES.ADMIN,
-            STRINGS.ROLES.ENTERPRISE,
-            STRINGS.ROLES.TRAFFIC,
-            STRINGS.ROLES.BUFFER,
-          ],
-        },
       },
     ],
   },

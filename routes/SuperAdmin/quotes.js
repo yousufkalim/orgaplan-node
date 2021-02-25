@@ -1,6 +1,7 @@
 const router = require("express").Router();
 
 const auth = require("../../middlewares/auth");
+const multer = require("../../middlewares/multer");
 const superAdmin = require("../../controllers/SuperAdmin");
 
 // GETS
@@ -9,6 +10,11 @@ router.get("/:id", superAdmin.quotesController.getById);
 
 // POSTS
 router.post("/", superAdmin.quotesController.create);
+router.put(
+  "/verify",
+  multer("company", "logo", "single"),
+  superAdmin.quotesController.verifyQuote
+);
 
 // DELETES
 router.delete("/:id", superAdmin.quotesController.delete);

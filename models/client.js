@@ -12,7 +12,7 @@ const ClientSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.USER,
     },
-    contract: [
+    contractsIds: [
       {
         type: Schema.Types.ObjectId,
         ref: STRINGS.MODALS.CONTRACT,

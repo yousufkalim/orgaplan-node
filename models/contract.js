@@ -4,13 +4,12 @@ const STRINGS = require("../utils/texts");
 
 const ContractSchema = new Schema(
   {
-    userId: {
+    companyId: {
       type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.USER,
+      ref: STRINGS.MODALS.COMPANY,
     },
     contractStartDate: {
       type: Date,
-      default: new Date(),
     },
     contractEndDate: {
       type: Date,

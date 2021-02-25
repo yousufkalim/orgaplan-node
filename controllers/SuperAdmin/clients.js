@@ -1,4 +1,3 @@
-const Auth = require("../auth");
 const User = require("../../models/user");
 const STRINGS = require("../../utils/texts");
 const Client = require("../../models/client");
@@ -13,94 +12,40 @@ class SuperAdminClientsController {
   async create(req, res) {
     const validatedData = await Validations.client.create(req.body);
 
-    // Create User
-    const userData = {
-      firstName: validatedData.firstName,
-      lastName: validatedData.lastName,
-      email: validatedData.email,
-      phone: validatedData.phone,
-    };
-
-    const userCheck = await User.findOne({ email: validatedData.email });
+    // Check company if already exists
     const companyCheck = await Company.findOne({
       name: validatedData.name,
     });
-    if (!userCheck && companyCheck)
-      throw new CustomError(STRINGS.ERRORS.companyAlreadyExists);
-
-    const user = await Auth.signup(userData);
-    const userId = user.user._id;
-
-    validatedData["userId"] = userId;
-
-    // If MasterClient and user exists
-    if (
-      validatedData.contractType === STRINGS.CONTRACTTYPES.MASTERCLIENT &&
-      user.exists
-    ) {
-      res.status(200).send(response(STRINGS.TEXTS.clientExistsAlready, user));
-      return;
-    }
-
-    // If ClientPerSite and user exists
-    if (
-      validatedData.contractType === STRINGS.CONTRACTTYPES.CLIENTPERSITE &&
-      user.exists
-    ) {
-      // Create a new contract and add it to the client document
-      let contract = await new Contract(validatedData).save();
-      let client = await Client.findOneAndUpdate(
-        { userId },
-        { $addToSet: { contract: contract._id } },
-        {
-          new: true,
-        }
-      )
-        .populate("userId")
-        .populate("companyId")
-        .populate("contract");
-
-      res.status(200).send(response(STRINGS.TEXTS.contractCreated, client));
-      return;
-    }
+    if (companyCheck)
+      throw new CustomError(STRINGS.ERRORS.companyAlreadyExists, 409);
 
     // Create User Company
-    const companyUsers = [{ userId: userId, role: STRINGS.ROLES.ADMIN }];
     const companyData = {
-      logo: validatedData.logo,
-      name: validatedData.name,
-      color: validatedData.color,
-      connection: [],
-      incharge: userData,
-      users: companyUsers,
+      ...validatedData,
+      incharge: { ...validatedData },
       type: validatedData.contractType,
     };
-    const company = await new Company(companyData).save();
-    await User.findByIdAndUpdate(
-      userId,
-      {
-        $addToSet: { company: company._id },
-      },
-      { new: true }
-    );
 
+    const company = await Company.create(companyData);
+    validatedData.companyId = company._id;
+
+    // Create a contract
     let contract = await new Contract({
       ...validatedData,
       isPendingResponse: false,
     }).save();
 
     let client = await Client.create({
-      userId: userId,
       companyId: company._id,
-      contract: [contract._id],
+      contractsIds: [contract._id],
     });
     client = await client
       .populate("userId")
       .populate("companyId")
-      .populate("contract")
+      .populate("contractsIds")
       .execPopulate();
 
-    await res.status(200).send(response(STRINGS.TEXTS.clientCreated, client));
+    res.status(200).send(response(STRINGS.TEXTS.clientCreated, client));
   }
 
   async getAll(req, res) {
@@ -113,7 +58,7 @@ class SuperAdminClientsController {
       .limit(ITEMS_PER_PAGE)
       .populate("userId")
       .populate("companyId")
-      .populate("contract");
+      .populate("contractsIds");
 
     if (!items) throw new CustomError(STRINGS.ERRORS.error);
 
@@ -135,7 +80,7 @@ class SuperAdminClientsController {
     const result = await Client.findById(id, { password: 0, __v: 0 })
       .populate("userId")
       .populate("companyId")
-      .populate("contract");
+      .populate("contractsIds");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.error);
 
@@ -145,21 +90,9 @@ class SuperAdminClientsController {
   async update(req, res) {
     const validatedData = await Validations.client.update(req.body);
 
-    const userData = {
-      firstName: validatedData.firstName,
-      lastName: validatedData.lastName,
-      email: validatedData.email,
-      phone: validatedData.phone,
-    };
-
-    const user = await User.findByIdAndUpdate(validatedData.userId, {
-      $set: userData,
-    });
-    if (!user) throw new CustomError(STRINGS.ERRORS.userNotFound);
-
     const companyData = {
-      color: validatedData.color,
-      incharge: userData,
+      ...validatedData,
+      incharge: { ...validatedData },
       type: validatedData.contractType,
     };
     validatedData.logo && (companyData.logo = validatedData.logo);
@@ -172,10 +105,10 @@ class SuperAdminClientsController {
       $set: validatedData,
     });
 
-    const result = await Client.findById({ _id: validatedData.clientId })
+    const result = await Client.findById(validatedData.clientId)
       .populate("userId")
       .populate("companyId")
-      .populate("contract");
+      .populate("contractsIds");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 
@@ -185,38 +118,10 @@ class SuperAdminClientsController {
   async delete(req, res) {
     const id = req.params.id;
 
-    const result = await Client.findByIdAndRemove(id);
-    if (!result) throw new CustomError(STRINGS.ERRORS.error);
+    // const result = await Client.findByIdAndRemove(id);
+    // if (!result) throw new CustomError(STRINGS.ERRORS.error);
 
-    res.status(201).send(response(STRINGS.TEXTS.clientDeleted, result));
-  }
-
-  async verifyRequest(req, res) {
-    const validatedData = await Validations.client.verify(req.body);
-
-    await Company.findByIdAndUpdate(validatedData.companyId, {
-      $set: {
-        logo: validatedData.logo,
-        color: validatedData.color,
-      },
-    });
-    let contract = await Contract.create({
-      ...validatedData,
-      isPendingResponse: false,
-      userId: validatedData.clientId,
-    });
-
-    const result = await Client.findByIdAndUpdate(
-      validatedData.clientId,
-      {
-        $addToSet: { contract: contract._id },
-      },
-      { new: true }
-    );
-
-    if (!result) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
-
-    res.status(201).send(response(STRINGS.TEXTS.clientVerified, result));
+    res.status(201).send(response(STRINGS.TEXTS.clientDeleted, "result"));
   }
 }
 

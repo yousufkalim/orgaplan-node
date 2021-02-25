@@ -21,11 +21,6 @@ router.put(
   multer("company", "logo", "single"),
   superAdmin.clientsController.update
 );
-router.put(
-  "/verify",
-  multer("company", "logo", "single"),
-  superAdmin.clientsController.verifyRequest
-);
 
 // DELETES
 router.delete("/", superAdmin.clientsController.delete);

@@ -1,10 +1,9 @@
-const Auth = require("../auth");
-const User = require("../../models/user");
 const STRINGS = require("../../utils/texts");
 const Client = require("../../models/client");
 const Company = require("../../models/company");
 const Validations = require("../../validators");
 const response = require("../../utils/response");
+const Contract = require("../../models/contract");
 const CustomError = require("../../utils/customError");
 const ENV = process.env;
 
@@ -12,55 +11,29 @@ class SuperAdminClientsController {
   async create(req, res) {
     const validatedData = await Validations.quote.create(req.body);
 
-    // Create User
-    const userData = {
-      firstName: validatedData.firstName,
-      lastName: validatedData.lastName,
-      email: validatedData.email,
-      phone: validatedData.phone,
-    };
-
-    const userCheck = await User.findOne({ email: validatedData.email });
-    if (userCheck) throw new CustomError(STRINGS.ERRORS.userAlreadyExists);
-
+    // Check company if already exists
     const companyCheck = await Company.findOne({
       name: validatedData.name,
     });
     if (companyCheck)
-      throw new CustomError(STRINGS.ERRORS.companyAlreadyExists);
-
-    const user = await Auth.signup(userData);
-    const userId = user.user._id;
-
-    validatedData["userId"] = userId;
+      throw new CustomError(STRINGS.ERRORS.companyAlreadyExists, 409);
 
     // Create User Company
-    const companyUsers = [{ userId: userId, role: STRINGS.ROLES.ADMIN }];
     const companyData = {
-      name: validatedData.name,
-      connection: [],
-      incharge: userData,
-      users: companyUsers,
+      ...validatedData,
+      incharge: { ...validatedData },
       type: validatedData.contractType,
     };
-    const company = await new Company(companyData).save();
-    await User.findByIdAndUpdate(
-      userId,
-      {
-        $addToSet: { company: company._id },
-      },
-      { new: true }
-    );
 
-    let client = await Client.create({
-      userId: userId,
-      companyId: company._id,
-      contract: [],
-    });
+    const company = await Company.create(companyData);
+    validatedData.companyId = company._id;
+
+    // Create a client
+    let client = await Client.create(validatedData);
     client = await client
       .populate("userId")
       .populate("companyId")
-      .populate("contract")
+      .populate("contractsIds")
       .execPopulate();
 
     await res.status(200).send(response(STRINGS.TEXTS.clientCreated, client));
@@ -76,9 +49,9 @@ class SuperAdminClientsController {
       .limit(ITEMS_PER_PAGE)
       .populate("userId")
       .populate("companyId")
-      .populate("contract");
+      .populate("contractsIds");
 
-    if (!items) throw new CustomError(STRINGS.ERRORS.error);
+    if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
 
     const result = {
       items,
@@ -98,9 +71,9 @@ class SuperAdminClientsController {
     const result = await Client.findById(id, { password: 0, __v: 0 })
       .populate("userId")
       .populate("companyId")
-      .populate("contract");
+      .populate("contractsIds");
 
-    if (!result) throw new CustomError(STRINGS.ERRORS.error);
+    if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
 
     res.status(200).send(response(STRINGS.TEXTS.clientRequested, result));
   }
@@ -108,10 +81,38 @@ class SuperAdminClientsController {
   async delete(req, res) {
     const id = req.params.id;
 
-    const result = await Client.findByIdAndRemove(id);
-    if (!result) throw new CustomError(STRINGS.ERRORS.error);
+    // const result = await Client.findByIdAndRemove(id);
+    // if (!result) throw new CustomError(STRINGS.ERRORS.error,404);
 
-    res.status(201).send(response(STRINGS.TEXTS.clientDeleted, result));
+    res.status(201).send(response(STRINGS.TEXTS.clientDeleted, "result"));
+  }
+
+  async verifyQuote(req, res) {
+    let validatedData = await Validations.quote.verify(req.body);
+
+    delete validatedData.contractType;
+
+    await Company.findByIdAndUpdate(validatedData.companyId, {
+      $set: validatedData,
+    });
+    let contract = await Contract.create({
+      ...validatedData,
+      isPendingResponse: false,
+    });
+
+    const result = await Client.findByIdAndUpdate(
+      validatedData.clientId,
+      {
+        $addToSet: { contractsIds: contract._id },
+      },
+      { new: true }
+    )
+      .populate("companyId")
+      .populate("contractsIds");
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
+
+    res.status(201).send(response(STRINGS.TEXTS.clientVerified, result));
   }
 }
 

@@ -10,7 +10,7 @@ const schemas = {
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
       image: Joi.string().required(),
-      color: Joi.string().required(),
+      companyId: Joi.string().required(),
     });
 
     if (!data.color) data.color = Helpers.randomColor;
@@ -19,7 +19,7 @@ const schemas = {
     if (error) {
       const { details } = error;
       const message = details.map((i) => i.message).join(",");
-      throw new CustomError(message);
+      throw new CustomError(message, 400);
     }
     return value;
   },
@@ -31,7 +31,7 @@ const schemas = {
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
       image: Joi.string().required(),
-      color: Joi.string().required(),
+      companyId: Joi.string().required(),
     });
 
     if (!data.color) data.color = Helpers.randomColor;
@@ -42,7 +42,7 @@ const schemas = {
     if (error) {
       const { details } = error;
       const message = details.map((i) => i.message).join(",");
-      throw new CustomError(message);
+      throw new CustomError(message, 400);
     }
     return value;
   },
