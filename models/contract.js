@@ -4,19 +4,25 @@ const STRINGS = require("../utils/texts");
 
 const ContractSchema = new Schema(
   {
-    userId: {
+    companyId: {
       type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.USER,
+      ref: STRINGS.MODALS.COMPANY,
     },
     contractStartDate: {
       type: Date,
-      default: new Date(),
     },
     contractEndDate: {
       type: Date,
     },
     monthlyCost: {
       type: Number,
+    },
+    isPendingResponse: {
+      type: Boolean,
+      default: true,
+    },
+    additionalInfo: {
+      type: String,
     },
     notificationPriorToDays: {
       type: Number,
@@ -26,6 +32,10 @@ const ContractSchema = new Schema(
         type: String,
       },
     ],
+    functionality: {
+      type: String,
+      enum: [STRINGS.FUNCTIONALITY.DELIVERY],
+    },
     contractType: {
       type: String,
       enum: [

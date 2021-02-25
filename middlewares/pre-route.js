@@ -2,6 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const hpp = require("hpp");
+const path = require("path");
 const helmet = require("helmet");
 const xss = require("xss-clean");
 const mongoose = require("mongoose");
@@ -24,9 +25,7 @@ module.exports = (app) => {
   app.use(hpp());
   app.use(express.json());
   app.use(limiter);
-  app.use(express.static("/public"));
   app.use(express.urlencoded({ extended: false }));
-  app.use("/uploads", express.static("/uploads"));
-
+  app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
   return app;
 };

@@ -33,8 +33,8 @@ function auth(role = STRINGS.ROLES.USER) {
         "Unauthorized access: Please verify email address",
         401
       );
-    if (role !== user.role) throw new CustomError("Unauthorized access", 401);
-
+    if (role !== STRINGS.ROLES.ALL && role !== user.role)
+      throw new CustomError("Unauthorized access", 401);
     req.user = user;
     req.userId = user._id;
 

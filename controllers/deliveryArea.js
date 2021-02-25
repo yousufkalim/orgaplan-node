@@ -6,7 +6,7 @@ const isDateChoronological = require("../utils/date");
 class DeliveryAreaController {
   async create(req, res) {
     const body = req.body;
-    if (!body.name) throw new CustomError(STRINGS.ERRORS.nameReqyured);
+    if (!body.name) throw new CustomError(STRINGS.ERRORS.nameRequired);
     if (req.file) body.document = req.file.path;
     if (!body.availability)
       throw new CustomError(STRINGS.ERRORS.startDateIsRequred);

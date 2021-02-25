@@ -19,7 +19,7 @@ class AuthContoller {
 
       //  const verifyLink = `${ENV.BASE_URL}/email-verification?uid=${user._id}&verifyToken=${verifyToken}`;
       const verifyLink = `${ENV.BASE_URL}/api/v1/users/${user._id}`;
-      await emailService.sendEmailConfirmation(user, verifyLink);
+      // await emailService.sendEmailConfirmation(user, verifyLink);
       return {
         user,
         exists: true,
@@ -40,13 +40,23 @@ class AuthContoller {
 
       // send email
       let emailService = new MailService();
-      await emailService.requestEmailVerification(user, verifyLink);
+      // await emailService.requestEmailVerification(user, verifyLink);
 
       return {
         user,
         exists: false,
       };
     }
+  }
+  async registerUser(req, res) {
+    const data = req.body;
+    let user = await User.findOne({ email: data.email });
+    if (user) throw new CustomError(STRINGS.ERRORS.passwordInvalid);
+    const hash = await bcrypt.hash(data.password, +ENV.BCRYPT_SALT);
+    data.password = hash;
+    user = await new User(data).save();
+
+    res.status(200).send(response(STRINGS.TEXTS.userCreated, user));
   }
 
   async signin(req, res) {

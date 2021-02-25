@@ -16,9 +16,7 @@ const locationSchema = new Schema(
         ref: STRINGS.MODALS.STORAGEAREA,
       },
     ],
-
     siteId: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.SITE },
-
     building: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.BUILDING,

@@ -1,4 +1,3 @@
-const Auth = require("../auth");
 const User = require("../../models/user");
 const STRINGS = require("../../utils/texts");
 const Client = require("../../models/client");
@@ -11,71 +10,42 @@ const ENV = process.env;
 
 class SuperAdminClientsController {
   async create(req, res) {
-    const validatedData = Validations.client.create(req.body);
+    const validatedData = await Validations.client.create(req.body);
 
-    // Create User
-    const userData = {
-      firstName: validatedData.firstName,
-      lastName: validatedData.lastName,
-      email: validatedData.email,
-      phone: validatedData.phone,
-    };
-
-    const user = await Auth.signup(userData);
-    const userId = user.user._id;
-
-    validatedData["userId"] = userId;
-
-    await new Contract(validatedData).save();
-
-    if (user.exists) {
-      await res
-        .status(200)
-        .send(response(STRINGS.TEXTS.emailVerificationSent, user));
-      return;
-    }
-
-    // Create User Company if it does not exist
-    const companyConnection = [];
-    const companyUsers = [{ userId: userId, role: STRINGS.ROLES.ADMIN }];
-    const companyResult = await Company.findOne({
-      name: validatedData.companyName,
-    });
-    if (companyResult)
-      throw new CustomError(STRINGS.ERRORS.companyAlreadyAdded);
-
-    const companyData = {
-      logo: validatedData.logo,
+    // Check company if already exists
+    const companyCheck = await Company.findOne({
       name: validatedData.name,
-      color: validatedData.color,
-      connection: companyConnection,
-      incharge: userData,
-      users: companyUsers,
+    });
+    if (companyCheck)
+      throw new CustomError(STRINGS.ERRORS.companyAlreadyExists, 409);
+
+    // Create User Company
+    const companyData = {
+      ...validatedData,
+      incharge: { ...validatedData },
       type: validatedData.contractType,
     };
-    const company = await new Company(companyData).save();
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      {
-        $addToSet: { company: company._id },
-      },
-      { new: true }
-    )
-      .populate("userId")
-      .populate("companyId");
 
-    await Client({
-      companyId: company._id,
-      userId: userId,
-      contractStartDate: validatedData.contractStartDate,
-      contractEndDate: validatedData.contractEndDate,
-      additionalInfo: validatedData.additionalInfo,
-      notificationPriorToDays: validatedData.notificationPriorToDays,
-      notificationTo: validatedData.notificationTo,
+    const company = await Company.create(companyData);
+    validatedData.companyId = company._id;
+
+    // Create a contract
+    let contract = await new Contract({
+      ...validatedData,
+      isPendingResponse: false,
     }).save();
-    await res
-      .status(200)
-      .send(response(STRINGS.TEXTS.clientUpdated, updatedUser));
+
+    let client = await Client.create({
+      companyId: company._id,
+      contractsIds: [contract._id],
+    });
+    client = await client
+      .populate("userId")
+      .populate("companyId")
+      .populate("contractsIds")
+      .execPopulate();
+
+    res.status(200).send(response(STRINGS.TEXTS.clientCreated, client));
   }
 
   async getAll(req, res) {
@@ -83,16 +53,17 @@ class SuperAdminClientsController {
     const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
 
     const totalItems = await Client.find().countDocuments();
-    const clients = await Client.find(null, { __v: 0, password: 0 })
+    const items = await Client.find(null, { __v: 0, password: 0 })
       .skip((page - 1) * ITEMS_PER_PAGE)
       .limit(ITEMS_PER_PAGE)
       .populate("userId")
-      .populate("companyId");
+      .populate("companyId")
+      .populate("contractsIds");
 
-    if (!totalItems || !clients) throw new CustomError(STRINGS.ERRORS.error);
+    if (!items) throw new CustomError(STRINGS.ERRORS.error);
 
     const result = {
-      items: clients,
+      items,
       currentPage: page,
       hasNextPage: ITEMS_PER_PAGE * page < totalItems,
       hasPreviousPage: page > 1,
@@ -108,36 +79,49 @@ class SuperAdminClientsController {
 
     const result = await Client.findById(id, { password: 0, __v: 0 })
       .populate("userId")
-      .populate("companyId");
+      .populate("companyId")
+      .populate("contractsIds");
+
     if (!result) throw new CustomError(STRINGS.ERRORS.error);
 
     res.status(200).send(response(STRINGS.TEXTS.clientRequested, result));
   }
 
   async update(req, res) {
-    const id = req.params.id;
-    const data = req.body;
+    const validatedData = await Validations.client.update(req.body);
 
-    const result = await Client.findByIdAndUpdate(
-      { _id: id },
-      { $set: data },
-      { new: true }
-    )
+    const companyData = {
+      ...validatedData,
+      incharge: { ...validatedData },
+      type: validatedData.contractType,
+    };
+    validatedData.logo && (companyData.logo = validatedData.logo);
+
+    await Company.findByIdAndUpdate(validatedData.companyId, {
+      $set: companyData,
+    });
+
+    await Contract.findByIdAndUpdate(validatedData.contractId, {
+      $set: validatedData,
+    });
+
+    const result = await Client.findById(validatedData.clientId)
       .populate("userId")
-      .populate("companyId");
+      .populate("companyId")
+      .populate("contractsIds");
 
-    if (!result) throw new CustomError(STRINGS.ERRORS.tradeNotFount, 404);
+    if (!result) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 
-    res.status(201).send(response(STRINGS.TEXTS.tradeUpdated, result));
+    res.status(201).send(response(STRINGS.TEXTS.clientUpdated, result));
   }
 
   async delete(req, res) {
     const id = req.params.id;
 
-    const result = await Client.findByIdAndRemove(id);
-    if (!result) throw new CustomError(STRINGS.ERRORS.error);
+    // const result = await Client.findByIdAndRemove(id);
+    // if (!result) throw new CustomError(STRINGS.ERRORS.error);
 
-    res.status(201).send(response(STRINGS.TEXTS.clientDeleted, result));
+    res.status(201).send(response(STRINGS.TEXTS.clientDeleted, "result"));
   }
 }
 

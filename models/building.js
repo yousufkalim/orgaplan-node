@@ -7,6 +7,11 @@ const buildingSchema = new Schema(
     name: String,
     start: Date,
     end: Date,
+    buildingType: {
+      type: String,
+      enum: [STRINGS.LOCATIONTYPE.EXTERIOR, STRINGS.LOCATIONTYPE.INTERIOR],
+      default: STRINGS.LOCATIONTYPE.EXTERIOR,
+    },
     mean: [
       {
         type: Schema.Types.ObjectId,
