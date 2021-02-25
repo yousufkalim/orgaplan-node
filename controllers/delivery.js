@@ -9,7 +9,18 @@ const StorageArea = require("../models/storageArea");
 const Building = require("../models/building");
 const Means = require("../models/mean");
 const Location = require("../models/location");
+const EmailService = require("../services/mail.service");
+var HTMLParser = require("node-html-parser");
+
 class DeliveryController {
+  async sendEmail(req, res) {
+    const body = req.body;
+
+    res
+      .status(200)
+      .send(response(STRINGS.TEXTS.deliveryCreated, { sent: "email send" }));
+  }
+
   async create(req, res) {
     const body = req.body;
     if (!body.isExterior) {
@@ -24,6 +35,14 @@ class DeliveryController {
       throw new CustomError(STRINGS.ERRORS.invalidCompanyTradeAssign);
 
     const result = await new Delivery(req.body).save();
+
+    if (body.sendDeliverySummary) {
+      await new EmailService().sendDeliverySummaryEmail(
+        body.userEmail,
+        body.html
+      );
+    }
+
     res.status(200).send(response(STRINGS.TEXTS.deliveryCreated, result));
   }
 
@@ -45,7 +64,7 @@ class DeliveryController {
     const { userId, siteId } = req.params;
     console.log(siteId);
     const userCompany = await Company.findOne({
-      "users.userId": userId,
+      adminId: userId,
       "connection.siteId": siteId,
     })
       .populate({
@@ -60,7 +79,9 @@ class DeliveryController {
     if (!userCompany) throw new CustomError(STRINGS.ERRORS.companyNotFound);
     const userCompanyId = userCompany._id;
     console.log(userCompanyId);
-    const siteDeliveryAreas = await DeliveryArea.find({ siteId: siteId });
+    const siteDeliveryAreas = await DeliveryArea.find({
+      siteId: siteId,
+    }).populate("means");
     if (!siteDeliveryAreas)
       throw new CustomError(STRINGS.ERRORS.deliveyAreaNotFount);
     const siteStorageAreas = await StorageArea.find({

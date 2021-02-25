@@ -31,6 +31,8 @@ const deliverySchema = new Schema(
       ref: STRINGS.MODALS.USER,
     },
     comment: String,
+    sendDeliverySummary: Boolean,
+    userEmail: String,
     trades: [{ type: Schema.Types.ObjectId, ref: STRINGS.MODALS.TRADES }],
     means: [{ type: Schema.Types.ObjectId, ref: STRINGS.MODALS.MEAN }],
     materials: [String],

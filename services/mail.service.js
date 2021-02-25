@@ -74,6 +74,35 @@ class MailService {
     return;
   }
 
+  async sendDeliverySummaryEmail(email, html) {
+    let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
+
+    if (!email) throw new CustomError(STRINGS.ERRORS.recipientRequired);
+
+    // Email Starts
+    const filePath = path.join(
+      __dirname,
+      "../html_templates/sendDeliverySummary.html"
+    );
+    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const template = handlebars.compile(source);
+    const htmlTemplage = handlebars.compile(html);
+    console.log(htmlTemplage);
+    const replacements = {
+      html: htmlTemplage,
+    };
+    const htmlToSend = template(replacements);
+
+    await this.transporter.sendMail({
+      from,
+      to: email,
+      subject: STRINGS.TEXTS.sendEmailConfirmationSubject,
+      html: html,
+    });
+
+    return;
+  }
+
   async requestSubscriptionActivation(to) {
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
 
