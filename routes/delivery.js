@@ -11,6 +11,7 @@ router.get(
 );
 // POSTS
 router.post("/", auth(), deliveryController.create);
+router.post("/send_email", deliveryController.sendEmail);
 // PUTS
 router.put("/:id", deliveryController.update);
 // DELETES
