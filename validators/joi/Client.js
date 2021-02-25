@@ -53,7 +53,7 @@ const schemas = {
     if (error) {
       const { details } = error;
       const message = details.map((i) => i.message).join(",");
-      throw new CustomError(message);
+      throw new CustomError(message, 409);
     }
     return value;
   },
@@ -107,7 +107,7 @@ const schemas = {
     if (error) {
       const { details } = error;
       const message = details.map((i) => i.message).join(",");
-      throw new CustomError(message);
+      throw new CustomError(message, 409);
     }
     return value;
   },

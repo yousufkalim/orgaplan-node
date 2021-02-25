@@ -1,6 +1,9 @@
 module.exports = {
   ERRORS: {
     zacNotFound: "No Zac Found",
+    verifiedAlready: "Verified already",
+    resourceNotFound: "Resource not found!",
+    adminExistsForCompany: "Admin exists for this company!",
 
     siteNotFound: "No Site Found",
 
@@ -110,7 +113,7 @@ module.exports = {
     invoiceExistsAlready: "Invoice exists already",
 
     adminCreated: "Admin created",
-    adminUpdated: "Admin created",
+    adminUpdated: "Admin updated",
     adminDeleted: "Admin deleted",
     adminRequested: "Admin requested",
     adminsRequested: "Admins requested",

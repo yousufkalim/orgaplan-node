@@ -35,6 +35,7 @@ class SuperAdminClientsController {
       isPendingResponse: false,
     }).save();
 
+    // Create a client
     let client = await Client.create({
       companyId: company._id,
       contractsIds: [contract._id],
@@ -60,7 +61,7 @@ class SuperAdminClientsController {
       .populate("companyId")
       .populate("contractsIds");
 
-    if (!items) throw new CustomError(STRINGS.ERRORS.error);
+    if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
 
     const result = {
       items,
@@ -82,7 +83,7 @@ class SuperAdminClientsController {
       .populate("companyId")
       .populate("contractsIds");
 
-    if (!result) throw new CustomError(STRINGS.ERRORS.error);
+    if (!result) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 
     res.status(200).send(response(STRINGS.TEXTS.clientRequested, result));
   }
@@ -119,7 +120,7 @@ class SuperAdminClientsController {
     const id = req.params.id;
 
     // const result = await Client.findByIdAndRemove(id);
-    // if (!result) throw new CustomError(STRINGS.ERRORS.error);
+    // if (!result) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 
     res.status(201).send(response(STRINGS.TEXTS.clientDeleted, "result"));
   }
