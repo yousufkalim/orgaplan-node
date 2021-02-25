@@ -6,6 +6,11 @@ const deliveryAreaController = require("../controllers/deliveryArea");
 // GETS
 router.get("/", auth(), deliveryAreaController.getAll);
 router.get("/:id", auth(), deliveryAreaController.getOne);
+router.get(
+  "/get_delivery_area_means/enterprise/:id",
+  auth(),
+  deliveryAreaController.getDeliveryAreaMeans
+);
 // POSTS
 router.post(
   "/",

@@ -37,7 +37,9 @@ const deliverySchema = new Schema(
     isExterior: Boolean,
     building: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.BUILDING },
     level: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.LEVEL },
-    dateTime: Date,
+    date: Date,
+    startTime: String,
+    endTime: String,
     status: {
       type: String,
       enum: [

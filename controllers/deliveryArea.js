@@ -54,6 +54,17 @@ class DeliveryAreaController {
     res.status(200).send(response(STRINGS.TEXTS.deliveryAreaRequested, result));
   }
 
+  async getDeliveryAreaMeans(req, res) {
+    const id = req.params.id;
+    const result = await DeliveryArea.findOne({
+      _id: id,
+    }).populate("means");
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
+
+    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequested, result));
+  }
+
   async update(req, res) {
     const id = req.params.id;
     const body = req.body;

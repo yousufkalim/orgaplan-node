@@ -30,6 +30,43 @@ class StorageAreaController {
     res.status(200).send(response(STRINGS.TEXTS.allStorateAreas, result));
   }
 
+  async getByLevelId(req, res) {
+    const levelId = req.params.level_id;
+    const companyId = req.params.company_id;
+    const result = await StorageArea.find({
+      level: levelId,
+      companies: companyId,
+      location: STRINGS.STATUS.INSIDE,
+    });
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
+
+    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequested, result));
+  }
+
+  async getByCompanyId(req, res) {
+    const companyId = req.params.company_id;
+    const result = await StorageArea.find({
+      companies: companyId,
+      location: STRINGS.STATUS.OUTSIDE,
+    });
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
+
+    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequested, result));
+  }
+
+  async getStorageMeans(req, res) {
+    const id = req.params.id;
+    const result = await StorageArea.findOne({
+      _id: id,
+    }).populate("means");
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
+
+    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequested, result));
+  }
+
   async getOne(req, res) {
     const id = req.params.id;
 
