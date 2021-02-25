@@ -23,12 +23,14 @@ const schemas = {
   update: (data) => {
     const Validation = Joi.object().keys({
       userId: Joi.string().required(),
-      phone: Joi.number().required(),
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
+      phone: Joi.number().required(),
       image: Joi.string().optional(),
       companyId: Joi.string().required(),
     });
+
+    if (!data.image) delete data.image;
 
     const { error, value } = Validation.validate(data);
     if (error) {

@@ -119,6 +119,13 @@ module.exports = {
     adminsRequested: "Admins requested",
     adminExistsAlready: "Admin exists already",
 
+    companyCreated: "Company created",
+    companyUpdated: "Company updated",
+    companyDeleted: "Company deleted",
+    companyRequested: "Company requested",
+    companysRequested: "Companys requested",
+    companyExistsAlready: "Company exists already",
+
     deliveryData: "Delivery Data",
     allDeliveries: "All Deliveries",
     deliveryAdded: "Delivery Added",

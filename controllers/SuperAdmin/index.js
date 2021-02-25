@@ -5,6 +5,7 @@ const exportsObj = {
   adminsController: require("./admins"),
   clientsController: require("./clients"),
   invoicesController: require("./invoices"),
+  companiesController: require("./companies"),
 };
 
 module.exports = exportsObj;

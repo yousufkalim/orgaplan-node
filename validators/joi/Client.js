@@ -59,9 +59,8 @@ const schemas = {
   },
   update: (data) => {
     const Validation = Joi.object().keys({
-      logo: Joi.string().allow(""),
+      logo: Joi.string().optional(),
       color: Joi.string().required(),
-      userId: Joi.string().required(),
       clientId: Joi.string().required(),
       contractId: Joi.string().required(),
       companyId: Joi.string().required(),
@@ -100,8 +99,10 @@ const schemas = {
 
     if (!data.color) data.color = Helpers.randomColor;
 
-    data.logo = data.image || "";
-    delete data.image;
+    if (data.image) {
+      data.logo = data.image;
+      delete data.image;
+    } else delete data.image;
 
     const { error, value } = Validation.validate(data);
     if (error) {
