@@ -18,6 +18,7 @@ const meanSchema = new Schema(
     },
     status: {
       type: String,
+      default: STRINGS.STATUS.AVAILABLE,
       enum: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],
     },
     picCoordinates: {
