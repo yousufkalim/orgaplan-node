@@ -10,7 +10,6 @@ class SuperAdminClientInvoicesController {
     const validatedData = await Validations.clientInvoice.create(req.body);
 
     let result = await ClientInvoice.create(validatedData);
-    result = await result.populate("clientId").execPopulate();
 
     res.status(200).send(response(STRINGS.TEXTS.invoiceCreated, result));
   }
@@ -21,11 +20,15 @@ class SuperAdminClientInvoicesController {
     const page = +req.query.page || 1;
     const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
 
-    const totalItems = await Invoice.find({ clientId }).countDocuments();
-    const items = await Invoice.find({ clientId }, { __v: 0, password: 0 })
+    const totalItems = await ClientInvoice.find({ clientId }).countDocuments();
+    const items = await ClientInvoice.find(
+      { clientId },
+      { __v: 0, password: 0 }
+    )
       .skip((page - 1) * ITEMS_PER_PAGE)
       .limit(ITEMS_PER_PAGE)
-      .populate("clientId");
+      .populate({ path: "clientId", populate: { path: "companyId" } })
+      .populate("siteId");
 
     if (!items) throw new CustomError(STRINGS.ERRORS.error);
 
@@ -44,9 +47,12 @@ class SuperAdminClientInvoicesController {
   async getById(req, res) {
     const id = req.params.id;
 
-    const result = await Invoice.findById(id, { password: 0, __v: 0 }).populate(
-      "clientId"
-    );
+    const result = await ClientInvoice.findById(id, {
+      password: 0,
+      __v: 0,
+    })
+      .populate("clientId")
+      .populate("siteId");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.error);
 
@@ -61,7 +67,9 @@ class SuperAdminClientInvoicesController {
       {
         $set: validatedData,
       }
-    ).populate("clientId");
+    )
+      .populate("clientId")
+      .populate("siteId");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.invoiceNotFound, 404);
 

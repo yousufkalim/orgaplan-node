@@ -81,6 +81,24 @@ class SuperAdminSitesController {
     res.status(201).send(response(STRINGS.TEXTS.siteDeleted, result));
   }
 
+  async getSitesByClient(req, res) {
+    const clientId = req.params.clientId;
+
+    const items = await Site.find(
+      { adminId: clientId },
+      { __v: 0, password: 0 }
+    )
+      .populate("zacId")
+      .populate({ path: "adminId", populate: { path: "userId" } });
+
+    if (!items) throw new CustomError(STRINGS.ERRORS.error);
+
+    const result = {
+      items,
+    };
+    res.status(200).send(response(STRINGS.TEXTS.sitesRequested, result));
+  }
+
   async getAllArchives(req, res) {
     const page = +req.query.page || 1;
     const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;

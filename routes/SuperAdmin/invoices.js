@@ -5,7 +5,7 @@ const superAdmin = require("../../controllers/SuperAdmin");
 
 // GETS
 router.get("/:clientId", superAdmin.invoicesController.getAll);
-router.get("/:id", superAdmin.invoicesController.getById);
+router.get("/get/:id", superAdmin.invoicesController.getById);
 
 // POSTS
 router.post("/", superAdmin.invoicesController.create);
@@ -14,6 +14,6 @@ router.post("/", superAdmin.invoicesController.create);
 router.put("/", superAdmin.invoicesController.update);
 
 // DELETES
-router.delete("/:id", superAdmin.invoicesController.delete);
+router.delete("/delete/:id", superAdmin.invoicesController.delete);
 
 module.exports = router;

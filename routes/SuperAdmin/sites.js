@@ -8,6 +8,7 @@ const superAdmin = require("../../controllers/SuperAdmin");
 router.get("/", superAdmin.sitesController.getAll);
 router.get("/get/:id", superAdmin.sitesController.getById);
 router.get("/archives", superAdmin.sitesController.getAllArchives);
+router.get("/client/:clientId", superAdmin.sitesController.getSitesByClient);
 
 // POSTS
 router.post(
