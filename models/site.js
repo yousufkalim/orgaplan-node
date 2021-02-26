@@ -12,7 +12,7 @@ const siteSchema = new Schema(
     },
     adminId: {
       type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.USER,
+      ref: STRINGS.MODALS.CLIENT,
     },
     functionality: {
       type: String,
@@ -35,6 +35,7 @@ const siteSchema = new Schema(
         day: Number,
         startHour: Number,
         endHour: Number,
+        dayOff: { type: Boolean, default: false },
       },
     ],
     unavailabilityDates: [

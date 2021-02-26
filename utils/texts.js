@@ -181,6 +181,7 @@ module.exports = {
     siteUpdated: "Site Updated",
     siteDeleted: "Site deleted",
     zacRequested: "Zac Requested",
+    zacsRequested: "Zacs Requested",
     clientUpdated: "Client Updated",
 
     allSitePenalties: "All Site Penalty",
@@ -222,6 +223,7 @@ module.exports = {
     allLocations: "All Locations",
     allContracts: "All Contracts",
     allBuildings: "All Buildings",
+    siteArchived: "Site Archived",
     meanRequested: "Mean Requested",
     siteRequested: "Site Requested",
     sitesRequested: "Site Requested",

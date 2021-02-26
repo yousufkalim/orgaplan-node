@@ -1,5 +1,4 @@
 const Joi = require("joi");
-const STRINGS = require("../../utils/texts");
 const Helpers = require("../../utils/helpers");
 const CustomError = require("../../utils/customError");
 
@@ -7,10 +6,10 @@ const schemas = {
   create: (data) => {
     const Validation = Joi.object().keys({
       name: Joi.string().required(),
-      logo: Joi.string().required(),
-      zacId: Joi.string().optional(),
+      logo: Joi.string().optional().allow(""),
+      zacId: Joi.string().optional().allow(""),
       adminId: Joi.string().required(),
-      functionality: Joi.string().required(),
+      functionality: Joi.string().optional().allow(""),
       addresses: Joi.array()
         .items(
           Joi.object().keys({
@@ -21,26 +20,35 @@ const schemas = {
         )
         .min(1, "Min one address required"),
       trades: Joi.array().items(Joi.string().optional()),
-      penaltyforLateDelivery: Joi.number().integer().min(1).max(9999).messages({
-        "number.min": "Min value of 1 required",
-        "number.max": "Max value of 1 required",
-      }),
-      penaltyforUnexpDelivery: Joi.number()
+      penaltyforLateDelivery: Joi.number()
         .integer()
-        .min(1)
+        .min(0)
         .max(9999)
         .messages({
-          "number.min": "Min value of 1 required",
+          "number.min": "Min value of 0 required",
           "number.max": "Max value of 1 required",
-        }),
+        })
+        .optional(),
+      penaltyforUnexpDelivery: Joi.number()
+        .integer()
+        .min(0)
+        .max(9999)
+        .messages({
+          "number.min": "Min value of 0 required",
+          "number.max": "Max value of 1 required",
+        })
+        .optional(),
       start: Joi.date().required(),
-      end: Joi.date().greater(Joi.ref("start")).required(),
+      end: Joi.date()
+        .greater(Joi.ref("start"), "End date must be greater than start date")
+        .required(),
       openingHours: Joi.array()
         .items(
           Joi.object().keys({
             day: Joi.number().required(),
             startHour: Joi.number().required(),
             endHour: Joi.number().required(),
+            dayOff: Joi.bool().optional(),
           })
         )
         .min(7, "All days are required"),
@@ -55,9 +63,9 @@ const schemas = {
           })
         )
         .optional(),
-      additionalInfo: Joi.string().optional(),
-      notificationPriorToDays: Joi.number().allow(""),
-      notificationTo: Joi.array().items(Joi.string()),
+      additionalInfo: Joi.string().optional().allow(""),
+      notificationPriorToDays: Joi.number().optional().allow("0"),
+      notificationTo: Joi.array().items(Joi.string()).optional(),
       // buildings: Joi.array()
       //   .items(
       //     Joi.object().keys({
