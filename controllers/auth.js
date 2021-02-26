@@ -12,48 +12,38 @@ const ENV = process.env;
 class AuthContoller {
   async signup(data) {
     let user = await User.findOne({ email: data.email });
-    if (user) {
-      // send email
-      let emailService = new MailService();
-      let verifyToken = crypto.randomBytes(32).toString("hex");
+    if (user) throw new CustomError(STRINGS.ERRORS.userAlreadyExists, 404);
 
-      //  const verifyLink = `${ENV.BASE_URL}/email-verification?uid=${user._id}&verifyToken=${verifyToken}`;
-      const verifyLink = `${ENV.BASE_URL}/api/v1/users/${user._id}`;
-      // await emailService.sendEmailConfirmation(user, verifyLink);
-      return {
-        user,
-        exists: true,
-      };
-    } else {
-      user = await new User(data).save();
+    user = await User.create(data);
+    if (!user) throw new CustomError(STRINGS.ERRORS.error, 404);
 
-      let verifyToken = crypto.randomBytes(32).toString("hex");
-      const hash = await bcrypt.hash(verifyToken, +ENV.BCRYPT_SALT);
-      //const verifyLink = `${ENV.BASE_URL}/email-verification?uid=${user._id}&verifyToken=${verifyToken}`;
-      const verifyLink = `${ENV.BASE_URL}/api/v1/users/${user._id}`;
+    // let verifyToken = crypto.randomBytes(32).toString("hex");
+    // const hash = await bcrypt.hash(verifyToken, +ENV.BCRYPT_SALT);
+    //const verifyLink = `${ENV.BASE_URL}/email-verification?uid=${user._id}&verifyToken=${verifyToken}`;
+    // const verifyLink = `${ENV.BASE_URL}/api/v1/users/${user._id}`;
 
-      // await new Token({
-      //   userId: user._id,
-      //   token: hash,
-      //   createdAt: Date.now(),
-      // }).save();
+    // await new Token({
+    //   userId: user._id,
+    //   token: hash,
+    //   createdAt: Date.now(),
+    // }).save();
 
-      // send email
-      let emailService = new MailService();
-      // await emailService.requestEmailVerification(user, verifyLink);
+    // // send email
+    // let emailService = new MailService();
+    // await emailService.requestEmailVerification(user, verifyLink);
 
-      return {
-        user,
-        exists: false,
-      };
-    }
+    return user;
   }
+
   async registerUser(req, res) {
     const data = req.body;
+
     let user = await User.findOne({ email: data.email });
     if (user) throw new CustomError(STRINGS.ERRORS.passwordInvalid);
+
     const hash = await bcrypt.hash(data.password, +ENV.BCRYPT_SALT);
     data.password = hash;
+
     user = await new User(data).save();
 
     res.status(200).send(response(STRINGS.TEXTS.userCreated, user));
@@ -61,16 +51,17 @@ class AuthContoller {
 
   async signin(req, res) {
     const data = req.body;
-    if (!data.email) throw new CustomError(STRINGS.ERRORS.emailRequired);
-    if (!data.password) throw new CustomError(STRINGS.ERRORS.passwordRequired);
+    if (!data.email) throw new CustomError(STRINGS.ERRORS.emailRequired, 401);
+    if (!data.password)
+      throw new CustomError(STRINGS.ERRORS.passwordRequired, 401);
 
     // Check if user exist
     const user = await User.findOne({ email: data.email });
-    if (!user) throw new CustomError(STRINGS.ERRORS.emailInvalid);
+    if (!user) throw new CustomError(STRINGS.ERRORS.emailInvalid, 401);
 
     // Check if user password is correct
     const isCorrect = await bcrypt.compare(data.password, user.password);
-    if (!isCorrect) throw new CustomError(STRINGS.ERRORS.passwordInvalid);
+    if (!isCorrect) throw new CustomError(STRINGS.ERRORS.passwordInvalid, 401);
 
     const token = await JWT.sign(
       { id: user._id, role: user.role },
@@ -91,7 +82,7 @@ class AuthContoller {
 
     // Check if user exist
     const user = await User.findById(userId, { password: 0, __v: 0 });
-    if (!user) throw new CustomError(STRINGS.ERRORS.userNotFound);
+    if (!user) throw new CustomError(STRINGS.ERRORS.userNotFound, 400);
 
     const result = {
       user,

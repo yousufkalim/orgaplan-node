@@ -6,5 +6,6 @@ router.use("/admins", require("./admins"));
 router.use("/quotes", require("./quotes"));
 router.use("/clients", require("./clients"));
 router.use("/invoices", require("./invoices"));
+router.use("/companies", require("./companies"));
 
 module.exports = router;

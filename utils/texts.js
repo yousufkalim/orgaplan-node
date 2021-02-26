@@ -1,6 +1,9 @@
 module.exports = {
   ERRORS: {
     zacNotFound: "No Zac Found",
+    verifiedAlready: "Verified already",
+    resourceNotFound: "Resource not found!",
+    adminExistsForCompany: "Admin exists for this company!",
 
     siteNotFound: "No Site Found",
 
@@ -110,11 +113,18 @@ module.exports = {
     invoiceExistsAlready: "Invoice exists already",
 
     adminCreated: "Admin created",
-    adminUpdated: "Admin created",
+    adminUpdated: "Admin updated",
     adminDeleted: "Admin deleted",
     adminRequested: "Admin requested",
     adminsRequested: "Admins requested",
     adminExistsAlready: "Admin exists already",
+
+    companyCreated: "Company created",
+    companyUpdated: "Company updated",
+    companyDeleted: "Company deleted",
+    companyRequested: "Company requested",
+    companysRequested: "Companys requested",
+    companyExistsAlready: "Company exists already",
 
     deliveryData: "Delivery Data",
     allDeliveries: "All Deliveries",
@@ -171,6 +181,7 @@ module.exports = {
     siteUpdated: "Site Updated",
     siteDeleted: "Site deleted",
     zacRequested: "Zac Requested",
+    zacsRequested: "Zacs Requested",
     clientUpdated: "Client Updated",
 
     allSitePenalties: "All Site Penalty",
@@ -212,6 +223,7 @@ module.exports = {
     allLocations: "All Locations",
     allContracts: "All Contracts",
     allBuildings: "All Buildings",
+    siteArchived: "Site Archived",
     meanRequested: "Mean Requested",
     siteRequested: "Site Requested",
     sitesRequested: "Site Requested",

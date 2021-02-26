@@ -16,6 +16,10 @@ const companySchema = new Schema(
       email: String,
       phone: Number,
     },
+    quoteVerified: {
+      type: Boolean,
+      default: false,
+    },
     // One admin per company
     adminId: {
       type: Schema.Types.ObjectId,

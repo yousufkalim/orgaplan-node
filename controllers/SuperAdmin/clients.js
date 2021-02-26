@@ -24,6 +24,7 @@ class SuperAdminClientsController {
       ...validatedData,
       incharge: { ...validatedData },
       type: validatedData.contractType,
+      quoteVerified: true,
     };
 
     const company = await Company.create(companyData);
@@ -35,6 +36,7 @@ class SuperAdminClientsController {
       isPendingResponse: false,
     }).save();
 
+    // Create a client
     let client = await Client.create({
       companyId: company._id,
       contractsIds: [contract._id],
@@ -60,7 +62,7 @@ class SuperAdminClientsController {
       .populate("companyId")
       .populate("contractsIds");
 
-    if (!items) throw new CustomError(STRINGS.ERRORS.error);
+    if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
 
     const result = {
       items,
@@ -82,13 +84,20 @@ class SuperAdminClientsController {
       .populate("companyId")
       .populate("contractsIds");
 
-    if (!result) throw new CustomError(STRINGS.ERRORS.error);
+    if (!result) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 
     res.status(200).send(response(STRINGS.TEXTS.clientRequested, result));
   }
 
   async update(req, res) {
     const validatedData = await Validations.client.update(req.body);
+
+    // Check company if already exists
+    const client = await Client.findById(validatedData.clientId);
+    const company = await Company.findById(validatedData.companyId);
+    const contract = await Contract.findById(validatedData.contractId);
+    if (!company || !client || !contract)
+      throw new CustomError(STRINGS.ERRORS.resourceNotFound, 404);
 
     const companyData = {
       ...validatedData,
@@ -97,12 +106,14 @@ class SuperAdminClientsController {
     };
     validatedData.logo && (companyData.logo = validatedData.logo);
 
-    await Company.findByIdAndUpdate(validatedData.companyId, {
+    await company.updateOne({
       $set: companyData,
     });
 
-    await Contract.findByIdAndUpdate(validatedData.contractId, {
-      $set: validatedData,
+    const { companyId, ...contractData } = validatedData;
+
+    await contract.updateOne({
+      $set: contractData,
     });
 
     const result = await Client.findById(validatedData.clientId)
@@ -119,7 +130,7 @@ class SuperAdminClientsController {
     const id = req.params.id;
 
     // const result = await Client.findByIdAndRemove(id);
-    // if (!result) throw new CustomError(STRINGS.ERRORS.error);
+    // if (!result) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 
     res.status(201).send(response(STRINGS.TEXTS.clientDeleted, "result"));
   }

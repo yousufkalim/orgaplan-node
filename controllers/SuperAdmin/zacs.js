@@ -10,7 +10,7 @@ class SuperAdminZacsController {
     const validatedData = await Validations.zac.create(req.body);
 
     let zac = await Zac.findOne({ name: validatedData.name });
-    if (zac) throw new CustomError(STRINGS.ERRORS.zacAlreadyExists);
+    if (zac) throw new CustomError(STRINGS.ERRORS.zacAlreadyExists, 404);
 
     let result = await Zac.create(validatedData);
 
@@ -27,7 +27,7 @@ class SuperAdminZacsController {
       .limit(ITEMS_PER_PAGE)
       .populate("sites");
 
-    if (!items) throw new CustomError(STRINGS.ERRORS.error);
+    if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
 
     const result = {
       items,
@@ -38,23 +38,30 @@ class SuperAdminZacsController {
       previousPage: page - 1,
       lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
     };
-    res.status(200).send(response(STRINGS.TEXTS.zacRequested, result));
+    res.status(200).send(response(STRINGS.TEXTS.zacsRequested, result));
   }
 
   async getById(req, res) {
     const id = req.params.id;
 
-    const result = await Zac.findById(id, { password: 0, __v: 0 }).populate(
-      "sites"
-    );
+    const result = await Zac.findById(id, { __v: 0 }).populate("sites");
 
-    if (!result) throw new CustomError(STRINGS.ERRORS.error);
+    if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
 
     res.status(200).send(response(STRINGS.TEXTS.zacRequested, result));
   }
 
   async update(req, res) {
     const validatedData = await Validations.zac.update(req.body);
+    console.log(validatedData);
+    let zacCheck = await Zac.findById(validatedData.zacId);
+    if (!zacCheck) throw new CustomError(STRINGS.ERRORS.zacNotFound, 404);
+
+    if (zacCheck.name !== validatedData.name) {
+      let zac = await Zac.findOne({ name: validatedData.name });
+      if (zac) throw new CustomError(STRINGS.ERRORS.zacAlreadyExists, 404);
+    }
+
     const result = await Zac.findByIdAndUpdate(
       validatedData.zacId,
       {
@@ -65,7 +72,7 @@ class SuperAdminZacsController {
       }
     ).populate("sites");
 
-    if (!result) throw new CustomError(STRINGS.ERRORS.zacNotFound, 404);
+    if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
 
     res.status(201).send(response(STRINGS.TEXTS.zacUpdated, result));
   }

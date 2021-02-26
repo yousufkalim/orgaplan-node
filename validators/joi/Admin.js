@@ -1,5 +1,4 @@
 const Joi = require("joi");
-const Helpers = require("../../utils/helpers");
 const CustomError = require("../../utils/customError");
 
 const schemas = {
@@ -13,8 +12,6 @@ const schemas = {
       companyId: Joi.string().required(),
     });
 
-    if (!data.color) data.color = Helpers.randomColor;
-
     const { error, value } = Validation.validate(data);
     if (error) {
       const { details } = error;
@@ -25,18 +22,15 @@ const schemas = {
   },
   update: (data) => {
     const Validation = Joi.object().keys({
-      userId: Joi.number().required(),
-      email: Joi.string().required(),
-      phone: Joi.number().required(),
+      userId: Joi.string().required(),
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
-      image: Joi.string().required(),
+      phone: Joi.number().required(),
+      image: Joi.string().optional(),
       companyId: Joi.string().required(),
     });
 
-    if (!data.color) data.color = Helpers.randomColor;
-
-    data.image = data.image || "";
+    if (!data.image) delete data.image;
 
     const { error, value } = Validation.validate(data);
     if (error) {

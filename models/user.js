@@ -6,13 +6,13 @@ const userSchema = new Schema(
   {
     firstName: String,
     lastName: String,
+    password: String,
+    image: String,
+    phone: Number,
     email: {
       type: String,
       trim: true,
     },
-    password: String,
-    image: String,
-    phone: Number,
     address: {
       zip: String,
       city: String,
@@ -21,13 +21,11 @@ const userSchema = new Schema(
       // [long, lat]
       location: [{ type: Number }],
     },
-    // Only one company per user allowed, but for future proofing, it's an array
-    company: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: STRINGS.MODALS.COMPANY,
-      },
-    ],
+    // Only one company per user allowed
+    company: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.COMPANY,
+    },
     role: {
       type: String,
       enum: [STRINGS.ROLES.USER, STRINGS.ROLES.SUPERADMIN],

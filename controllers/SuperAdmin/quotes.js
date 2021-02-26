@@ -89,24 +89,35 @@ class SuperAdminClientsController {
 
   async verifyQuote(req, res) {
     let validatedData = await Validations.quote.verify(req.body);
-
     delete validatedData.contractType;
 
-    await Company.findByIdAndUpdate(validatedData.companyId, {
-      $set: validatedData,
+    // Check Company
+    let company = await Company.findById(validatedData.companyId);
+    if (!company || company.quoteVerified)
+      throw new CustomError(STRINGS.ERRORS.verifiedAlready, 404);
+    let contractType = company.type;
+
+    // Check Client
+    let client = await Client.findById(validatedData.clientId);
+    if (!client) throw new CustomError(STRINGS.ERRORS.resourceNotFound, 404);
+
+    await company.updateOne({
+      $set: { ...validatedData, quoteVerified: true },
     });
+
     let contract = await Contract.create({
       ...validatedData,
+      contractType,
       isPendingResponse: false,
     });
 
-    const result = await Client.findByIdAndUpdate(
-      validatedData.clientId,
-      {
-        $addToSet: { contractsIds: contract._id },
-      },
-      { new: true }
-    )
+    const result = await client
+      .updateOne(
+        {
+          $addToSet: { contractsIds: contract._id },
+        },
+        { new: true }
+      )
       .populate("companyId")
       .populate("contractsIds");
 

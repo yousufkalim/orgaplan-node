@@ -6,7 +6,8 @@ const superAdmin = require("../../controllers/SuperAdmin");
 
 // GETS
 router.get("/", superAdmin.sitesController.getAll);
-router.get("/:id", superAdmin.sitesController.getById);
+router.get("/get/:id", superAdmin.sitesController.getById);
+router.get("/archives", superAdmin.sitesController.getAllArchives);
 
 // POSTS
 router.post(
@@ -21,8 +22,10 @@ router.put(
   multer("site", "logo", "single"),
   superAdmin.sitesController.update
 );
+router.put("/archive/:id", superAdmin.sitesController.archiveSite);
+router.put("/unarchive/:id", superAdmin.sitesController.unArchiveSite);
 
 // DELETES
-router.delete("/:id", superAdmin.sitesController.delete);
+router.delete("/delete/:id", superAdmin.sitesController.delete);
 
 module.exports = router;
