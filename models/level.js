@@ -5,7 +5,7 @@ const STRINGS = require("../utils/texts");
 const levelSchema = new Schema(
   {
     name: String,
-    number: String,
+    number: Number,
     image: String,
     levelType: {
       type: String,

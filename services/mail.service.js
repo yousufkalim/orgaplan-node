@@ -87,7 +87,6 @@ class MailService {
     const source = fs.readFileSync(filePath, "utf-8").toString();
     const template = handlebars.compile(source);
     const htmlTemplage = handlebars.compile(html);
-    console.log(htmlTemplage);
     const replacements = {
       html: htmlTemplage,
     };

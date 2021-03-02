@@ -5,7 +5,7 @@ const superAdmin = require("../../controllers/SuperAdmin");
 
 // GETS
 router.get("/", superAdmin.zacsController.getAll);
-router.get("/:id", superAdmin.zacsController.getById);
+router.get("/get/:id", superAdmin.zacsController.getById);
 
 // POSTS
 router.post("/", superAdmin.zacsController.create);
@@ -14,6 +14,6 @@ router.post("/", superAdmin.zacsController.create);
 router.put("/", superAdmin.zacsController.update);
 
 // DELETES
-router.delete("/:id", superAdmin.zacsController.delete);
+router.delete("/delete/:id", superAdmin.zacsController.delete);
 
 module.exports = router;

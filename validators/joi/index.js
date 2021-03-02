@@ -4,6 +4,7 @@ const exportsObj = {
   alert: require("./Alert"),
   quote: require("./Quote"),
   admin: require("./Admin"),
+  level: require("./Level"),
   client: require("./Client"),
   building: require("./Building"),
   clientInvoice: require("./ClientInvoice"),

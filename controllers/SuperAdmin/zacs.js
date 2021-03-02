@@ -53,7 +53,7 @@ class SuperAdminZacsController {
 
   async update(req, res) {
     const validatedData = await Validations.zac.update(req.body);
-    console.log(validatedData);
+
     let zacCheck = await Zac.findById(validatedData.zacId);
     if (!zacCheck) throw new CustomError(STRINGS.ERRORS.zacNotFound, 404);
 
