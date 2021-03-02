@@ -1,5 +1,6 @@
 const Auth = require("../auth");
 const User = require("../../models/user");
+const Site = require("../../models/site");
 const STRINGS = require("../../utils/texts");
 const Client = require("../../models/client");
 const Company = require("../../models/company");
@@ -151,6 +152,26 @@ class SuperAdminAdminsController {
 
   async delete(req, res) {
     const id = req.params.id;
+
+    // Check User
+    const userCheck = await User.findById(id);
+    if (!userCheck) throw new CustomError(STRINGS.ERRORS.userNotFound, 404);
+
+    const siteCheck = await Site.findOne({ adminId: userCheck._id });
+    if (siteCheck) throw new CustomError(STRINGS.ERRORS.deleteSiteFirst, 404);
+
+    // Update Client
+    await Client.findOneAndUpdate(
+      { companyId: userCheck.company },
+      {
+        $unset: { userId: "" },
+      }
+    );
+
+    // Update Company
+    await Company.findByIdAndUpdate(userCheck.company, {
+      $unset: { adminId: "" },
+    });
 
     const result = await User.findByIdAndRemove(id);
     if (!result) throw new CustomError(STRINGS.ERRORS.error);

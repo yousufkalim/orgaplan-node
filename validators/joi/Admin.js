@@ -4,8 +4,17 @@ const CustomError = require("../../utils/customError");
 const schemas = {
   create: (data) => {
     const Validation = Joi.object().keys({
-      email: Joi.string().required(),
-      phone: Joi.number().required(),
+      email: Joi.string()
+        .email({ tlds: { allow: false } })
+        .required(),
+      phone: Joi.number()
+        .integer()
+        .custom((value, helper) => {
+          if (String(value).startsWith("0") || String(value).length !== 9)
+            return helper.message("phone is invalid");
+          return value;
+        })
+        .required(),
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
       image: Joi.string().required(),
@@ -25,7 +34,14 @@ const schemas = {
       userId: Joi.string().required(),
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
-      phone: Joi.number().required(),
+      phone: Joi.number()
+        .integer()
+        .custom((value, helper) => {
+          if (String(value).startsWith("0") || String(value).length !== 9)
+            return helper.message("phone is invalid");
+          return value;
+        })
+        .required(),
       image: Joi.string().optional(),
       companyId: Joi.string().required(),
     });

@@ -31,7 +31,7 @@ class SuperAdminSitesController {
       .populate("zacId")
       .populate({ path: "adminId", populate: { path: "userId" } });
 
-    if (!items) throw new CustomError(STRINGS.ERRORS.error);
+    if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
 
     const result = {
       items,
@@ -52,7 +52,7 @@ class SuperAdminSitesController {
       .populate("zacId")
       .populate({ path: "adminId", populate: { path: "userId" } });
 
-    if (!result) throw new CustomError(STRINGS.ERRORS.error);
+    if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
 
     res.status(200).send(response(STRINGS.TEXTS.siteRequested, result));
   }
@@ -67,7 +67,7 @@ class SuperAdminSitesController {
       },
       { new: true }
     );
-    if (!result) throw new CustomError(STRINGS.ERRORS.siteNotFound);
+    if (!result) throw new CustomError(STRINGS.ERRORS.siteNotFound, 404);
 
     res.status(201).send(response(STRINGS.TEXTS.siteUpdated, result));
   }
@@ -76,7 +76,7 @@ class SuperAdminSitesController {
     const id = req.params.id;
 
     const result = await Site.findByIdAndRemove(id);
-    if (!result) throw new CustomError(STRINGS.ERRORS.error);
+    if (!result) throw new CustomError(STRINGS.ERRORS.siteNotFound, 404);
 
     res.status(201).send(response(STRINGS.TEXTS.siteDeleted, result));
   }
@@ -91,7 +91,7 @@ class SuperAdminSitesController {
       .populate("zacId")
       .populate({ path: "adminId", populate: { path: "userId" } });
 
-    if (!items) throw new CustomError(STRINGS.ERRORS.error);
+    if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
 
     const result = {
       items,
@@ -115,7 +115,7 @@ class SuperAdminSitesController {
       .populate("zacId")
       .populate({ path: "adminId", populate: { path: "userId" } });
 
-    if (!items) throw new CustomError(STRINGS.ERRORS.error);
+    if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
 
     const result = {
       items,
@@ -138,7 +138,7 @@ class SuperAdminSitesController {
       .populate("zacId")
       .populate({ path: "adminId", populate: { path: "userId" } });
 
-    if (!result) throw new CustomError(STRINGS.ERRORS.error);
+    if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
 
     res.status(200).send(response(STRINGS.TEXTS.siteArchived, result));
   }
@@ -152,7 +152,7 @@ class SuperAdminSitesController {
       .populate("zacId")
       .populate({ path: "adminId", populate: { path: "userId" } });
 
-    if (!result) throw new CustomError(STRINGS.ERRORS.error);
+    if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
 
     res.status(200).send(response(STRINGS.TEXTS.siteArchived, result));
   }

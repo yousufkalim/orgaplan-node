@@ -9,13 +9,19 @@ const schemas = {
       logo: Joi.string().required(),
       name: Joi.string().required(),
       color: Joi.string().required(),
-      firstName: Joi.string().required(),
-      lastName: Joi.string().required(),
-      email: Joi.string().required(),
-      phone: Joi.number().integer().min(1000000000).max(9999999999).messages({
-        "number.min": STRINGS.ERRORS.phoneLength,
-        "number.max": STRINGS.ERRORS.phoneLength,
-      }),
+      firstName: Joi.string().allow(""),
+      lastName: Joi.string().allow(""),
+      email: Joi.string()
+        .email({ tlds: { allow: false } })
+        .allow(""),
+      phone: Joi.number()
+        .integer()
+        .custom((value, helper) => {
+          if (String(value).startsWith("0") || String(value).length !== 9)
+            return helper.message("phone is invalid");
+          return value;
+        })
+        .allow(""),
       contractType: Joi.string()
         .required()
         .valid(
@@ -45,7 +51,8 @@ const schemas = {
     }
 
     if (!data.color) data.color = Helpers.randomColor;
-    data.notificationTo = JSON.parse(data.notificationTo);
+    data.notificationTo &&
+      (data.notificationTo = JSON.parse(data.notificationTo));
     data.logo = data.image;
     delete data.image;
 
@@ -64,13 +71,19 @@ const schemas = {
       clientId: Joi.string().required(),
       contractId: Joi.string().required(),
       companyId: Joi.string().required(),
-      firstName: Joi.string().required(),
-      lastName: Joi.string().required(),
-      email: Joi.string().required(),
-      phone: Joi.number().integer().min(1000000000).max(9999999999).messages({
-        "number.min": STRINGS.ERRORS.phoneLength,
-        "number.max": STRINGS.ERRORS.phoneLength,
-      }),
+      firstName: Joi.string().allow(""),
+      lastName: Joi.string().allow(""),
+      email: Joi.string()
+        .email({ tlds: { allow: false } })
+        .allow(""),
+      phone: Joi.number()
+        .integer()
+        .custom((value, helper) => {
+          if (String(value).startsWith("0") || String(value).length !== 9)
+            return helper.message("phone is invalid");
+          return value;
+        })
+        .allow(""),
       contractType: Joi.string()
         .required()
         .valid(
@@ -87,6 +100,8 @@ const schemas = {
       }),
       functionality: Joi.string().required(),
       additionalInfo: Joi.string().allow(""),
+      notificationPriorToDays: Joi.number().allow(""),
+      notificationTo: Joi.array().items(Joi.string()),
       monthlyCost: Joi.any(),
     });
 
@@ -98,7 +113,8 @@ const schemas = {
     }
 
     if (!data.color) data.color = Helpers.randomColor;
-
+    data.notificationTo &&
+      (data.notificationTo = JSON.parse(data.notificationTo));
     if (data.image) {
       data.logo = data.image;
       delete data.image;

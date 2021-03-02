@@ -4,6 +4,8 @@ module.exports = {
     verifiedAlready: "Verified already",
     resourceNotFound: "Resource not found!",
     adminExistsForCompany: "Admin exists for this company!",
+    deleteAdminFirst: "Delete it's admin first",
+    deleteSiteFirst: "Delete it's sites first",
 
     siteNotFound: "No Site Found",
 
