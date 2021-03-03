@@ -4,7 +4,6 @@ const CustomError = require("../../utils/customError");
 const schemas = {
   create: (data) => {
     const Validation = Joi.object().keys({
-      name: Joi.string().required(),
       number: Joi.number().required(),
       image: Joi.string().allow(""),
       levelType: Joi.string().allow(""),
@@ -23,7 +22,6 @@ const schemas = {
   },
   update: (data) => {
     const Validation = Joi.object().keys({
-      name: Joi.string().required(),
       number: Joi.number().required(),
       image: Joi.string().allow(""),
       levelType: Joi.string().required(""),

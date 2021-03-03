@@ -20,7 +20,6 @@ class SuperAdminZacsController {
 
     let building = await Building.create(validatedData);
     let level = await Level.create({
-      name: "RDC",
       number: 0,
       levelType: "STORAGE",
       building: building._id,

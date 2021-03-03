@@ -1,7 +1,9 @@
 const Site = require("../../models/site");
+const Level = require("../../models/level");
 const STRINGS = require("../../utils/texts");
 const Validations = require("../../validators");
 const response = require("../../utils/response");
+const Building = require("../../models/building");
 const CustomError = require("../../utils/customError");
 const ENV = process.env;
 
@@ -10,9 +12,40 @@ class SuperAdminSitesController {
     const validatedData = await Validations.site.create(req.body);
     if (!validatedData.zacId) delete validatedData.zacId;
 
+    // const siteCheck = await Site.findOne({ name: validatedData.name });
+    // if (siteCheck) throw new CustomError(STRINGS.ERRORS.siteNameExists, 404);
+
     const site = await Site.create(validatedData);
 
-    await res.status(200).send(response(STRINGS.TEXTS.siteCreated, site));
+    let building = await Building.create({
+      name: "Exterior",
+      siteId: site._id,
+      buildingType: "EXTERIOR",
+    });
+
+    let level = await Level.create({
+      number: 0,
+      levelType: "STORAGE",
+      building: building._id,
+    });
+
+    await Building.findByIdAndUpdate(
+      building._id,
+      {
+        $addToSet: { levels: level._id },
+      },
+      { new: true }
+    );
+
+    const result = await Site.findByIdAndUpdate(
+      site._id,
+      {
+        $addToSet: { buildings: building._id },
+      },
+      { new: true }
+    ).populate({ path: "buildings", populate: { path: "levels" } });
+
+    await res.status(200).send(response(STRINGS.TEXTS.siteCreated, result));
   }
 
   async getAll(req, res) {
@@ -59,6 +92,11 @@ class SuperAdminSitesController {
 
   async update(req, res) {
     const validatedData = await Validations.site.update(req.body);
+
+    const itemCheck = await Site.findById(validatedData.siteId, {
+      _id: 1,
+    }).lean();
+    if (!itemCheck) throw new CustomError(STRINGS.TEXTS.siteNotFound, 404);
 
     const result = await Site.findByIdAndUpdate(
       validatedData.siteId,
