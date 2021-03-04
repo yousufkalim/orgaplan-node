@@ -47,15 +47,19 @@ class SuperAdminAdminsController {
   }
 
   async getAll(req, res) {
+    const name = req.query.name || "";
     const page = +req.query.page || 1;
     const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
 
+    var re = new RegExp(`^${name}`, "i");
+
     const totalItems = await User.find({
+      firstName: { $regex: re },
       company: { $ne: undefined },
     }).countDocuments();
 
     const items = await User.find(
-      { company: { $ne: undefined } },
+      { firstName: { $regex: re }, company: { $ne: undefined } },
       {
         __v: 0,
         password: 0,

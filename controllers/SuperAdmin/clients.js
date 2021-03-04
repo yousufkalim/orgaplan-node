@@ -51,15 +51,26 @@ class SuperAdminClientsController {
   }
 
   async getAll(req, res) {
+    const name = req.query.name || "";
     const page = +req.query.page || 1;
     const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
 
-    const totalItems = await Client.find().countDocuments();
-    const items = await Client.find(null, { __v: 0, password: 0 })
+    console.log("name", name);
+
+    const totalItems = await Client.find({})
+      .populate({
+        path: "companyId",
+        // match: { name: { $regex: /^Client/i } },
+      })
+      .countDocuments();
+    const items = await Client.find({}, { __v: 0, password: 0 })
       .skip((page - 1) * ITEMS_PER_PAGE)
       .limit(ITEMS_PER_PAGE)
+      .populate({
+        path: "companyId",
+        // match: { name: { $regex: /^Clientt/i } },
+      })
       .populate("userId")
-      .populate("companyId")
       .populate("contractsIds");
 
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
@@ -73,6 +84,7 @@ class SuperAdminClientsController {
       previousPage: page - 1,
       lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
     };
+    console.log("items", items, totalItems);
     res.status(200).send(response(STRINGS.TEXTS.clientsRequested, result));
   }
 
@@ -136,13 +148,6 @@ class SuperAdminClientsController {
     if (client.userId)
       throw new CustomError(STRINGS.ERRORS.deleteAdminFirst, 404);
 
-    // // Delete company
-    // await Company.findByIdAndDelete(client.companyId);
-    // // Delete contract
-    // await Contract.deleteMany({ _id: { $in: client.contractsIds } });
-    // // Delete admin
-    // await User.findByIdAndDelete(client.userId);
-    // Delete client
     const result = await Client.findByIdAndDelete(client._id);
 
     if (!result) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);

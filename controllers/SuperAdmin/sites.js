@@ -49,16 +49,26 @@ class SuperAdminSitesController {
   }
 
   async getAll(req, res) {
+    const name = req.query.name || "";
+    const status = req.query.status || "ALL";
+    const clientId = req.query.client || "ALL";
     const page = +req.query.page || 1;
     const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
 
-    const totalItems = await Site.find({
-      status: { $ne: STRINGS.STATUS.INACTIVE },
-    }).countDocuments();
-    const items = await Site.find(
-      { status: { $ne: STRINGS.STATUS.INACTIVE } },
-      { __v: 0, password: 0 }
-    )
+    // Filters
+    var re = new RegExp(`^${name}`, "i");
+    const statusQuery =
+      status === "ALL" ? { $ne: STRINGS.STATUS.ARCHIVED } : { $eq: status };
+
+    const filters = {
+      name: { $regex: re },
+      status: statusQuery,
+    };
+    if (clientId !== "ALL") filters["adminId"] = clientId;
+    // Fetching
+    const totalItems = await Site.find(filters).countDocuments();
+
+    const items = await Site.find(filters, { __v: 0, password: 0 })
       .skip((page - 1) * ITEMS_PER_PAGE)
       .limit(ITEMS_PER_PAGE)
       .populate("zacId")
@@ -113,8 +123,11 @@ class SuperAdminSitesController {
   async delete(req, res) {
     const id = req.params.id;
 
-    const result = await Site.findByIdAndRemove(id);
+    const result = await Site.findByIdAndDelete(id);
     if (!result) throw new CustomError(STRINGS.ERRORS.siteNotFound, 404);
+
+    await Building.deleteMany({ _id: { $in: result.buildings } });
+    await Level.deleteMany({ building: { $in: result.buildings } });
 
     res.status(201).send(response(STRINGS.TEXTS.siteDeleted, result));
   }
@@ -123,7 +136,7 @@ class SuperAdminSitesController {
     const clientId = req.params.clientId;
 
     const items = await Site.find(
-      { adminId: clientId },
+      { adminId: clientId, status: { $ne: STRINGS.STATUS.ARCHIVED } },
       { __v: 0, password: 0 }
     )
       .populate("zacId")
@@ -138,14 +151,18 @@ class SuperAdminSitesController {
   }
 
   async getAllArchives(req, res) {
+    const name = req.query.name || "";
     const page = +req.query.page || 1;
     const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
 
+    var re = new RegExp(`^${name}`, "i");
+
     const totalItems = await Site.find({
-      status: { $eq: STRINGS.STATUS.INACTIVE },
+      name: { $regex: re },
+      status: { $eq: STRINGS.STATUS.ARCHIVED },
     }).countDocuments();
     const items = await Site.find(
-      { status: { $eq: STRINGS.STATUS.INACTIVE } },
+      { name: { $regex: re }, status: { $eq: STRINGS.STATUS.ARCHIVED } },
       { __v: 0, password: 0 }
     )
       .skip((page - 1) * ITEMS_PER_PAGE)
@@ -171,7 +188,7 @@ class SuperAdminSitesController {
     const id = req.params.id;
 
     const result = await Site.findByIdAndUpdate(id, {
-      status: STRINGS.STATUS.INACTIVE,
+      status: STRINGS.STATUS.ARCHIVED,
     })
       .populate("zacId")
       .populate({ path: "adminId", populate: { path: "userId" } });
