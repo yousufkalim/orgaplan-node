@@ -2,6 +2,11 @@ const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const Mean = require("../models/mean");
+const Building = require("../models/building");
+const DeliveryArea = require("../models/deliveryArea");
+const StorageArea = require("../models/storageArea");
+const Location = require("../models/location");
+const Company = require("../models/company");
 const moment = require("moment");
 class MeanController {
   async create(req, res) {
@@ -51,18 +56,19 @@ class MeanController {
     const deliveryArea = body.deliveryArea;
     const storageArea = body.storageArea;
     const location = body.location;
-    const level = body.level;
     const type = body.type;
     const startDate = body.startDate;
     const endDate = body.endDate;
     const status = body.status;
     const name = body.name;
+    console.log("\n\n\n" + name);
+
     const result = await Mean.find({
       siteId: siteId,
       $and: [
         name ? { name: { $eq: name } } : {},
         type ? { meanType: { $eq: type } } : {},
-        body ? { status: { $eq: status } } : {},
+        status ? { status: { $eq: status } } : {},
         startDate
           ? { "availability.start": { $gte: new Date(startDate) } }
           : {},
@@ -70,7 +76,6 @@ class MeanController {
         deliveryArea ? { "location.deliveryArea": deliveryArea } : {},
         location ? { "location._id": location } : {},
         storageArea ? { "location.storageArea": storageArea } : {},
-        // level ? { "location.storageArea.level": level } : {},
         { "availability.start": { $lte: new Date() } },
         { "availability.end": { $gte: new Date() } },
       ],
@@ -83,11 +88,11 @@ class MeanController {
 
           model: STRINGS.MODALS.STORAGEAREA,
 
-          populate: {
-            path: "level",
-            model: STRINGS.MODALS.LEVEL,
-            match: level ? { _id: { $eq: level } } : {},
-          },
+          // populate: {
+          //   path: "level",
+          //   model: STRINGS.MODALS.LEVEL,
+          //   match: level ? { _id: { $eq: level } } : {},
+          // },
         },
       })
       .populate({
@@ -111,15 +116,61 @@ class MeanController {
     })
       .populate({
         path: "location",
-        populate: { path: "storageArea", model: STRINGS.MODALS.STORAGEAREA },
+
+        populate: {
+          path: "storageArea",
+
+          model: STRINGS.MODALS.STORAGEAREA,
+
+          // populate: {
+          //   path: "level",
+          //   model: STRINGS.MODALS.LEVEL,
+          // },
+        },
       })
       .populate({
         path: "location",
         populate: { path: "deliveryArea", model: STRINGS.MODALS.DELIVERYAREA },
       });
+
+    const building = await Building.find({ siteId: siteId });
+    if (!building) throw new CustomError(STRINGS.ERRORS.buildingNotFound);
+
+    const siteDeliveryAreas = await DeliveryArea.find({
+      siteId: siteId,
+    });
+    if (!siteDeliveryAreas)
+      throw new CustomError(STRINGS.ERRORS.deliveyAreaNotFount);
+    const siteStorageAreas = await StorageArea.find({
+      siteId: siteId,
+    });
+    if (!siteStorageAreas)
+      throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
+
+    const siteLocations = await Location.find({
+      siteId: siteId,
+    })
+      .populate("storage")
+      .populate("building");
+
+    const siteCompanies = await Company.find({
+      "connection.siteId": siteId,
+    });
+    if (!siteCompanies) throw new CustomError(STRINGS.ERRORS.companyNotFound);
     if (!result) throw new CustomError(STRINGS.ERRORS.meanNotFound);
 
-    res.status(200).send(response(STRINGS.TEXTS.meanRequested, result));
+    res.status(200).send(
+      response(STRINGS.TEXTS.meanRequested, {
+        means: result,
+        buildings: building,
+        site_delivery_areas: siteDeliveryAreas,
+        siteStorageAreas: siteStorageAreas,
+        site_locations: siteLocations,
+        site_companies: siteCompanies,
+        mean_types: [STRINGS.MEANTYPES.LIFTING, STRINGS.MEANTYPES.ROUTING],
+        mean_status: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],
+      })
+    );
   }
 
   async update(req, res) {

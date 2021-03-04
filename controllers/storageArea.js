@@ -30,7 +30,7 @@ class StorageAreaController {
     res.status(200).send(response(STRINGS.TEXTS.allStorateAreas, result));
   }
 
-  async getByLevelId(req, res) {
+  async getByLevelIdAndCompany(req, res) {
     const levelId = req.params.level_id;
     const companyId = req.params.company_id;
     const result = await StorageArea.find({
@@ -44,10 +44,34 @@ class StorageAreaController {
     res.status(200).send(response(STRINGS.TEXTS.storateAreaRequested, result));
   }
 
+  async getByLevelId(req, res) {
+    const levelId = req.params.level_id;
+    const result = await StorageArea.find({
+      level: levelId,
+      location: STRINGS.STATUS.INSIDE,
+    });
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
+
+    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequested, result));
+  }
+
   async getByCompanyId(req, res) {
     const companyId = req.params.company_id;
     const result = await StorageArea.find({
       companies: companyId,
+      location: STRINGS.STATUS.OUTSIDE,
+    });
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
+
+    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequested, result));
+  }
+
+  async getExteriorMeans(req, res) {
+    const siteId = req.params.siteId;
+    const result = await StorageArea.find({
+      siteId: siteId,
       location: STRINGS.STATUS.OUTSIDE,
     });
 
