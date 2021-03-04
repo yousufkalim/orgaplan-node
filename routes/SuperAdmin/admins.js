@@ -6,7 +6,7 @@ const superAdmin = require("../../controllers/SuperAdmin");
 
 // GETS
 router.get("/", superAdmin.adminsController.getAll);
-router.get("/:id", superAdmin.adminsController.getById);
+router.get("/get/:id", superAdmin.adminsController.getById);
 
 // POSTS
 router.post(
@@ -23,6 +23,6 @@ router.put(
 );
 
 // DELETES
-router.delete("/", superAdmin.adminsController.delete);
+router.delete("/delete/:id", superAdmin.adminsController.delete);
 
 module.exports = router;

@@ -7,13 +7,19 @@ const schemas = {
   create: (data) => {
     const Validation = Joi.object().keys({
       name: Joi.string().required(),
-      firstName: Joi.string().required(),
-      lastName: Joi.string().required(),
-      email: Joi.string().email({ tlds: { allow: false } }),
-      phone: Joi.number().integer().min(1000000000).max(9999999999).messages({
-        "number.min": STRINGS.ERRORS.phoneLength,
-        "number.max": STRINGS.ERRORS.phoneLength,
-      }),
+      firstName: Joi.string().allow(""),
+      lastName: Joi.string().allow(""),
+      email: Joi.string()
+        .email({ tlds: { allow: false } })
+        .allow(""),
+      phone: Joi.number()
+        .integer()
+        .custom((value, helper) => {
+          if (String(value).startsWith("0") || String(value).length !== 9)
+            return helper.message("phone is invalid");
+          return value;
+        })
+        .allow(""),
       contractType: Joi.string()
         .required()
         .valid(
@@ -33,13 +39,19 @@ const schemas = {
   update: (data) => {
     const Validation = Joi.object().keys({
       name: Joi.string().required(),
-      firstName: Joi.string().required(),
-      lastName: Joi.string().required(),
-      email: Joi.string().email({ tlds: { allow: false } }),
-      phone: Joi.number().integer().min(1000000000).max(9999999999).messages({
-        "number.min": STRINGS.ERRORS.phoneLength,
-        "number.max": STRINGS.ERRORS.phoneLength,
-      }),
+      firstName: Joi.string().allow(""),
+      lastName: Joi.string().allow(""),
+      email: Joi.string()
+        .email({ tlds: { allow: false } })
+        .allow(""),
+      phone: Joi.number()
+        .integer()
+        .custom((value, helper) => {
+          if (String(value).startsWith("0") || String(value).length !== 9)
+            return helper.message("phone is invalid");
+          return value;
+        })
+        .allow(""),
       contractType: Joi.string()
         .required()
         .valid(
@@ -91,7 +103,8 @@ const schemas = {
     }
 
     if (!data.color) data.color = Helpers.randomColor;
-    data.notificationTo = JSON.parse(data.notificationTo);
+    data.notificationTo &&
+      (data.notificationTo = JSON.parse(data.notificationTo));
     data.logo = data.image;
     delete data.image;
     const { error, value } = Validation.validate(data);

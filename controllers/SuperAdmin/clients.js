@@ -127,12 +127,27 @@ class SuperAdminClientsController {
   }
 
   async delete(req, res) {
-    const id = req.params.id;
+    const clientId = req.params.id;
 
-    // const result = await Client.findByIdAndRemove(id);
-    // if (!result) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
+    // Get Client
+    const client = await Client.findById(clientId);
+    if (!client) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 
-    res.status(201).send(response(STRINGS.TEXTS.clientDeleted, "result"));
+    if (client.userId)
+      throw new CustomError(STRINGS.ERRORS.deleteAdminFirst, 404);
+
+    // // Delete company
+    // await Company.findByIdAndDelete(client.companyId);
+    // // Delete contract
+    // await Contract.deleteMany({ _id: { $in: client.contractsIds } });
+    // // Delete admin
+    // await User.findByIdAndDelete(client.userId);
+    // Delete client
+    const result = await Client.findByIdAndDelete(client._id);
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
+
+    res.status(201).send(response(STRINGS.TEXTS.clientDeleted, result));
   }
 }
 

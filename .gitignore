@@ -11,6 +11,24 @@ uploads/deliveryArea/*.jpg
 uploads/deliveryArea/*.jpeg
 
 
+uploads/incidents/*.pdf
+uploads/incidents/*.png
+uploads/incidents/*.jpg
+uploads/incidents/*.jpeg
+
+
+uploads/invoice/*.pdf
+uploads/invoice/*.png
+uploads/invoice/*.jpg
+uploads/invoice/*.jpeg
+
+
+uploads/level/*.pdf
+uploads/level/*.png
+uploads/level/*.jpg
+uploads/level/*.jpeg
+
+
 uploads/mean/*.pdf
 uploads/mean/*.png
 uploads/mean/*.jpg
@@ -27,13 +45,6 @@ uploads/user/*.pdf
 uploads/user/*.png
 uploads/user/*.jpg
 uploads/user/*.jpeg
-
-
-
-uploads/incidents/*.pdf
-uploads/incidents/*.png
-uploads/incidents/*.jpg
-uploads/incidents/*.jpeg
 
 
 # Logs

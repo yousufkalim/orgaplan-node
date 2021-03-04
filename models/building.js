@@ -10,24 +10,24 @@ const buildingSchema = new Schema(
     buildingType: {
       type: String,
       enum: [STRINGS.LOCATIONTYPE.EXTERIOR, STRINGS.LOCATIONTYPE.INTERIOR],
-      default: STRINGS.LOCATIONTYPE.EXTERIOR,
+      default: STRINGS.LOCATIONTYPE.INTERIOR,
     },
-    mean: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: STRINGS.MODALS.MEAN,
-      },
-    ],
+    siteId: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.SITE,
+    },
     levels: [
       {
         type: Schema.Types.ObjectId,
         ref: STRINGS.MODALS.LEVEL,
       },
     ],
-    siteId: {
-      type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.SITE,
-    },
+    mean: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: STRINGS.MODALS.MEAN,
+      },
+    ],
     status: {
       type: String,
       enum: [STRINGS.STATUS.ACTIVE, STRINGS.STATUS.INACTIVE],

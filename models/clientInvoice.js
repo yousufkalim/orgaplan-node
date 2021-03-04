@@ -3,19 +3,17 @@ const Schema = mongoose.Schema;
 const STRINGS = require("../utils/texts");
 
 const clientInvoiceSchema = new Schema({
-  price: { type: Number, default: 0 },
-  createdBy: {
-    type: Schema.Types.ObjectId,
-    ref: STRINGS.MODALS.USER,
-  },
   clientId: {
     type: Schema.Types.ObjectId,
     ref: STRINGS.MODALS.CLIENT,
   },
+  startDate: Date,
+  endDate: Date,
   siteId: {
     type: Schema.Types.ObjectId,
     ref: STRINGS.MODALS.SITE,
   },
+  amount: { type: Number, default: 0 },
   description: {
     type: String,
     default: "",

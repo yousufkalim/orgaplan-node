@@ -1,13 +1,15 @@
 const Joi = require("joi");
+const CustomError = require("../../utils/customError");
 
 const schemas = {
   create: (data) => {
     const Validation = Joi.object().keys({
-      price: Joi.number().required(),
-      createdBy: Joi.string().required(),
       clientId: Joi.string().required(),
+      startDate: Joi.date().required(),
+      endDate: Joi.date().required(),
       siteId: Joi.string().required(),
-      description: Joi.string().optional(),
+      amount: Joi.number().required(),
+      description: Joi.string().optional().allow(""),
     });
 
     const { error, value } = Validation.validate(data);
@@ -20,12 +22,12 @@ const schemas = {
   },
   update: (data) => {
     const Validation = Joi.object().keys({
-      price: Joi.number().required(),
-      invoiceId: Joi.string().required(),
-      createdBy: Joi.string().required(),
       clientId: Joi.string().required(),
+      startDate: Joi.date().required(),
+      endDate: Joi.date().required(),
       siteId: Joi.string().required(),
-      description: Joi.string().optional(),
+      amount: Joi.number().required(),
+      description: Joi.string().optional().allow(""),
     });
 
     const { error, value } = Validation.validate(data);
