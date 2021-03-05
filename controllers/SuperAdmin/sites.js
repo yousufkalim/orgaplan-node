@@ -1,3 +1,4 @@
+const Zac = require("../../models/zac");
 const Site = require("../../models/site");
 const Level = require("../../models/level");
 const STRINGS = require("../../utils/texts");
@@ -16,6 +17,12 @@ class SuperAdminSitesController {
     // if (siteCheck) throw new CustomError(STRINGS.ERRORS.siteNameExists, 404);
 
     const site = await Site.create(validatedData);
+
+    if (validatedData.zacId) {
+      await Zac.findByIdAndUpdate(validatedData.zacId, {
+        $addToSet: { sites: site._id },
+      });
+    }
 
     let building = await Building.create({
       name: "Exterior",
@@ -78,12 +85,15 @@ class SuperAdminSitesController {
 
     const result = {
       items,
+      totalItems,
+      totalPages: Math.ceil(totalItems / ITEMS_PER_PAGE),
+      itemsPerPage: ITEMS_PER_PAGE,
       currentPage: page,
+      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
       hasNextPage: ITEMS_PER_PAGE * page < totalItems,
       hasPreviousPage: page > 1,
       nextPage: page + 1,
       previousPage: page - 1,
-      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
     };
     res.status(200).send(response(STRINGS.TEXTS.sitesRequested, result));
   }
@@ -105,8 +115,27 @@ class SuperAdminSitesController {
 
     const itemCheck = await Site.findById(validatedData.siteId, {
       _id: 1,
+      zacId: 1,
     }).lean();
     if (!itemCheck) throw new CustomError(STRINGS.TEXTS.siteNotFound, 404);
+
+    if (
+      validatedData.zacId &&
+      validatedData.zacId !== String(itemCheck.zacId)
+    ) {
+      await Zac.findByIdAndUpdate(validatedData.zacId, {
+        $addToSet: { sites: validatedData.siteId },
+      });
+      await Zac.findByIdAndUpdate(itemCheck.zacId, {
+        $pull: { sites: validatedData.siteId },
+      });
+    }
+
+    if (!validatedData.zacId) {
+      await Site.findByIdAndUpdate(validatedData.siteId, {
+        $unset: { zacId: "" },
+      });
+    }
 
     const result = await Site.findByIdAndUpdate(
       validatedData.siteId,
@@ -125,6 +154,12 @@ class SuperAdminSitesController {
 
     const result = await Site.findByIdAndDelete(id);
     if (!result) throw new CustomError(STRINGS.ERRORS.siteNotFound, 404);
+
+    if (result.zacId) {
+      await Zac.findByIdAndUpdate(result.zacId, {
+        $pull: { sites: result.zacId },
+      });
+    }
 
     await Building.deleteMany({ _id: { $in: result.buildings } });
     await Level.deleteMany({ building: { $in: result.buildings } });
@@ -209,7 +244,7 @@ class SuperAdminSitesController {
 
     if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
 
-    res.status(200).send(response(STRINGS.TEXTS.siteArchived, result));
+    res.status(200).send(response(STRINGS.TEXTS.siteUnArchived, result));
   }
 }
 

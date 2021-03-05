@@ -57,7 +57,7 @@ class SuperAdminClientsController {
 
     var re = new RegExp(`^${name}`, "i");
 
-    const totalItems = await Client.aggregate([
+    let totalItems = await Client.aggregate([
       {
         $lookup: {
           from: Company.collection.name,
@@ -66,25 +66,7 @@ class SuperAdminClientsController {
           as: "companyId",
         },
       },
-      {
-        $lookup: {
-          from: User.collection.name,
-          localField: "userId",
-          foreignField: "_id",
-          as: "userId",
-        },
-      },
-      {
-        $lookup: {
-          from: Contract.collection.name,
-          localField: "contractsIds",
-          foreignField: "_id",
-          as: "contractsIds",
-        },
-      },
       { $unwind: "$companyId" },
-      { $unwind: "$userId" },
-      { $unwind: "$contractsIds" },
       { $match: { "companyId.name": { $regex: re } } },
       { $count: "Total" },
     ]);
@@ -129,17 +111,19 @@ class SuperAdminClientsController {
       //   },
       // },
     ]);
-
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
-
+    totalItems = totalItems[0].Total;
     const result = {
       items,
+      totalItems,
+      totalPages: Math.ceil(totalItems / ITEMS_PER_PAGE),
+      itemsPerPage: ITEMS_PER_PAGE,
       currentPage: page,
+      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
       hasNextPage: ITEMS_PER_PAGE * page < totalItems,
       hasPreviousPage: page > 1,
       nextPage: page + 1,
       previousPage: page - 1,
-      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
     };
     res.status(200).send(response(STRINGS.TEXTS.clientsRequested, result));
   }

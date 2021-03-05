@@ -227,6 +227,7 @@ module.exports = {
     allContracts: "All Contracts",
     allBuildings: "All Buildings",
     siteArchived: "Site Archived",
+    siteUnArchived: "Site Unarchived",
     meanRequested: "Mean Requested",
     siteRequested: "Site Requested",
     sitesRequested: "Site Requested",
@@ -253,6 +254,7 @@ module.exports = {
     sendSubscriptionActivationConfirmationSubject:
       "Subscription activated successfully",
 
+    success: "Success",
     clientUpdated: "Client Updated",
     emailVerificationSent: "Email verfication link sent",
     subscriptionStatusChanged: "Subscription Status Changed",

@@ -1,4 +1,5 @@
 const Zac = require("../../models/zac");
+const Site = require("../../models/site");
 const STRINGS = require("../../utils/texts");
 const Validations = require("../../validators");
 const response = require("../../utils/response");
@@ -31,12 +32,15 @@ class SuperAdminZacsController {
 
     const result = {
       items,
+      totalItems,
+      totalPages: Math.ceil(totalItems / ITEMS_PER_PAGE),
+      itemsPerPage: ITEMS_PER_PAGE,
       currentPage: page,
+      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
       hasNextPage: ITEMS_PER_PAGE * page < totalItems,
       hasPreviousPage: page > 1,
       nextPage: page + 1,
       previousPage: page - 1,
-      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
     };
     res.status(200).send(response(STRINGS.TEXTS.zacsRequested, result));
   }
@@ -83,6 +87,10 @@ class SuperAdminZacsController {
     const result = await Zac.findByIdAndRemove(id);
     if (!result) throw new CustomError(STRINGS.ERRORS.error);
 
+    const sies = await Site.updateMany(
+      { _id: { $in: result.sites } },
+      { $unset: { zacId: "" } }
+    );
     res.status(201).send(response(STRINGS.TEXTS.zacDeleted, result));
   }
 }
