@@ -15,11 +15,14 @@ class SuperAdminClientInvoicesController {
   }
 
   async getAll(req, res) {
+    const clientId = req.query.clientId;
     const page = +req.query.page || 1;
     const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
 
-    const totalItems = await ClientInvoice.find({}).countDocuments();
-    const items = await ClientInvoice.find({}, { __v: 0, password: 0 })
+    const query = clientId === "ALL" ? {} : { clientId };
+
+    const totalItems = await ClientInvoice.find(query).countDocuments();
+    const items = await ClientInvoice.find(query, { __v: 0, password: 0 })
       .skip((page - 1) * ITEMS_PER_PAGE)
       .limit(ITEMS_PER_PAGE)
       .populate({ path: "clientId", populate: { path: "companyId" } })

@@ -7,6 +7,7 @@ module.exports = {
     siteNameExists: "Site with this name exists!",
     deleteAdminFirst: "Delete it's admin first",
     deleteSiteFirst: "Delete it's sites first",
+    deleteClientAdminSitesFirst: "Delete your admin's sites first",
 
     siteNotFound: "No Site Found",
 
@@ -331,15 +332,12 @@ module.exports = {
     LATE: "LATE",
     UNEXPRECTED: "UNEXPECTED",
   },
-<<<<<<< HEAD
   MEANLOCATIONTYPE: {
     STORAGEAREA: "STORAGEAREA",
     DELIVERYAREA: "DELIVERYAREA",
     LEVEL: "LEVEL",
     EXTERIOR: "EXTERIOR",
   },
-=======
->>>>>>> 2a2df96959c84cadcb1a772fa475dbb4de54f5fe
   MODALS: {
     ZAC: "Zac",
     MEAN: "Mean",

@@ -22,6 +22,7 @@ const schemas = {
   },
   update: (data) => {
     const Validation = Joi.object().keys({
+      invoiceId: Joi.string().required(),
       clientId: Joi.string().required(),
       startDate: Joi.date().required(),
       endDate: Joi.date().required(),

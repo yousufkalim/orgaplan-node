@@ -20,11 +20,13 @@ const companySchema = new Schema(
       type: Boolean,
       default: false,
     },
-    // One admin per company
-    adminId: {
-      type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.USER,
-    },
+    // Multiple Admins for a company/client
+    adminIds: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: STRINGS.MODALS.USER,
+      },
+    ],
     type: {
       type: String,
       enum: [
