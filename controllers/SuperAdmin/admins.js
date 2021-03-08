@@ -47,15 +47,19 @@ class SuperAdminAdminsController {
   }
 
   async getAll(req, res) {
+    const name = req.query.name || "";
     const page = +req.query.page || 1;
     const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
 
+    var re = new RegExp(`^${name}`, "i");
+
     const totalItems = await User.find({
+      firstName: { $regex: re },
       company: { $ne: undefined },
     }).countDocuments();
 
     const items = await User.find(
-      { company: { $ne: undefined } },
+      { firstName: { $regex: re }, company: { $ne: undefined } },
       {
         __v: 0,
         password: 0,
@@ -69,12 +73,15 @@ class SuperAdminAdminsController {
 
     const result = {
       items,
+      totalItems,
+      totalPages: Math.ceil(totalItems / ITEMS_PER_PAGE),
+      itemsPerPage: ITEMS_PER_PAGE,
       currentPage: page,
+      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
       hasNextPage: ITEMS_PER_PAGE * page < totalItems,
       hasPreviousPage: page > 1,
       nextPage: page + 1,
       previousPage: page - 1,
-      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
     };
     res.status(200).send(response(STRINGS.TEXTS.adminsRequested, result));
   }

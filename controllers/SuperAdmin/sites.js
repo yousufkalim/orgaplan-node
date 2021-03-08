@@ -1,3 +1,4 @@
+const Zac = require("../../models/zac");
 const Site = require("../../models/site");
 const Level = require("../../models/level");
 const STRINGS = require("../../utils/texts");
@@ -16,6 +17,12 @@ class SuperAdminSitesController {
     // if (siteCheck) throw new CustomError(STRINGS.ERRORS.siteNameExists, 404);
 
     const site = await Site.create(validatedData);
+
+    if (validatedData.zacId) {
+      await Zac.findByIdAndUpdate(validatedData.zacId, {
+        $addToSet: { sites: site._id },
+      });
+    }
 
     let building = await Building.create({
       name: "Exterior",
@@ -49,16 +56,26 @@ class SuperAdminSitesController {
   }
 
   async getAll(req, res) {
+    const name = req.query.name || "";
+    const status = req.query.status || "ALL";
+    const clientId = req.query.client || "ALL";
     const page = +req.query.page || 1;
     const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
 
-    const totalItems = await Site.find({
-      status: { $ne: STRINGS.STATUS.INACTIVE },
-    }).countDocuments();
-    const items = await Site.find(
-      { status: { $ne: STRINGS.STATUS.INACTIVE } },
-      { __v: 0, password: 0 }
-    )
+    // Filters
+    var re = new RegExp(`^${name}`, "i");
+    const statusQuery =
+      status === "ALL" ? { $ne: STRINGS.STATUS.ARCHIVED } : { $eq: status };
+
+    const filters = {
+      name: { $regex: re },
+      status: statusQuery,
+    };
+    if (clientId !== "ALL") filters["adminId"] = clientId;
+    // Fetching
+    const totalItems = await Site.find(filters).countDocuments();
+
+    const items = await Site.find(filters, { __v: 0, password: 0 })
       .skip((page - 1) * ITEMS_PER_PAGE)
       .limit(ITEMS_PER_PAGE)
       .populate("zacId")
@@ -68,12 +85,15 @@ class SuperAdminSitesController {
 
     const result = {
       items,
+      totalItems,
+      totalPages: Math.ceil(totalItems / ITEMS_PER_PAGE),
+      itemsPerPage: ITEMS_PER_PAGE,
       currentPage: page,
+      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
       hasNextPage: ITEMS_PER_PAGE * page < totalItems,
       hasPreviousPage: page > 1,
       nextPage: page + 1,
       previousPage: page - 1,
-      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
     };
     res.status(200).send(response(STRINGS.TEXTS.sitesRequested, result));
   }
@@ -95,8 +115,27 @@ class SuperAdminSitesController {
 
     const itemCheck = await Site.findById(validatedData.siteId, {
       _id: 1,
+      zacId: 1,
     }).lean();
     if (!itemCheck) throw new CustomError(STRINGS.TEXTS.siteNotFound, 404);
+
+    if (
+      validatedData.zacId &&
+      validatedData.zacId !== String(itemCheck.zacId)
+    ) {
+      await Zac.findByIdAndUpdate(validatedData.zacId, {
+        $addToSet: { sites: validatedData.siteId },
+      });
+      await Zac.findByIdAndUpdate(itemCheck.zacId, {
+        $pull: { sites: validatedData.siteId },
+      });
+    }
+
+    if (!validatedData.zacId) {
+      await Site.findByIdAndUpdate(validatedData.siteId, {
+        $unset: { zacId: "" },
+      });
+    }
 
     const result = await Site.findByIdAndUpdate(
       validatedData.siteId,
@@ -113,8 +152,17 @@ class SuperAdminSitesController {
   async delete(req, res) {
     const id = req.params.id;
 
-    const result = await Site.findByIdAndRemove(id);
+    const result = await Site.findByIdAndDelete(id);
     if (!result) throw new CustomError(STRINGS.ERRORS.siteNotFound, 404);
+
+    if (result.zacId) {
+      await Zac.findByIdAndUpdate(result.zacId, {
+        $pull: { sites: result.zacId },
+      });
+    }
+
+    await Building.deleteMany({ _id: { $in: result.buildings } });
+    await Level.deleteMany({ building: { $in: result.buildings } });
 
     res.status(201).send(response(STRINGS.TEXTS.siteDeleted, result));
   }
@@ -123,7 +171,7 @@ class SuperAdminSitesController {
     const clientId = req.params.clientId;
 
     const items = await Site.find(
-      { adminId: clientId },
+      { adminId: clientId, status: { $ne: STRINGS.STATUS.ARCHIVED } },
       { __v: 0, password: 0 }
     )
       .populate("zacId")
@@ -138,14 +186,18 @@ class SuperAdminSitesController {
   }
 
   async getAllArchives(req, res) {
+    const name = req.query.name || "";
     const page = +req.query.page || 1;
     const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
 
+    var re = new RegExp(`^${name}`, "i");
+
     const totalItems = await Site.find({
-      status: { $eq: STRINGS.STATUS.INACTIVE },
+      name: { $regex: re },
+      status: { $eq: STRINGS.STATUS.ARCHIVED },
     }).countDocuments();
     const items = await Site.find(
-      { status: { $eq: STRINGS.STATUS.INACTIVE } },
+      { name: { $regex: re }, status: { $eq: STRINGS.STATUS.ARCHIVED } },
       { __v: 0, password: 0 }
     )
       .skip((page - 1) * ITEMS_PER_PAGE)
@@ -171,7 +223,7 @@ class SuperAdminSitesController {
     const id = req.params.id;
 
     const result = await Site.findByIdAndUpdate(id, {
-      status: STRINGS.STATUS.INACTIVE,
+      status: STRINGS.STATUS.ARCHIVED,
     })
       .populate("zacId")
       .populate({ path: "adminId", populate: { path: "userId" } });
@@ -192,7 +244,7 @@ class SuperAdminSitesController {
 
     if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
 
-    res.status(200).send(response(STRINGS.TEXTS.siteArchived, result));
+    res.status(200).send(response(STRINGS.TEXTS.siteUnArchived, result));
   }
 }
 

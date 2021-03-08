@@ -7,6 +7,7 @@ const exportsObj = {
   clientsController: require("./clients"),
   invoicesController: require("./invoices"),
   companiesController: require("./companies"),
+  dashboardController: require("./dashboard"),
   buildingsController: require("./buildings"),
 };
 
