@@ -331,12 +331,15 @@ module.exports = {
     LATE: "LATE",
     UNEXPRECTED: "UNEXPECTED",
   },
+<<<<<<< HEAD
   MEANLOCATIONTYPE: {
     STORAGEAREA: "STORAGEAREA",
     DELIVERYAREA: "DELIVERYAREA",
     LEVEL: "LEVEL",
     EXTERIOR: "EXTERIOR",
   },
+=======
+>>>>>>> 2a2df96959c84cadcb1a772fa475dbb4de54f5fe
   MODALS: {
     ZAC: "Zac",
     MEAN: "Mean",
