@@ -3,21 +3,21 @@ const auth = require("../middlewares/auth");
 const levelController = require("../controllers/level");
 
 // GETS
-router.get("/", auth(), levelController.getAll);
-router.get("/:id", auth(), levelController.getOne);
+router.get("/", levelController.getAll);
+router.get("/:id", levelController.getOne);
 router.get(
   "/get_levels_by_building/:buidingId",
-  auth(),
+
   levelController.getLevelsByBuilding
 );
 
 // POSTS
-router.post("/", auth(), levelController.create);
+router.post("/", levelController.create);
 
 // PUTS
-router.put("/:id", auth(), levelController.update);
+router.put("/:id", levelController.update);
 
 // DELETES
-router.delete("/:id", auth(), levelController.delete);
+router.delete("/:id", levelController.delete);
 
 module.exports = router;

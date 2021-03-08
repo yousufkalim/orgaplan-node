@@ -4,15 +4,29 @@ const upload = require("../middlewares/multer");
 
 const meanController = require("../controllers/mean");
 // GETS
-router.get("/", auth(), meanController.getAll);
-router.get("/:id", auth(), meanController.getOne);
-router.get("/get_list_of_means/:siteId", auth(), meanController.getListOfMeans);
+router.get("/", meanController.getAll);
+router.get("/:id", meanController.getOne);
+router.get("/get_list_of_means/:siteId", meanController.getListOfMeans);
+router.get("/get_add_mean/:siteId", meanController.getAddMean);
+
 // POSTS
-router.post("/", auth(), upload("mean", "sheet"), meanController.create);
-router.post("/filter", auth(), meanController.filterMeans);
+router.post(
+  "/",
+  upload(
+    "mean",
+
+    [
+      { name: "sheet", maxCount: 1 },
+      { name: "image", maxCount: 1 },
+    ],
+    "fields"
+  ),
+  meanController.create
+);
+router.post("/filter", meanController.filterMeans);
 
 // PUTS
-router.put("/:id", auth(), upload("mean", "sheet"), meanController.update);
+router.put("/:id", upload("mean", "sheet"), meanController.update);
 // DELETES
 router.delete("/:id", meanController.delete);
 module.exports = router;

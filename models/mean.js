@@ -6,6 +6,8 @@ const meanSchema = new Schema(
   {
     name: String,
     sheet: String,
+    image: String,
+    color: String,
     pricePerHour: Number,
     additionalInfo: String,
     siteId: {
@@ -34,6 +36,23 @@ const meanSchema = new Schema(
         storageArea: {
           type: Schema.Types.ObjectId,
           ref: STRINGS.MODALS.STORAGEAREA,
+        },
+        buildingId: {
+          type: Schema.Types.ObjectId,
+          ref: STRINGS.MODALS.BUILDING,
+        },
+        levelID: {
+          type: Schema.Types.ObjectId,
+          ref: STRINGS.MODALS.LEVEL,
+        },
+        locationType: {
+          type: String,
+          enum: [
+            STRINGS.MEANLOCATIONTYPE.DELIVERYAREA,
+            STRINGS.MEANLOCATIONTYPE.STORAGEAREA,
+            STRINGS.MEANLOCATIONTYPE.LEVEL,
+            STRINGS.MEANLOCATIONTYPE.EXTERIOR,
+          ],
         },
       },
     ],

@@ -2,6 +2,8 @@ const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const Mean = require("../models/mean");
+const Site = require("../models/site");
+
 const Building = require("../models/building");
 const DeliveryArea = require("../models/deliveryArea");
 const StorageArea = require("../models/storageArea");
@@ -11,32 +13,71 @@ const moment = require("moment");
 class MeanController {
   async create(req, res) {
     const body = req.body;
-    if (req.file) {
-      body.sheet = req.file.path;
+    console.log("HERERE");
+    console.log("\n\n\n\n");
+    console.log(body);
+    console.log("\n\n\n\n");
+    if (req.files) {
+      if (req.files["sheet"]) {
+        body.sheet = req.files["sheet"][0].path;
+      }
+
+      if (req.files["image"]) {
+        body.image = req.files["image"][0].path;
+      }
     }
-    if (body.location) body.location = JSON.parse(body.location);
+
     if (!body.availability)
-      throw new CustomError(STRINGS.ERRORS.startDateIsRequred);
+      throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound);
+
     if (body.availability) {
-      //   isDateChoronological(body.availability.start, body.availability.end);
       body.availability = JSON.parse(body.availability);
-      console.log(body.availability.start);
+      body.availability = body.availability.availability;
 
       if (!body.availability.start)
         throw new CustomError(STRINGS.ERRORS.startDateIsRequred);
+    }
+    if (body.location) {
+      body.location = JSON.parse(body.location);
     }
 
     if (body.unavailability)
       body.unavailability = JSON.parse(body.unavailability);
 
-    if (body.picCoordinates)
-      body.picCoordinates = JSON.parse(body.picCoordinates);
+    // if (body.picCoordinates)
+    //   body.picCoordinates = JSON.parse(body.picCoordinates);
     const result = await new Mean(req.body).save();
     res.status(200).send(response(STRINGS.TEXTS.meanCreated, result));
   }
 
   async getAll(req, res) {
     const result = await Mean.find({}, { password: 0, __v: 0 });
+    res.status(200).send(response(STRINGS.TEXTS.allMeans, result));
+  }
+
+  async getAddMean(req, res) {
+    const siteId = req.params.siteId;
+    const siteDeliveryAreas = await DeliveryArea.find({
+      siteId: siteId,
+    });
+    const site = await Site.findById(siteId);
+    const siteBuildings = await Building.find({
+      siteId: siteId,
+    }).populate("siteId");
+    if (!siteBuildings) throw new CustomError(STRINGS.ERRORS.locationNotFound);
+    if (!siteDeliveryAreas)
+      throw new CustomError(STRINGS.ERRORS.deliveyAreaNotFount);
+    const siteStorageAreas = await StorageArea.find({
+      siteId: siteId,
+    });
+    const meanTypes = [STRINGS.MEANTYPES.LIFTING, STRINGS.MEANTYPES.ROUTING];
+    let result = {
+      site_buildings: siteBuildings,
+      site_storage_areas: siteStorageAreas,
+      site_delivery_areas: siteDeliveryAreas,
+      mean_types: meanTypes,
+      site: site,
+    };
     res.status(200).send(response(STRINGS.TEXTS.allMeans, result));
   }
 
