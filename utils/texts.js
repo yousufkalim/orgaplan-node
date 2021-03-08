@@ -3,12 +3,24 @@ module.exports = {
     zacNotFound: "No Zac Found",
     verifiedAlready: "Verified already",
     resourceNotFound: "Resource not found!",
+    meanBookingNotFound: "Mean Booking not found!",
     adminExistsForCompany: "Admin exists for this company!",
     siteNameExists: "Site with this name exists!",
     deleteAdminFirst: "Delete it's admin first",
     deleteSiteFirst: "Delete it's sites first",
 
     siteNotFound: "No Site Found",
+
+    meanStartDateBeforeSiteStartDate:
+      "Mean Start Date Cannot Be Before Site's Start Date ",
+
+    meanStartDateBeforeSiteEndtDate:
+      "Mean End ate Date Cannot Be After Site's End Date ",
+
+    meanEndDateBeforeSiteStartDate:
+      "Mean End Date Cannot Be Before Site's Start Date",
+    meanEndDateAfterSiteEndtDate:
+      "Mean End Date Cannot Be After Site's End Date",
 
     tradeNotFount: "No Trade Found",
 
@@ -204,6 +216,12 @@ module.exports = {
     tradeUpdated: "Trade Updated",
     tradeRequested: "Trade Requested",
 
+    allMeanBookings: "All Mean Bookings",
+    meanBookingDeleted: "Mean Booking Deleted",
+    meanBookingCreated: "Mean Booking Created",
+    meanBookingUpdated: "Mean Booking Updated",
+    meanBookingRequested: "Mean Booking Requested",
+
     locationDeleted: "Location Deleted",
     locationCreated: "Location Created",
     locationUpdated: "Location Updated",
@@ -331,15 +349,12 @@ module.exports = {
     LATE: "LATE",
     UNEXPRECTED: "UNEXPECTED",
   },
-<<<<<<< HEAD
   MEANLOCATIONTYPE: {
     STORAGEAREA: "STORAGEAREA",
     DELIVERYAREA: "DELIVERYAREA",
     LEVEL: "LEVEL",
     EXTERIOR: "EXTERIOR",
   },
-=======
->>>>>>> 2a2df96959c84cadcb1a772fa475dbb4de54f5fe
   MODALS: {
     ZAC: "Zac",
     MEAN: "Mean",
@@ -361,6 +376,7 @@ module.exports = {
     MATERIAL: "Material",
     VECHICLES: "Vehicles",
     USERSITES: "UserSites",
+    MEANBOOKING: "MeanBooking",
     STORAGEAREA: "StorageArea",
     DELIVERYAREA: "DeliveryArea",
     SUBSCRIPTION: "Subscription",

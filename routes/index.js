@@ -11,6 +11,7 @@ router.use("/v1/building", require("./building"));
 router.use("/v1/contract", require("./contract"));
 router.use("/v1/trades", require("./trades"));
 router.use("/v1/mean", require("./mean"));
+router.use("/v1/mean_booking", require("./meanBooking"));
 router.use("/v1/incidents", require("./incidents"));
 router.use("/v1/delivery", require("./delivery"));
 router.use("/v1/delivery-area", require("./deliveryArea"));
@@ -22,7 +23,6 @@ router.use("/v1/company_trades", require("./companyTrades"));
 router.use("/v1/site-incidents", require("./siteIncidents"));
 router.use("/v1/company-sites", require("./siteCompanies"));
 router.use("/v1/location", require("./location"));
-
 router.use("/v1/superadmin", require("./SuperAdmin"));
 
 module.exports = router;

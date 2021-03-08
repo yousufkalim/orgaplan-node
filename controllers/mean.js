@@ -9,14 +9,16 @@ const DeliveryArea = require("../models/deliveryArea");
 const StorageArea = require("../models/storageArea");
 const Location = require("../models/location");
 const Company = require("../models/company");
+const {
+  isDateBefore,
+  isDateAfter,
+  isDateOccuranceChronological,
+} = require("../utils/helpers");
 const moment = require("moment");
 class MeanController {
   async create(req, res) {
     const body = req.body;
-    console.log("HERERE");
-    console.log("\n\n\n\n");
-    console.log(body);
-    console.log("\n\n\n\n");
+
     if (req.files) {
       if (req.files["sheet"]) {
         body.sheet = req.files["sheet"][0].path;
@@ -32,10 +34,26 @@ class MeanController {
 
     if (body.availability) {
       body.availability = JSON.parse(body.availability);
-      body.availability = body.availability.availability;
 
       if (!body.availability.start)
         throw new CustomError(STRINGS.ERRORS.startDateIsRequred);
+      const site = await Site.findById(body.siteId);
+      if (!site) throw new CustomError(STRINGS.ERRORS.siteNotFound);
+
+      isDateOccuranceChronological(
+        body.availability.start,
+        body.availability.end
+      );
+
+      if (isDateBefore(body.availability.start, site.start))
+        throw new CustomError(STRINGS.ERRORS.meanStartDateBeforeSiteStartDate);
+      if (isDateAfter(body.availability.start, site.end))
+        throw new CustomError(STRINGS.ERRORS.meanStartDateBeforeSiteEndtDate);
+      if (isDateBefore(body.availability.end, site.start))
+        throw new CustomError(STRINGS.ERRORS.meanEndDateBeforeSiteStartDate);
+
+      if (isDateAfter(body.availability.end, site.end))
+        throw new CustomError(STRINGS.ERRORS.meanEndDateAfterSiteEndtDate);
     }
     if (body.location) {
       body.location = JSON.parse(body.location);
@@ -78,6 +96,17 @@ class MeanController {
       mean_types: meanTypes,
       site: site,
     };
+    res.status(200).send(response(STRINGS.TEXTS.allMeans, result));
+  }
+
+  async getExternalMeans(req, res) {
+    const siteId = req.params.siteId;
+
+    const result = await Mean.find({
+      siteId: siteId,
+      "location.locationType": STRINGS.MEANLOCATIONTYPE.EXTERIOR,
+    }).populate("location.storageArea");
+    console.log(result, null, 2);
     res.status(200).send(response(STRINGS.TEXTS.allMeans, result));
   }
 
@@ -140,6 +169,7 @@ class MeanController {
         path: "location",
         populate: { path: "deliveryArea", model: STRINGS.MODALS.DELIVERYAREA },
       });
+
     if (!result) throw new CustomError(STRINGS.ERRORS.meanNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.meanRequested, result));
@@ -180,11 +210,13 @@ class MeanController {
     const siteDeliveryAreas = await DeliveryArea.find({
       siteId: siteId,
     });
+
     if (!siteDeliveryAreas)
       throw new CustomError(STRINGS.ERRORS.deliveyAreaNotFount);
     const siteStorageAreas = await StorageArea.find({
       siteId: siteId,
     });
+
     if (!siteStorageAreas)
       throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
 
@@ -203,10 +235,10 @@ class MeanController {
     res.status(200).send(
       response(STRINGS.TEXTS.meanRequested, {
         means: result,
-        buildings: building,
+        site_locations: building,
         site_delivery_areas: siteDeliveryAreas,
         siteStorageAreas: siteStorageAreas,
-        site_locations: siteLocations,
+        // site_locations: siteLocations,
         site_companies: siteCompanies,
         mean_types: [STRINGS.MEANTYPES.LIFTING, STRINGS.MEANTYPES.ROUTING],
         mean_status: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],

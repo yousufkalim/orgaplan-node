@@ -8,6 +8,7 @@ router.get("/", meanController.getAll);
 router.get("/:id", meanController.getOne);
 router.get("/get_list_of_means/:siteId", meanController.getListOfMeans);
 router.get("/get_add_mean/:siteId", meanController.getAddMean);
+router.get("/get_exterior_means/:siteId", meanController.getExternalMeans);
 
 // POSTS
 router.post(

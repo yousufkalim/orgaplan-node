@@ -19,4 +19,16 @@ module.exports = {
       throw new CustomError(STRINGS.ERRORS.endDateShouldBeAfeterStartDate);
     return true;
   },
+
+  isDateBefore: (startDate, endDate) => {
+    if (moment(startDate).isBefore(endDate, "day")) return true;
+
+    return false;
+  },
+
+  isDateAfter: (startDate, endDate) => {
+    if (moment(startDate).isAfter(endDate, "day")) return true;
+
+    return false;
+  },
 };
