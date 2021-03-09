@@ -60,9 +60,20 @@ class DeliveryAreaController {
       _id: id,
     }).populate("means");
 
-    if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
+    if (!result) throw new CustomError(STRINGS.ERRORS.deliveyAreaNotFount);
 
-    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequested, result));
+    res.status(200).send(response(STRINGS.TEXTS.deliveryAreaRequested, result));
+  }
+
+  async getDelveryAreaBySiteId(req, res) {
+    const id = req.params.id;
+    const result = await DeliveryArea.find({
+      siteId: id,
+    }).populate("means");
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.deliveyAreaNotFount);
+
+    res.status(200).send(response(STRINGS.TEXTS.deliveryAreaRequested, result));
   }
 
   async update(req, res) {

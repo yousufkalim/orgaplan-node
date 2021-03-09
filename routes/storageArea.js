@@ -25,6 +25,11 @@ router.get(
   storageAreaController.getStorageMeans
 );
 router.get(
+  "/get_storage_site/enterprise/:id",
+  auth(),
+  storageAreaController.getStorageAreaBySiteId
+);
+router.get(
   "/get_exterior_means/enterprise/:siteId",
   auth(),
   storageAreaController.getExteriorMeans

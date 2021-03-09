@@ -80,6 +80,17 @@ class StorageAreaController {
     res.status(200).send(response(STRINGS.TEXTS.storateAreaRequested, result));
   }
 
+  async getStorageAreaBySiteId(req, res) {
+    const id = req.params.id;
+    const result = await StorageArea.findOne({
+      siteId: id,
+    });
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
+
+    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequested, result));
+  }
+
   async getStorageMeans(req, res) {
     const id = req.params.id;
     const result = await StorageArea.findOne({

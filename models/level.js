@@ -7,22 +7,12 @@ const levelSchema = new Schema(
     name: String,
     number: Number,
     image: String,
-    levelType: {
-      type: String,
-      enum: [
-        STRINGS.LEVELTYPE.STORAGE,
-        STRINGS.LEVELTYPE.DELIVERY,
-        STRINGS.LEVELTYPE.BOTH,
-      ],
-    },
+
     storage: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.STORAGEAREA,
     },
-    delivery: {
-      type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.DELIVERYAREA,
-    },
+
     building: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.BUILDING,

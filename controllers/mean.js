@@ -9,6 +9,7 @@ const DeliveryArea = require("../models/deliveryArea");
 const StorageArea = require("../models/storageArea");
 const Location = require("../models/location");
 const Company = require("../models/company");
+const Booking = require("../models/meanBooking");
 const {
   isDateBefore,
   isDateAfter,
@@ -131,7 +132,14 @@ class MeanController {
     const endDate = body.endDate;
     const status = body.status;
     const name = body.name;
-    console.log("\n\n\n" + name);
+    const company = body.company;
+
+    // if (company) {
+    //   const booking = await Booking.aggregate([
+    //     { $match: { companyId: company } },
+    //   ]);
+    //   console.log(JSON.stringify(booking, null, 2));
+    // }
 
     const result = await Mean.find({
       siteId: siteId,
@@ -148,6 +156,7 @@ class MeanController {
         storageArea ? { "location.storageArea": storageArea } : {},
         { "availability.start": { $lte: new Date() } },
         { "availability.end": { $gte: new Date() } },
+        company ? {} : {},
       ],
     })
       .populate({
@@ -250,11 +259,17 @@ class MeanController {
     const id = req.params.id;
     const body = req.body;
 
-    if (req.file) {
-      body.sheet = req.file.path;
+    if (req.files) {
+      if (req.files["sheet"]) {
+        body.sheet = req.files["sheet"][0].path;
+      }
+
+      if (req.files["image"]) {
+        body.image = req.files["image"][0].path;
+      }
     }
     if (body.location) body.location = JSON.parse(body.location);
-    if (!body.availability) body.availability = JSON.parse(body.availability);
+    if (body.availability) body.availability = JSON.parse(body.availability);
     if (body.unavailability)
       body.unavailability = JSON.parse(body.unavailability);
 

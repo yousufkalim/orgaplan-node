@@ -27,7 +27,19 @@ router.post(
 router.post("/filter", meanController.filterMeans);
 
 // PUTS
-router.put("/:id", upload("mean", "sheet"), meanController.update);
+router.put(
+  "/:id",
+  upload(
+    "mean",
+
+    [
+      { name: "sheet", maxCount: 1 },
+      { name: "image", maxCount: 1 },
+    ],
+    "fields"
+  ),
+  meanController.update
+);
 // DELETES
 router.delete("/:id", meanController.delete);
 module.exports = router;

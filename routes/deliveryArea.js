@@ -11,6 +11,12 @@ router.get(
   auth(),
   deliveryAreaController.getDeliveryAreaMeans
 );
+
+router.get(
+  "/get_delivery_area_site/enterprise/:id",
+  auth(),
+  deliveryAreaController.getDelveryAreaBySiteId
+);
 // POSTS
 router.post(
   "/",
