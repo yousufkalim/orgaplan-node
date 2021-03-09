@@ -1,4 +1,5 @@
 const User = require("../../models/user");
+const Site = require("../../models/site");
 const STRINGS = require("../../utils/texts");
 const Client = require("../../models/client");
 const Company = require("../../models/company");
@@ -39,12 +40,12 @@ class SuperAdminClientsController {
     // Create a client
     let client = await Client.create({
       companyId: company._id,
-      contractsIds: [contract._id],
+      contractIds: [contract._id],
     });
     client = await client
-      .populate("userId")
       .populate("companyId")
-      .populate("contractsIds")
+      .populate("adminIds")
+      .populate("contractIds")
       .execPopulate();
 
     res.status(200).send(response(STRINGS.TEXTS.clientCreated, client));
@@ -66,7 +67,6 @@ class SuperAdminClientsController {
           as: "companyId",
         },
       },
-      { $unwind: "$companyId" },
       { $match: { "companyId.name": { $regex: re } } },
       { $count: "Total" },
     ]);
@@ -82,22 +82,35 @@ class SuperAdminClientsController {
       {
         $lookup: {
           from: User.collection.name,
-          localField: "userId",
+          localField: "adminIds",
           foreignField: "_id",
-          as: "userId",
+          as: "adminIds",
         },
       },
       {
         $lookup: {
           from: Contract.collection.name,
-          localField: "contractsIds",
+          localField: "contractIds",
           foreignField: "_id",
-          as: "contractsIds",
+          as: "contractIds",
+        },
+      },
+      {
+        $lookup: {
+          from: Site.collection.name,
+          localField: "_id",
+          foreignField: "clientId",
+          as: "sites",
         },
       },
       { $unwind: "$companyId" },
-      { $unwind: "$userId" },
-      // { $unwind: "$contractsIds" },
+      // {
+      //   $unwind: {
+      //     path: "$adminIds",
+      //     // includeArrayIndex: <string>,
+      //     preserveNullAndEmptyArrays: true,
+      //   },
+      // },
       { $match: { "companyId.name": { $regex: re } } },
       { $skip: (page - 1) * ITEMS_PER_PAGE },
       { $limit: ITEMS_PER_PAGE },
@@ -105,14 +118,23 @@ class SuperAdminClientsController {
       // {
       //   $group: {
       //     _id: "$_id",
-      //     contractsIds: { $first: "$contractsIds" },
-      //     userId: { $first: "$userId" },
+      //     contractIds: { $first: "$contractIds" },
+      //     adminIds: { $first: "$adminIds" },
       //     companyId: { $push: "$companyId" },
       //   },
       // },
+      {
+        $project: {
+          _id: "$_id",
+          companyId: 1,
+          adminIds: 1,
+          contractIds: 1,
+          sites: { $size: "$sites" },
+        },
+      },
     ]);
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
-    totalItems = totalItems[0].Total;
+    totalItems = totalItems.length > 0 ? totalItems[0].Total : 0;
     const result = {
       items,
       totalItems,
@@ -132,9 +154,9 @@ class SuperAdminClientsController {
     const id = req.params.id;
 
     const result = await Client.findById(id, { password: 0, __v: 0 })
-      .populate("userId")
+      .populate("adminIds")
       .populate("companyId")
-      .populate("contractsIds");
+      .populate("contractIds");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 
@@ -169,9 +191,9 @@ class SuperAdminClientsController {
     });
 
     const result = await Client.findById(validatedData.clientId)
-      .populate("userId")
+      .populate("adminIds")
       .populate("companyId")
-      .populate("contractsIds");
+      .populate("contractIds");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 
@@ -185,10 +207,53 @@ class SuperAdminClientsController {
     const client = await Client.findById(clientId);
     if (!client) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 
-    if (client.userId)
-      throw new CustomError(STRINGS.ERRORS.deleteAdminFirst, 404);
+    if (client.status === STRINGS.STATUS.DELETED)
+      throw new CustomError(STRINGS.ERRORS.clientNotActive, 404);
 
-    const result = await Client.findByIdAndDelete(client._id);
+    await Promise.all(
+      client.adminIds.map(async (adminId) => {
+        const site = await Site.findOne({ adminId });
+        if (site) {
+          throw new CustomError(
+            STRINGS.ERRORS.deleteClientAdminSitesFirst,
+            404
+          );
+        } else {
+          let countUsers = await User.find().countDocuments();
+          let admin = await User.findById(adminId);
+          if (admin && admin.status !== STRINGS.STATUS.DELETED) {
+            admin.firstName = admin.firstName[0];
+            admin.lastName = admin.lastName[0];
+            admin.email = `AAA@${countUsers}.com`;
+            admin.phone = 9999999999;
+            admin.image = "uploads/avatar.jpeg";
+            admin.status = STRINGS.STATUS.DELETED;
+            await admin.save();
+          }
+        }
+      })
+    );
+
+    const company = await Company.findById(client.companyId);
+    if (!company) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
+
+    company.name = company.name[0];
+    company.logo = "uploads/avatar.jpeg";
+    company.status = STRINGS.STATUS.DELETED;
+    delete company.incharge;
+    await company.save();
+
+    const result = await Client.findByIdAndUpdate(
+      client._id,
+      {
+        $set: {
+          status: STRINGS.STATUS.DELETED,
+        },
+      },
+      {
+        new: true,
+      }
+    );
 
     if (!result) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 

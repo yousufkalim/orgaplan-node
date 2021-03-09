@@ -8,8 +8,10 @@ module.exports = {
     siteNameExists: "Site with this name exists!",
     deleteAdminFirst: "Delete it's admin first",
     deleteSiteFirst: "Delete it's sites first",
+    deleteClientAdminSitesFirst: "Delete your admin's sites first",
 
     siteNotFound: "No Site Found",
+    clientNotActive: "Client not active",
 
     meanStartDateBeforeSiteStartDate:
       "Mean Start Date Cannot Be Before Site's Start Date ",
@@ -296,6 +298,7 @@ module.exports = {
     CLOSED: "CLOSED",
     UNPAID: "UNPAID",
     INSIDE: "INSIDE",
+    DELETED: "DELETED",
     PENDING: "PENDING",
     OUTSIDE: "OUTSIDE",
     REJECTED: "REJECTED",

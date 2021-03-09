@@ -31,9 +31,9 @@ class SuperAdminClientsController {
     // Create a client
     let client = await Client.create(validatedData);
     client = await client
-      .populate("userId")
       .populate("companyId")
-      .populate("contractsIds")
+      .populate("adminIds")
+      .populate("contractIds")
       .execPopulate();
 
     await res.status(200).send(response(STRINGS.TEXTS.clientCreated, client));
@@ -47,9 +47,9 @@ class SuperAdminClientsController {
     const items = await Client.find({ contract: [] }, { __v: 0, password: 0 })
       .skip((page - 1) * ITEMS_PER_PAGE)
       .limit(ITEMS_PER_PAGE)
-      .populate("userId")
+      .populate("adminIds")
       .populate("companyId")
-      .populate("contractsIds");
+      .populate("contractIds");
 
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
 
@@ -72,9 +72,9 @@ class SuperAdminClientsController {
     const id = req.params.id;
 
     const result = await Client.findById(id, { password: 0, __v: 0 })
-      .populate("userId")
+      .populate("adminIds")
       .populate("companyId")
-      .populate("contractsIds");
+      .populate("contractIds");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
 
@@ -117,12 +117,12 @@ class SuperAdminClientsController {
     const result = await client
       .updateOne(
         {
-          $addToSet: { contractsIds: contract._id },
+          $addToSet: { contractIds: contract._id },
         },
         { new: true }
       )
       .populate("companyId")
-      .populate("contractsIds");
+      .populate("contractIds");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 

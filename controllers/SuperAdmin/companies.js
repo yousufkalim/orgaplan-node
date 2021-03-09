@@ -21,7 +21,7 @@ class SuperAdminAdminsController {
     const items = await Company.find({})
       .skip((page - 1) * ITEMS_PER_PAGE)
       .limit(ITEMS_PER_PAGE)
-      .populate("adminId");
+      .populate("adminIds");
 
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
 
@@ -44,7 +44,7 @@ class SuperAdminAdminsController {
     const id = req.params.id;
 
     const result = await Company.findById(id, { password: 0, __v: 0 }).populate(
-      "adminId"
+      "adminIds"
     );
 
     if (!result) throw new CustomError(STRINGS.ERRORS.adminNotFound, 404);

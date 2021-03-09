@@ -18,9 +18,6 @@ class SuperAdminAdminsController {
     if (!companyCheck)
       throw new CustomError(STRINGS.ERRORS.companyNotFound, 404);
 
-    if (companyCheck.adminId)
-      throw new CustomError(STRINGS.ERRORS.adminExistsForCompany, 404);
-
     // Create Login User
     const user = await Auth.signup({
       ...validatedData,
@@ -32,13 +29,13 @@ class SuperAdminAdminsController {
     await Client.findOneAndUpdate(
       { companyId: validatedData.companyId },
       {
-        $set: { userId: user._id },
+        $addToSet: { adminIds: user._id },
       }
     );
 
     // Update Company
     await Company.findByIdAndUpdate(validatedData.companyId, {
-      $set: { adminId: user._id },
+      $addToSet: { adminIds: user._id },
     });
 
     const result = await User.findById(user._id).populate("company");
@@ -53,24 +50,51 @@ class SuperAdminAdminsController {
 
     var re = new RegExp(`^${name}`, "i");
 
-    const totalItems = await User.find({
-      firstName: { $regex: re },
-      company: { $ne: undefined },
-    }).countDocuments();
-
-    const items = await User.find(
-      { firstName: { $regex: re }, company: { $ne: undefined } },
+    let totalItems = await User.aggregate([
       {
-        __v: 0,
-        password: 0,
-      }
-    )
-      .skip((page - 1) * ITEMS_PER_PAGE)
-      .limit(ITEMS_PER_PAGE)
-      .populate("company");
+        $match: {
+          firstName: { $regex: re },
+          company: { $ne: undefined },
+          status: { $ne: STRINGS.STATUS.DELETED },
+        },
+      },
+      { $count: "Total" },
+    ]);
+
+    const items = await User.aggregate([
+      {
+        $match: {
+          firstName: { $regex: re },
+          company: { $ne: undefined },
+          status: { $ne: STRINGS.STATUS.DELETED },
+        },
+      },
+      {
+        $lookup: {
+          from: Company.collection.name,
+          localField: "company",
+          foreignField: "_id",
+          as: "company",
+        },
+      },
+      {
+        $lookup: {
+          from: Site.collection.name,
+          localField: "_id",
+          foreignField: "adminId",
+          as: "sites",
+        },
+      },
+      {
+        $addFields: { sites: { $size: "$sites" } },
+      },
+      { $unwind: "$company" },
+      { $skip: (page - 1) * ITEMS_PER_PAGE },
+      { $limit: ITEMS_PER_PAGE },
+    ]);
 
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
-
+    totalItems = totalItems.length > 0 ? totalItems[0].Total : 0;
     const result = {
       items,
       totalItems,
@@ -102,8 +126,8 @@ class SuperAdminAdminsController {
     const validatedData = Validations.admin.update(req.body);
 
     // Check User
-    const userCheck = await User.findById(validatedData.userId);
-    if (!userCheck) throw new CustomError(STRINGS.ERRORS.userNotFound, 404);
+    const userCheck = await User.findById(validatedData.adminId);
+    if (!userCheck) throw new CustomError(STRINGS.ERRORS.adminNotFound, 404);
 
     // If company needs to be changed
     if (String(userCheck.company) !== String(validatedData.companyId)) {
@@ -112,7 +136,7 @@ class SuperAdminAdminsController {
       await Client.findOneAndUpdate(
         { companyId: userCheck.companyId },
         {
-          $set: { userId: undefined },
+          $pull: { adminIds: validatedData.adminId },
         }
       );
       // Update Client
@@ -120,18 +144,18 @@ class SuperAdminAdminsController {
       await Client.findOneAndUpdate(
         { companyId: validatedData.companyId },
         {
-          $set: { userId: validatedData.userId },
+          $addToSet: { adminIds: validatedData.adminId },
         }
       );
 
       // Update Company
       // (remove)
       await Company.findByIdAndUpdate(userCheck.companyId, {
-        $set: { adminId: undefined },
+        $pull: { adminIds: userCheck._id },
       });
       // (add)
       await Company.findByIdAndUpdate(validatedData.companyId, {
-        $set: { adminId: userCheck._id },
+        $addToSet: { adminIds: userCheck._id },
       });
     }
 
@@ -145,7 +169,7 @@ class SuperAdminAdminsController {
 
     // Update user
     const result = await User.findByIdAndUpdate(
-      validatedData.userId,
+      validatedData.adminId,
       {
         $set: userData,
       },
@@ -171,17 +195,32 @@ class SuperAdminAdminsController {
     await Client.findOneAndUpdate(
       { companyId: userCheck.company },
       {
-        $unset: { userId: "" },
+        $pull: { adminIds: userCheck._id },
       }
     );
 
     // Update Company
     await Company.findByIdAndUpdate(userCheck.company, {
-      $unset: { adminId: "" },
+      $pull: { adminIds: userCheck._id },
     });
 
-    const result = await User.findByIdAndRemove(id);
-    if (!result) throw new CustomError(STRINGS.ERRORS.error);
+    const countUsers = await User.find().countDocuments();
+
+    await User.findByIdAndUpdate(id, {
+      $set: {
+        firstName: userCheck.firstName[0],
+        lastName: userCheck.lastName[0],
+        email: `AAA@${countUsers}.com`,
+        phone: 9999999999,
+        image: "uploads/avatar.jpeg",
+        status: STRINGS.STATUS.DELETED,
+      },
+    });
+
+    const result = {
+      _id: userCheck._id,
+      name: `${userCheck.firstName} ${userCheck.lastName}`,
+    };
 
     res.status(201).send(response(STRINGS.TEXTS.adminDeleted, result));
   }

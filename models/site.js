@@ -10,9 +10,13 @@ const siteSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.ZAC,
     },
-    adminId: {
+    clientId: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.CLIENT,
+    },
+    adminId: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.USER,
     },
     functionality: {
       type: String,
@@ -66,6 +70,7 @@ const siteSchema = new Schema(
       type: String,
       enum: [
         STRINGS.STATUS.ACTIVE,
+        STRINGS.STATUS.DELETED,
         STRINGS.STATUS.ARCHIVED,
         STRINGS.STATUS.INACTIVE,
         STRINGS.STATUS.COMPLETED,

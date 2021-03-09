@@ -2,6 +2,7 @@ const Zac = require("../../models/zac");
 const Site = require("../../models/site");
 const Level = require("../../models/level");
 const STRINGS = require("../../utils/texts");
+const Client = require("../../models/client");
 const Validations = require("../../validators");
 const response = require("../../utils/response");
 const Building = require("../../models/building");
@@ -16,6 +17,13 @@ class SuperAdminSitesController {
     // const siteCheck = await Site.findOne({ name: validatedData.name });
     // if (siteCheck) throw new CustomError(STRINGS.ERRORS.siteNameExists, 404);
 
+    const client = await Client.findOne(
+      { adminIds: validatedData.adminId },
+      { _id: 1 }
+    ).lean();
+    if (!client) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
+
+    validatedData.clientId = client._id;
     const site = await Site.create(validatedData);
 
     if (validatedData.zacId) {
@@ -71,7 +79,7 @@ class SuperAdminSitesController {
       name: { $regex: re },
       status: statusQuery,
     };
-    if (clientId !== "ALL") filters["adminId"] = clientId;
+    if (clientId !== "ALL") filters["clientId"] = clientId;
     // Fetching
     const totalItems = await Site.find(filters).countDocuments();
 
@@ -79,7 +87,8 @@ class SuperAdminSitesController {
       .skip((page - 1) * ITEMS_PER_PAGE)
       .limit(ITEMS_PER_PAGE)
       .populate("zacId")
-      .populate({ path: "adminId", populate: { path: "userId" } });
+      .populate("clientId")
+      .populate("adminId");
 
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
 
@@ -103,7 +112,8 @@ class SuperAdminSitesController {
 
     const result = await Site.findById(id, { password: 0, __v: 0 })
       .populate("zacId")
-      .populate({ path: "adminId", populate: { path: "userId" } });
+      .populate("clientId")
+      .populate("adminId");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
 
@@ -171,11 +181,31 @@ class SuperAdminSitesController {
     const clientId = req.params.clientId;
 
     const items = await Site.find(
-      { adminId: clientId, status: { $ne: STRINGS.STATUS.ARCHIVED } },
+      { clientId: clientId, status: { $ne: STRINGS.STATUS.ARCHIVED } },
       { __v: 0, password: 0 }
     )
       .populate("zacId")
-      .populate({ path: "adminId", populate: { path: "userId" } });
+      .populate("clientId")
+      .populate("adminId");
+
+    if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
+
+    const result = {
+      items,
+    };
+    res.status(200).send(response(STRINGS.TEXTS.sitesRequested, result));
+  }
+
+  async getSitesByAdmin(req, res) {
+    const adminId = req.params.adminId;
+
+    const items = await Site.find(
+      { adminId: adminId, status: { $ne: STRINGS.STATUS.ARCHIVED } },
+      { __v: 0, password: 0 }
+    )
+      .populate("zacId")
+      .populate("clientId")
+      .populate("adminId");
 
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
 
@@ -203,7 +233,8 @@ class SuperAdminSitesController {
       .skip((page - 1) * ITEMS_PER_PAGE)
       .limit(ITEMS_PER_PAGE)
       .populate("zacId")
-      .populate({ path: "adminId", populate: { path: "userId" } });
+      .populate("clientId")
+      .populate("adminId");
 
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
 
@@ -226,7 +257,8 @@ class SuperAdminSitesController {
       status: STRINGS.STATUS.ARCHIVED,
     })
       .populate("zacId")
-      .populate({ path: "adminId", populate: { path: "userId" } });
+      .populate("clientId")
+      .populate("adminId");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
 
@@ -240,7 +272,8 @@ class SuperAdminSitesController {
       status: STRINGS.STATUS.ACTIVE,
     })
       .populate("zacId")
-      .populate({ path: "adminId", populate: { path: "userId" } });
+      .populate("clientId")
+      .populate("adminId");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
 

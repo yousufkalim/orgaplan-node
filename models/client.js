@@ -8,16 +8,27 @@ const ClientSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.COMPANY,
     },
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.USER,
-    },
-    contractsIds: [
+    adminIds: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: STRINGS.MODALS.USER,
+      },
+    ],
+    contractIds: [
       {
         type: Schema.Types.ObjectId,
         ref: STRINGS.MODALS.CONTRACT,
       },
     ],
+    status: {
+      type: String,
+      enum: [
+        STRINGS.STATUS.ACTIVE,
+        STRINGS.STATUS.DELETED,
+        STRINGS.STATUS.INACTIVE,
+      ],
+      default: STRINGS.STATUS.ACTIVE,
+    },
   },
   {
     timestamps: true,

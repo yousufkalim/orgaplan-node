@@ -15,15 +15,22 @@ class SuperAdminClientInvoicesController {
   }
 
   async getAll(req, res) {
+    const clientId = req.query.clientId || "ALL";
     const page = +req.query.page || 1;
     const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
 
-    const totalItems = await ClientInvoice.find({}).countDocuments();
-    const items = await ClientInvoice.find({}, { __v: 0, password: 0 })
+    const query = clientId === "ALL" ? {} : { clientId };
+
+    const totalItems = await ClientInvoice.find(query).countDocuments();
+    const items = await ClientInvoice.find(query, { __v: 0, password: 0 })
       .skip((page - 1) * ITEMS_PER_PAGE)
       .limit(ITEMS_PER_PAGE)
-      .populate({ path: "clientId", populate: { path: "companyId" } })
-      .populate("siteId");
+      .populate({
+        path: "clientId",
+        select: "_id companyId",
+        populate: { path: "companyId", select: "_id name" },
+      })
+      .populate("siteId", "_id name status start end");
 
     if (!items) throw new CustomError(STRINGS.ERRORS.error);
 
@@ -49,8 +56,12 @@ class SuperAdminClientInvoicesController {
       password: 0,
       __v: 0,
     })
-      .populate("clientId")
-      .populate("siteId");
+      .populate({
+        path: "clientId",
+        select: "_id companyId",
+        populate: { path: "companyId", select: "_id name" },
+      })
+      .populate("siteId", "_id name status start end");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.error);
 
@@ -66,8 +77,12 @@ class SuperAdminClientInvoicesController {
         $set: validatedData,
       }
     )
-      .populate("clientId")
-      .populate("siteId");
+      .populate({
+        path: "clientId",
+        select: "_id companyId",
+        populate: { path: "companyId", select: "_id name" },
+      })
+      .populate("siteId", "_id name status start end");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.invoiceNotFound, 404);
 
@@ -81,36 +96,6 @@ class SuperAdminClientInvoicesController {
     if (!result) throw new CustomError(STRINGS.ERRORS.error);
 
     res.status(201).send(response(STRINGS.TEXTS.invoiceDeleted, result));
-  }
-
-  async getAllByClient(req, res) {
-    const clientId = req.params.clientId;
-
-    const page = +req.query.page || 1;
-    const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
-
-    const totalItems = await ClientInvoice.find({ clientId }).countDocuments();
-    const items = await ClientInvoice.find(
-      { clientId },
-      { __v: 0, password: 0 }
-    )
-      .skip((page - 1) * ITEMS_PER_PAGE)
-      .limit(ITEMS_PER_PAGE)
-      .populate({ path: "clientId", populate: { path: "companyId" } })
-      .populate("siteId");
-
-    if (!items) throw new CustomError(STRINGS.ERRORS.error);
-
-    const result = {
-      items,
-      currentPage: page,
-      hasNextPage: ITEMS_PER_PAGE * page < totalItems,
-      hasPreviousPage: page > 1,
-      nextPage: page + 1,
-      previousPage: page - 1,
-      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
-    };
-    res.status(200).send(response(STRINGS.TEXTS.invoicesRequested, result));
   }
 }
 
