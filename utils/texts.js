@@ -10,6 +10,7 @@ module.exports = {
     deleteClientAdminSitesFirst: "Delete your admin's sites first",
 
     siteNotFound: "No Site Found",
+    clientNotActive: "Client not active",
 
     tradeNotFount: "No Trade Found",
 
@@ -279,6 +280,7 @@ module.exports = {
     CLOSED: "CLOSED",
     UNPAID: "UNPAID",
     INSIDE: "INSIDE",
+    DELETED: "DELETED",
     PENDING: "PENDING",
     OUTSIDE: "OUTSIDE",
     REJECTED: "REJECTED",

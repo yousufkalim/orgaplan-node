@@ -27,15 +27,6 @@ const companySchema = new Schema(
         ref: STRINGS.MODALS.USER,
       },
     ],
-    type: {
-      type: String,
-      enum: [
-        STRINGS.COMPANYTYPE.CLIENTPERSITE,
-        STRINGS.COMPANYTYPE.MASTERCLIENT,
-        STRINGS.COMPANYTYPE.NOCLIENTS,
-      ],
-      default: STRINGS.COMPANYTYPE.NOCLIENTS,
-    },
     users: [
       {
         userId: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.USER },
@@ -71,6 +62,24 @@ const companySchema = new Schema(
         siteId: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.SITE },
       },
     ],
+    type: {
+      type: String,
+      enum: [
+        STRINGS.COMPANYTYPE.CLIENTPERSITE,
+        STRINGS.COMPANYTYPE.MASTERCLIENT,
+        STRINGS.COMPANYTYPE.NOCLIENTS,
+      ],
+      default: STRINGS.COMPANYTYPE.NOCLIENTS,
+    },
+    status: {
+      type: String,
+      enum: [
+        STRINGS.STATUS.ACTIVE,
+        STRINGS.STATUS.DELETED,
+        STRINGS.STATUS.INACTIVE,
+      ],
+      default: STRINGS.STATUS.ACTIVE,
+    },
   },
   {
     timestamps: true,

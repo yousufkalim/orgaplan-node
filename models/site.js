@@ -70,6 +70,7 @@ const siteSchema = new Schema(
       type: String,
       enum: [
         STRINGS.STATUS.ACTIVE,
+        STRINGS.STATUS.DELETED,
         STRINGS.STATUS.ARCHIVED,
         STRINGS.STATUS.INACTIVE,
         STRINGS.STATUS.COMPLETED,

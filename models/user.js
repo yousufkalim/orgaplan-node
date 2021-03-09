@@ -31,13 +31,18 @@ const userSchema = new Schema(
       enum: [STRINGS.ROLES.USER, STRINGS.ROLES.SUPERADMIN],
       default: STRINGS.ROLES.USER,
     },
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
     isVerified: {
       type: Boolean,
       default: false,
+    },
+    status: {
+      type: String,
+      enum: [
+        STRINGS.STATUS.ACTIVE,
+        STRINGS.STATUS.INACTIVE,
+        STRINGS.STATUS.DELETED,
+      ],
+      default: STRINGS.STATUS.ACTIVE,
     },
   },
   {

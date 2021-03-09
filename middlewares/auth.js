@@ -23,9 +23,9 @@ function auth(role = STRINGS.ROLES.USER) {
     let user = await User.findOne({ _id: decoded.id });
     if (!user)
       throw new CustomError("Unauthorized access: User does not exist", 401);
-    if (!user.isActive)
+    if (user.status !== STRINGS.STATUS.ACTIVE)
       throw new CustomError(
-        "Unauthorized access: User has been deactivated",
+        "Unauthorized access: User is not active anymore",
         401
       );
     if (!user.isVerified)

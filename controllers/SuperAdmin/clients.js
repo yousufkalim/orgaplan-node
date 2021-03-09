@@ -207,20 +207,53 @@ class SuperAdminClientsController {
     const client = await Client.findById(clientId);
     if (!client) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 
+    if (client.status === STRINGS.STATUS.DELETED)
+      throw new CustomError(STRINGS.ERRORS.clientNotActive, 404);
+
     await Promise.all(
-      client.adminIds.map(async (admin) => {
-        const site = await Site.findOne({ adminId: admin._id });
-        if (site)
+      client.adminIds.map(async (adminId) => {
+        const site = await Site.findOne({ adminId });
+        if (site) {
           throw new CustomError(
             STRINGS.ERRORS.deleteClientAdminSitesFirst,
             404
           );
+        } else {
+          let countUsers = await User.find().countDocuments();
+          let admin = await User.findById(adminId);
+          if (admin && admin.status !== STRINGS.STATUS.DELETED) {
+            admin.firstName = admin.firstName[0];
+            admin.lastName = admin.lastName[0];
+            admin.email = `AAA@${countUsers}.com`;
+            admin.phone = 9999999999;
+            admin.image = "uploads/avatar.jpeg";
+            admin.status = STRINGS.STATUS.DELETED;
+            await admin.save();
+          }
+        }
       })
     );
 
-    await User.deleteMany({ _id: { $in: client.adminIds } });
+    const company = await Company.findById(client.companyId);
+    if (!company) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 
-    const result = await Client.findByIdAndDelete(client._id);
+    company.name = company.name[0];
+    company.logo = "uploads/avatar.jpeg";
+    company.status = STRINGS.STATUS.DELETED;
+    delete company.incharge;
+    await company.save();
+
+    const result = await Client.findByIdAndUpdate(
+      client._id,
+      {
+        $set: {
+          status: STRINGS.STATUS.DELETED,
+        },
+      },
+      {
+        new: true,
+      }
+    );
 
     if (!result) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 

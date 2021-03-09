@@ -6,7 +6,6 @@ const superAdmin = require("../../controllers/SuperAdmin");
 // GETS
 router.get("/", superAdmin.invoicesController.getAll);
 router.get("/get/:id", superAdmin.invoicesController.getById);
-router.get("/client/:clientId", superAdmin.invoicesController.getAllByClient);
 
 // POSTS
 router.post("/", superAdmin.invoicesController.create);

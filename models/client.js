@@ -20,6 +20,15 @@ const ClientSchema = new Schema(
         ref: STRINGS.MODALS.CONTRACT,
       },
     ],
+    status: {
+      type: String,
+      enum: [
+        STRINGS.STATUS.ACTIVE,
+        STRINGS.STATUS.DELETED,
+        STRINGS.STATUS.INACTIVE,
+      ],
+      default: STRINGS.STATUS.ACTIVE,
+    },
   },
   {
     timestamps: true,

@@ -52,14 +52,22 @@ class SuperAdminAdminsController {
 
     let totalItems = await User.aggregate([
       {
-        $match: { firstName: { $regex: re }, company: { $ne: undefined } },
+        $match: {
+          firstName: { $regex: re },
+          company: { $ne: undefined },
+          status: { $ne: STRINGS.STATUS.DELETED },
+        },
       },
       { $count: "Total" },
     ]);
 
     const items = await User.aggregate([
       {
-        $match: { firstName: { $regex: re }, company: { $ne: undefined } },
+        $match: {
+          firstName: { $regex: re },
+          company: { $ne: undefined },
+          status: { $ne: STRINGS.STATUS.DELETED },
+        },
       },
       {
         $lookup: {
@@ -196,8 +204,23 @@ class SuperAdminAdminsController {
       $pull: { adminIds: userCheck._id },
     });
 
-    const result = await User.findByIdAndRemove(id);
-    if (!result) throw new CustomError(STRINGS.ERRORS.error);
+    const countUsers = await User.find().countDocuments();
+
+    await User.findByIdAndUpdate(id, {
+      $set: {
+        firstName: userCheck.firstName[0],
+        lastName: userCheck.lastName[0],
+        email: `AAA@${countUsers}.com`,
+        phone: 9999999999,
+        image: "uploads/avatar.jpeg",
+        status: STRINGS.STATUS.DELETED,
+      },
+    });
+
+    const result = {
+      _id: userCheck._id,
+      name: `${userCheck.firstName} ${userCheck.lastName}`,
+    };
 
     res.status(201).send(response(STRINGS.TEXTS.adminDeleted, result));
   }
