@@ -14,6 +14,8 @@ router.post("/", auth(), meanBookingController.create);
 router.post("/filter", meanBookingController.filterHistory);
 router.post("/filter_calendar", meanBookingController.filterBookingCalendar);
 
+// POSTS
+router.post("/", auth(), meanBookingController.create);
 // PUTS
 router.put("/:id", meanBookingController.update);
 // DELETES

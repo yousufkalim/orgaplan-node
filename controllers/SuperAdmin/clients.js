@@ -7,6 +7,7 @@ const Validations = require("../../validators");
 const response = require("../../utils/response");
 const Contract = require("../../models/contract");
 const CustomError = require("../../utils/customError");
+const mongoose = require("mongoose");
 const ENV = process.env;
 
 class SuperAdminClientsController {
@@ -67,7 +68,12 @@ class SuperAdminClientsController {
           as: "companyId",
         },
       },
-      { $match: { "companyId.name": { $regex: re } } },
+      {
+        $match: {
+          "companyId.name": { $regex: re },
+          status: { $ne: STRINGS.STATUS.DELETED },
+        },
+      },
       { $count: "Total" },
     ]);
     const items = await Client.aggregate([
@@ -103,6 +109,19 @@ class SuperAdminClientsController {
           as: "sites",
         },
       },
+      {
+        $addFields: {
+          sites: {
+            $filter: {
+              input: "$sites",
+              as: "site",
+              cond: {
+                $ne: ["$$site.status", STRINGS.STATUS.ARCHIVED],
+              },
+            },
+          },
+        },
+      },
       { $unwind: "$companyId" },
       // {
       //   $unwind: {
@@ -111,7 +130,12 @@ class SuperAdminClientsController {
       //     preserveNullAndEmptyArrays: true,
       //   },
       // },
-      { $match: { "companyId.name": { $regex: re } } },
+      {
+        $match: {
+          "companyId.name": { $regex: re },
+          status: { $ne: STRINGS.STATUS.DELETED },
+        },
+      },
       { $skip: (page - 1) * ITEMS_PER_PAGE },
       { $limit: ITEMS_PER_PAGE },
       // { $group: { _id: null, n: { $sum: 1 } } },
@@ -153,11 +177,65 @@ class SuperAdminClientsController {
   async getById(req, res) {
     const id = req.params.id;
 
-    const result = await Client.findById(id, { password: 0, __v: 0 })
-      .populate("adminIds")
-      .populate("companyId")
-      .populate("contractIds");
-
+    let result = await Client.aggregate([
+      { $match: { _id: mongoose.Types.ObjectId(id) } },
+      {
+        $lookup: {
+          from: Company.collection.name,
+          localField: "companyId",
+          foreignField: "_id",
+          as: "companyId",
+        },
+      },
+      {
+        $lookup: {
+          from: User.collection.name,
+          localField: "adminIds",
+          foreignField: "_id",
+          as: "adminIds",
+        },
+      },
+      {
+        $lookup: {
+          from: Contract.collection.name,
+          localField: "contractIds",
+          foreignField: "_id",
+          as: "contractIds",
+        },
+      },
+      {
+        $lookup: {
+          from: Site.collection.name,
+          localField: "_id",
+          foreignField: "clientId",
+          as: "sites",
+        },
+      },
+      {
+        $addFields: {
+          sites: {
+            $filter: {
+              input: "$sites",
+              as: "site",
+              cond: {
+                $ne: ["$$site.status", STRINGS.STATUS.ARCHIVED],
+              },
+            },
+          },
+        },
+      },
+      { $unwind: "$companyId" },
+      {
+        $project: {
+          _id: "$_id",
+          companyId: 1,
+          adminIds: 1,
+          contractIds: 1,
+          sites: { $size: "$sites" },
+        },
+      },
+    ]);
+    result = result[0];
     if (!result) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 
     res.status(200).send(response(STRINGS.TEXTS.clientRequested, result));
@@ -190,10 +268,70 @@ class SuperAdminClientsController {
       $set: contractData,
     });
 
-    const result = await Client.findById(validatedData.clientId)
-      .populate("adminIds")
-      .populate("companyId")
-      .populate("contractIds");
+    // const result = await Client.findById(validatedData.clientId)
+    //   .populate("adminIds")
+    //   .populate("companyId")
+    //   .populate("contractIds");
+
+    let result = await Client.aggregate([
+      { $match: { _id: mongoose.Types.ObjectId(validatedData.clientId) } },
+      {
+        $lookup: {
+          from: Company.collection.name,
+          localField: "companyId",
+          foreignField: "_id",
+          as: "companyId",
+        },
+      },
+      {
+        $lookup: {
+          from: User.collection.name,
+          localField: "adminIds",
+          foreignField: "_id",
+          as: "adminIds",
+        },
+      },
+      {
+        $lookup: {
+          from: Contract.collection.name,
+          localField: "contractIds",
+          foreignField: "_id",
+          as: "contractIds",
+        },
+      },
+      {
+        $lookup: {
+          from: Site.collection.name,
+          localField: "_id",
+          foreignField: "clientId",
+          as: "sites",
+        },
+      },
+      {
+        $addFields: {
+          sites: {
+            $filter: {
+              input: "$sites",
+              as: "site",
+              cond: {
+                $ne: ["$$site.status", STRINGS.STATUS.ARCHIVED],
+              },
+            },
+          },
+        },
+      },
+      { $unwind: "$companyId" },
+      {
+        $project: {
+          _id: "$_id",
+          companyId: 1,
+          adminIds: 1,
+          contractIds: 1,
+          sites: { $size: "$sites" },
+        },
+      },
+    ]);
+    result = result[0];
 
     if (!result) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 

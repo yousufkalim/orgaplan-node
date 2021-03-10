@@ -1,5 +1,8 @@
 const Auth = require("../auth");
+const bcrypt = require("bcryptjs");
+const JWT = require("jsonwebtoken");
 const User = require("../../models/user");
+const Token = require("../../models/token");
 const Site = require("../../models/site");
 const STRINGS = require("../../utils/texts");
 const Client = require("../../models/client");
@@ -7,6 +10,7 @@ const Company = require("../../models/company");
 const Validations = require("../../validators");
 const response = require("../../utils/response");
 const CustomError = require("../../utils/customError");
+const MailService = require("../../services/mail.service");
 const ENV = process.env;
 
 class SuperAdminAdminsController {
@@ -83,6 +87,19 @@ class SuperAdminAdminsController {
           localField: "_id",
           foreignField: "adminId",
           as: "sites",
+        },
+      },
+      {
+        $addFields: {
+          sites: {
+            $filter: {
+              input: "$sites",
+              as: "site",
+              cond: {
+                $ne: ["$$site.status", STRINGS.STATUS.ARCHIVED],
+              },
+            },
+          },
         },
       },
       {
@@ -223,6 +240,61 @@ class SuperAdminAdminsController {
     };
 
     res.status(201).send(response(STRINGS.TEXTS.adminDeleted, result));
+  }
+
+  async completeRegistration(req, res) {
+    const validatedData = Validations.admin.completeRegistration(req.body);
+
+    // Check Company
+    const companyCheck = await Company.findById(validatedData.companyId);
+    if (!companyCheck)
+      throw new CustomError(STRINGS.ERRORS.companyNotFound, 404);
+
+    // Check User
+    const userCheck = await User.findById(validatedData.adminId);
+    if (!userCheck) throw new CustomError(STRINGS.ERRORS.userNotFound, 404);
+
+    // VerifyToken
+    let VToken = await Token.findOne({ userId: validatedData.adminId });
+    if (!VToken) throw new CustomError(STRINGS.ERRORS.invalidToken);
+
+    const isValid = await bcrypt.compare(
+      validatedData.verifyToken,
+      VToken.token
+    );
+    if (!isValid) throw new CustomError(STRINGS.ERRORS.invalidToken);
+
+    const hashedPassword = await bcrypt.hash(
+      validatedData.password,
+      +ENV.BCRYPT_SALT
+    );
+
+    validatedData.password = hashedPassword;
+
+    const user = await User.findOneAndUpdate(
+      { _id: validatedData.adminId },
+      { $set: validatedData },
+      { returnOriginal: false }
+    );
+
+    await VToken.deleteOne();
+    const link = `${ENV.CLIENT_URL}/login`;
+
+    // send email
+    let emailService = new MailService();
+    await emailService.sendEmailConfirmation(user, link);
+
+    const token = await JWT.sign(
+      { id: user._id, role: user.role },
+      ENV.JWT_SECRET
+    );
+
+    const result = {
+      user,
+      token,
+    };
+
+    res.status(200).send(response(STRINGS.TEXTS.completeRegistration, result));
   }
 }
 

@@ -38,7 +38,7 @@ class SiteCompanies {
   async getOne(req, res) {
     const siteId = req.params.siteId;
 
-    const result = await SiteCompaniesModel.findOne({
+    await SiteCompaniesModel.findOne({
       siteId: siteId,
     }).populate({
       path: "companies",
@@ -47,6 +47,7 @@ class SiteCompanies {
         model: STRINGS.MODALS.COMPANY,
       },
     });
+    const result = await SiteCompaniesModel.findOne({ siteId: siteId });
     if (!result) throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));

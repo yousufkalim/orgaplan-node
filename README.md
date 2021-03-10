@@ -1,13 +1,31 @@
-# NODEJS Template By Talha Ahmad (github.com/talha-ah)
+# OrgaPlan By Talha Ahmad (github.com/talha-ah)
 
 ## Installation
 
-1. Install dependencies - `npm install`
+1. Update .env.development with your development credentials
 
-2. Create a new file `.env` if it doesn't exist and copy the contents of `env.dev` into it to be able to run your server on production environment.
+```
+cp -av .env.dev .env
+```
+
+2. Install dependencies
+
+```
+npm install
+```
 
 ## Running the server locally
 
-1. Start up the server - Run `npm start` | `npm run dev`
+1. Start up the server (development)
 
-2. Server should be running on http://localhost:5000/ by default
+```
+npm start
+```
+
+1. Start up the server (production)
+
+```
+npm run start:dev
+```
+
+### Server should be running on http://localhost:5000 by default

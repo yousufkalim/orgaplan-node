@@ -31,7 +31,7 @@ const schemas = {
   },
   update: (data) => {
     const Validation = Joi.object().keys({
-      userId: Joi.string().required(),
+      adminId: Joi.string().required(),
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
       phone: Joi.number()
@@ -47,6 +47,32 @@ const schemas = {
     });
 
     if (!data.image) delete data.image;
+
+    const { error, value } = Validation.validate(data);
+    if (error) {
+      const { details } = error;
+      const message = details.map((i) => i.message).join(",");
+      throw new CustomError(message, 400);
+    }
+    return value;
+  },
+  completeRegistration: (data) => {
+    const Validation = Joi.object().keys({
+      phone: Joi.number()
+        .integer()
+        .custom((value, helper) => {
+          if (String(value).startsWith("0") || String(value).length !== 9)
+            return helper.message("phone is invalid");
+          return value;
+        })
+        .required(),
+      firstName: Joi.string().required(),
+      lastName: Joi.string().required(),
+      password: Joi.string().required(),
+      adminId: Joi.string().required(),
+      companyId: Joi.string().required(),
+      verifyToken: Joi.string().required(),
+    });
 
     const { error, value } = Validation.validate(data);
     if (error) {

@@ -14,6 +14,10 @@ router.post(
   multer("user", "image", "single"),
   superAdmin.adminsController.create
 );
+router.post(
+  "/complete-registeration",
+  superAdmin.adminsController.completeRegistration
+);
 
 // PUTS
 router.put(

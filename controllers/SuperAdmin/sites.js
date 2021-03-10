@@ -73,11 +73,18 @@ class SuperAdminSitesController {
     // Filters
     var re = new RegExp(`^${name}`, "i");
     const statusQuery =
-      status === "ALL" ? { $ne: STRINGS.STATUS.ARCHIVED } : { $eq: status };
+      status === "ALL"
+        ? {
+            $and: [
+              { status: { $ne: STRINGS.STATUS.ARCHIVED } },
+              { status: { $ne: STRINGS.STATUS.DELETED } },
+            ],
+          }
+        : { status: { $eq: status } };
 
     const filters = {
       name: { $regex: re },
-      status: statusQuery,
+      ...statusQuery,
     };
     if (clientId !== "ALL") filters["clientId"] = clientId;
     // Fetching
@@ -128,6 +135,14 @@ class SuperAdminSitesController {
       zacId: 1,
     }).lean();
     if (!itemCheck) throw new CustomError(STRINGS.TEXTS.siteNotFound, 404);
+
+    const client = await Client.findOne(
+      { adminIds: validatedData.adminId },
+      { _id: 1 }
+    ).lean();
+    if (!client) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
+
+    validatedData.clientId = client._id;
 
     if (
       validatedData.zacId &&
