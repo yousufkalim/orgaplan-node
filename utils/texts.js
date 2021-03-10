@@ -269,6 +269,7 @@ module.exports = {
     requestResetPasswordSubject: "Password reset",
     passwordResetSent: "Password reset link sent",
     siteCompanyRequested: "Site Company Requested",
+    completeRegistration: "Registration completed",
     allRequestedSubscriptions: "All Subscriptions",
     requestEmailVerificationSubject: "Verify your email",
     sendSubscriptionActivationConfirmationSubject:

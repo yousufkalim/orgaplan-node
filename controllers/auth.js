@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const JWT = require("jsonwebtoken");
 
 const User = require("../models/user");
+const Token = require("../models/token");
 const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
@@ -19,14 +20,14 @@ class AuthContoller {
 
     let verifyToken = crypto.randomBytes(32).toString("hex");
     const hash = await bcrypt.hash(verifyToken, +ENV.BCRYPT_SALT);
-    const verifyLink = `${ENV.BASE_URL}/email-verification?uid=${user._id}&verifyToken=${verifyToken}`;
-    // const verifyLink = `${ENV.BASE_URL}/api/v1/users/${user._id}`;
+    const verifyLink = `${ENV.CLIENT_URL}/email-verification?uid=${user._id}&verifyToken=${verifyToken}`;
+    // const verifyLink = `${ENV.CLIENT_URL}/api/v1/users/${user._id}`;
 
-    await new Token({
+    await Token.create({
       userId: user._id,
       token: hash,
       createdAt: Date.now(),
-    }).save();
+    });
 
     // send email
     let emailService = new MailService();
@@ -125,7 +126,7 @@ class AuthContoller {
 
     let verifyToken = crypto.randomBytes(32).toString("hex");
     const hash = await bcrypt.hash(verifyToken, +ENV.BCRYPT_SALT);
-    const verifyLink = `${ENV.BASE_URL}/email-verification?uid=${user._id}&verifyToken=${verifyToken}`;
+    const verifyLink = `${ENV.CLIENT_URL}/email-verification?uid=${user._id}&verifyToken=${verifyToken}`;
 
     await new Token({
       userId: user._id,
@@ -157,11 +158,7 @@ class AuthContoller {
     const isValid = await bcrypt.compare(verifyToken, VToken.token);
     if (!isValid) throw new CustomError(STRINGS.ERRORS.invalidToken);
 
-    await User.updateOne(
-      { _id: userId },
-      { $set: { isVerified: true } },
-      { new: true }
-    );
+    await User.updateOne({ _id: userId }, { $set: { isVerified: true } });
 
     await VToken.deleteOne();
 
@@ -193,7 +190,7 @@ class AuthContoller {
 
     let resetToken = crypto.randomBytes(32).toString("hex");
     const hash = await bcrypt.hash(resetToken, +ENV.BCRYPT_SALT);
-    const verifyLink = `${url.CLIENT_URL}/reset-password?uid=${user._id}&resetToken=${resetToken}`;
+    const verifyLink = `${ENV.CLIENT_URL}/reset-password?uid=${user._id}&resetToken=${resetToken}`;
 
     await new Token({
       userId: user._id,
