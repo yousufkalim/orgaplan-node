@@ -8,7 +8,7 @@ module.exports = {
     siteNameExists: "Site with this name exists!",
     deleteAdminFirst: "Delete it's admin first",
     deleteSiteFirst: "Delete it's sites first",
-    deleteClientAdminSitesFirst: "Delete your admin's sites first",
+    deleteClientAdminSitesFirst: "Delete it's admin's sites first",
 
     siteNotFound: "No Site Found",
     clientNotActive: "Client not active",

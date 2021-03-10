@@ -68,7 +68,12 @@ class SuperAdminClientsController {
           as: "companyId",
         },
       },
-      { $match: { "companyId.name": { $regex: re } } },
+      {
+        $match: {
+          "companyId.name": { $regex: re },
+          status: { $ne: STRINGS.STATUS.DELETED },
+        },
+      },
       { $count: "Total" },
     ]);
     const items = await Client.aggregate([
@@ -125,7 +130,12 @@ class SuperAdminClientsController {
       //     preserveNullAndEmptyArrays: true,
       //   },
       // },
-      { $match: { "companyId.name": { $regex: re } } },
+      {
+        $match: {
+          "companyId.name": { $regex: re },
+          status: { $ne: STRINGS.STATUS.DELETED },
+        },
+      },
       { $skip: (page - 1) * ITEMS_PER_PAGE },
       { $limit: ITEMS_PER_PAGE },
       // { $group: { _id: null, n: { $sum: 1 } } },

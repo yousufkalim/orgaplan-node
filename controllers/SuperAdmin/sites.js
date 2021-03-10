@@ -73,11 +73,18 @@ class SuperAdminSitesController {
     // Filters
     var re = new RegExp(`^${name}`, "i");
     const statusQuery =
-      status === "ALL" ? { $ne: STRINGS.STATUS.ARCHIVED } : { $eq: status };
+      status === "ALL"
+        ? {
+            $and: [
+              { status: { $ne: STRINGS.STATUS.ARCHIVED } },
+              { status: { $ne: STRINGS.STATUS.DELETED } },
+            ],
+          }
+        : { status: { $eq: status } };
 
     const filters = {
       name: { $regex: re },
-      status: statusQuery,
+      ...statusQuery,
     };
     if (clientId !== "ALL") filters["clientId"] = clientId;
     // Fetching

@@ -17,20 +17,20 @@ class AuthContoller {
     user = await User.create(data);
     if (!user) throw new CustomError(STRINGS.ERRORS.error, 404);
 
-    // let verifyToken = crypto.randomBytes(32).toString("hex");
-    // const hash = await bcrypt.hash(verifyToken, +ENV.BCRYPT_SALT);
-    //const verifyLink = `${ENV.BASE_URL}/email-verification?uid=${user._id}&verifyToken=${verifyToken}`;
+    let verifyToken = crypto.randomBytes(32).toString("hex");
+    const hash = await bcrypt.hash(verifyToken, +ENV.BCRYPT_SALT);
+    const verifyLink = `${ENV.BASE_URL}/email-verification?uid=${user._id}&verifyToken=${verifyToken}`;
     // const verifyLink = `${ENV.BASE_URL}/api/v1/users/${user._id}`;
 
-    // await new Token({
-    //   userId: user._id,
-    //   token: hash,
-    //   createdAt: Date.now(),
-    // }).save();
+    await new Token({
+      userId: user._id,
+      token: hash,
+      createdAt: Date.now(),
+    }).save();
 
-    // // send email
-    // let emailService = new MailService();
-    // await emailService.requestEmailVerification(user, verifyLink);
+    // send email
+    let emailService = new MailService();
+    await emailService.requestEmailVerification(user, verifyLink);
 
     return user;
   }

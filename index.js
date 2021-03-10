@@ -5,7 +5,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 
 // Load env vars
-dotenv.config({ path: ".env.dev" });
+dotenv.config({ path: ".env" });
 
 // App initialization
 const app = express();
