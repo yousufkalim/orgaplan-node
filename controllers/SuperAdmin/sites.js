@@ -129,6 +129,14 @@ class SuperAdminSitesController {
     }).lean();
     if (!itemCheck) throw new CustomError(STRINGS.TEXTS.siteNotFound, 404);
 
+    const client = await Client.findOne(
+      { adminIds: validatedData.adminId },
+      { _id: 1 }
+    ).lean();
+    if (!client) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
+
+    validatedData.clientId = client._id;
+
     if (
       validatedData.zacId &&
       validatedData.zacId !== String(itemCheck.zacId)

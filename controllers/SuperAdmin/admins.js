@@ -86,6 +86,19 @@ class SuperAdminAdminsController {
         },
       },
       {
+        $addFields: {
+          sites: {
+            $filter: {
+              input: "$sites",
+              as: "site",
+              cond: {
+                $ne: ["$$site.status", STRINGS.STATUS.ARCHIVED],
+              },
+            },
+          },
+        },
+      },
+      {
         $addFields: { sites: { $size: "$sites" } },
       },
       { $unwind: "$company" },

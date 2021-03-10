@@ -170,7 +170,7 @@ const schemas = {
       notificationTo: Joi.array().items(Joi.string()).optional(),
     });
 
-    Helpers.isDateOccuranceChronological(data.start, data.end);
+    // Helpers.isDateOccuranceChronological(data.start, data.end);
 
     data.addresses = JSON.parse(data.addresses);
     data.trades = JSON.parse(data.trades);
@@ -181,7 +181,7 @@ const schemas = {
       data.logo = data.image;
       delete data.image;
     }
-
+    console.log("data", data);
     const { error, value } = Validation.validate(data);
     if (error) {
       const { details } = error;

@@ -31,7 +31,7 @@ const schemas = {
   },
   update: (data) => {
     const Validation = Joi.object().keys({
-      userId: Joi.string().required(),
+      adminId: Joi.string().required(),
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
       phone: Joi.number()
