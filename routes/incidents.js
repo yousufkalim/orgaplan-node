@@ -7,6 +7,8 @@ const incidentsController = require("../controllers/incidents");
 router.get("/", auth(), incidentsController.getAll);
 router.get("/:id", auth(), incidentsController.getOne);
 
+router.get("/admin/:id", auth(), incidentsController.getIncidentAdmin);
+
 // POSTS
 // router.post("/", auth(), upload("logo"), companyController.create);
 router.post(

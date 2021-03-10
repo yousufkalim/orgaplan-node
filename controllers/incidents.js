@@ -3,6 +3,8 @@ const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const SiteIncidents = require("../models/siteincidents");
 const Incidents = require("../models/incidents");
+const SiteCompanies = require("../models/SiteCompanies");
+
 class IncidentsController {
   async create(req, res) {
     const body = req.body;
@@ -42,6 +44,29 @@ class IncidentsController {
       { _id: id },
       { password: 0, __v: 0 }
     );
+    if (!result) throw new CustomError(STRINGS.ERRORS.indcidentNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.incidentRequested, result));
+  }
+
+  async getIncidentAdmin(req, res) {
+    const id = req.params.id;
+
+    const siteCompanies = await SiteCompanies.findOne({
+      siteId: id,
+    }).populate({
+      path: "companies",
+      populate: {
+        path: "connection.parentCompanyId",
+        model: STRINGS.MODALS.COMPANY,
+      },
+    });
+
+    // const result = await Incidents.findOne(
+    //   { _id: id },
+    //   { password: 0, __v: 0 }
+    // );
+    const result = { site_companies: siteCompanies };
     if (!result) throw new CustomError(STRINGS.ERRORS.indcidentNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.incidentRequested, result));
