@@ -25,7 +25,7 @@ module.exports = {
       "Mean End Date Cannot Be After Site's End Date",
 
     tradeNotFount: "No Trade Found",
-
+    organigrammeNotFound: "No Organigramme Found",
     adminNotFound: "No Admin Found",
 
     levelNotFouned: "No Level Found",
@@ -218,6 +218,12 @@ module.exports = {
     tradeUpdated: "Trade Updated",
     tradeRequested: "Trade Requested",
 
+    organigrammeDeleted: "Organigramme Deleted",
+    organigrammeCreated: "Organigramme Created",
+    organigrammeUpdated: "Organigramme Updated",
+    organigrammeRequested: "Organigramme Requested",
+    allOrganigramme: "All Organigrammes",
+
     allMeanBookings: "All Mean Bookings",
     meanBookingDeleted: "Mean Booking Deleted",
     meanBookingCreated: "Mean Booking Created",
@@ -359,6 +365,10 @@ module.exports = {
     LEVEL: "LEVEL",
     EXTERIOR: "EXTERIOR",
   },
+  ORGANIGRAMMETYPE: {
+    SITE: "SITE",
+    LOGISTICS: "LOGISTICS",
+  },
   MODALS: {
     ZAC: "Zac",
     MEAN: "Mean",
@@ -369,6 +379,7 @@ module.exports = {
     LEVEL: "Level",
     TOKEN: "Token",
     TRADES: "Trades",
+    ORGANIGRAMME: "ORGANIGRAMME",
     CLIENT: "Client",
     COMPANY: "Company",
     INVOICE: "Invoice",

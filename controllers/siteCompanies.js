@@ -37,17 +37,23 @@ class SiteCompanies {
 
   async getOne(req, res) {
     const siteId = req.params.siteId;
-
-    await SiteCompaniesModel.findOne({
+    const result = await SiteCompaniesModel.findOne({
       siteId: siteId,
     }).populate({
       path: "companies",
+      model: STRINGS.MODALS.COMPANY,
       populate: {
-        path: "connection.parentCompanyId",
+        path: "connection",
         model: STRINGS.MODALS.COMPANY,
+        populate: {
+          path: "childCompanyId",
+          model: STRINGS.MODALS.COMPANY,
+        },
+        match: {
+          siteId: { $eq: siteId },
+        },
       },
     });
-    const result = await SiteCompaniesModel.findOne({ siteId: siteId });
     if (!result) throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
@@ -66,6 +72,56 @@ class SiteCompanies {
     if (!result) throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound, 404);
 
     res.status(200).send(response(STRINGS.TEXTS.siteCompanyUpdated, result));
+  }
+
+  async filterCompanies(req, res) {
+    const body = req.body;
+    const siteId = body.siteId;
+
+    const companyName = body.companyName;
+    const responsibleName = body.responsibleName;
+
+    let companyNameRegex = "";
+    let responsibleNameRegex = "";
+
+    if (companyName) companyNameRegex = new RegExp(`^${companyName}`, "i");
+    if (responsibleName)
+      responsibleNameRegex = new RegExp(`^${responsibleName}`, "i");
+
+    const result = await SiteCompaniesModel.findOne({
+      siteId: siteId,
+    }).populate({
+      path: "companies",
+      model: STRINGS.MODALS.COMPANY,
+      match: {
+        $and: [
+          companyName ? { name: { $regex: companyNameRegex } } : {},
+          responsibleName
+            ? {
+                $or: [
+                  { "incharge.firstName": { $regex: responsibleNameRegex } },
+                  { "incharge.lastName": { $regex: responsibleNameRegex } },
+                ],
+              }
+            : {},
+        ],
+      },
+      populate: {
+        path: "connection",
+        model: STRINGS.MODALS.COMPANY,
+        populate: {
+          path: "childCompanyId",
+          model: STRINGS.MODALS.COMPANY,
+        },
+        match: {
+          siteId: { $eq: siteId },
+        },
+      },
+    });
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.meanNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.meanRequested, result));
   }
 
   async addUser(req, res) {

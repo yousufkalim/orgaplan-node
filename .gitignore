@@ -11,11 +11,15 @@ uploads/deliveryArea/*.jpg
 uploads/deliveryArea/*.jpeg
 
 
+uploads/organigramme/*.pdf
+uploads/organigramme/*.png
+uploads/organigramme/*.jpg
+uploads/organigramme/*.jpeg
+
 uploads/incidents/*.pdf
 uploads/incidents/*.png
 uploads/incidents/*.jpg
 uploads/incidents/*.jpeg
-
 
 uploads/invoice/*.pdf
 uploads/invoice/*.png

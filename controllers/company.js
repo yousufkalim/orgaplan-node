@@ -187,6 +187,19 @@ class CompanyController {
     res.status(200).send(response(STRINGS.TEXTS.companyRequested, result));
   }
 
+  async getCompanyUsersPerSite(req, res) {
+    const siteId = req.params.siteId;
+    const companyId = req.params.companyId;
+
+    const result = await Company.findOne({
+      _id: companyId,
+      "users.siteId": siteId,
+    }).populate("users.userId");
+    if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.companyRequested, result));
+  }
+
   async update(req, res) {
     const id = req.params.id;
     const data = req.body;
