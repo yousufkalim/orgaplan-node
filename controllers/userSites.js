@@ -2,6 +2,8 @@ const UserSites = require("../models/userSites");
 const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
+const ENV = process.env;
+
 class UserSitesController {
   async create(req, res) {
     const data = req.body;
@@ -46,16 +48,6 @@ class UserSitesController {
 
     res.status(200).send(response(STRINGS.TEXTS.userSiteRequested, result));
   }
-  async getSiteByUserId(req, res) {
-    const userId = req.params.userId;
-
-    const result = await UserSites.findOne({ userId: userId }).populate(
-      "sites.siteId"
-    );
-    if (!result) throw new CustomError(STRINGS.ERRORS.userSitesNotFound);
-
-    res.status(200).send(response(STRINGS.TEXTS.userSiteRequested, result));
-  }
 
   async update(req, res) {
     const id = req.params.id;
@@ -72,6 +64,29 @@ class UserSitesController {
     res.status(200).send(response(STRINGS.TEXTS.userSitesUpdated, result));
   }
 
+  async delete(req, res) {
+    const id = req.params.id;
+
+    const result = await UserSites.findOne({
+      _id: id,
+    });
+    result.remove();
+
+    res.status(200).send(response(STRINGS.TEXTS.userSitesDeleted, result));
+  }
+
+  async getSitesByUser(req, res) {
+    const userId = req.params.userId;
+
+    const result = await UserSites.findOne({ userId: userId }).populate(
+      "sites.siteId"
+    );
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.userSitesNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.sitesRequested, result));
+  }
+
   async deleteUserSite(req, res) {
     const userId = req.params.userId;
     const data = req.body;
@@ -86,17 +101,6 @@ class UserSitesController {
       );
       res.status(200).send(response(STRINGS.TEXTS.userSitesDeleted, userSites));
     } else throw new CustomError(STRINGS.ERRORS.userSitesNotFound, 404);
-  }
-
-  async delete(req, res) {
-    const id = req.params.id;
-
-    const result = await UserSites.findOne({
-      _id: id,
-    });
-    result.remove();
-
-    res.status(200).send(response(STRINGS.TEXTS.userSitesDeleted, result));
   }
 }
 

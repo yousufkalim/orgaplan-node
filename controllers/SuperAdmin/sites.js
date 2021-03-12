@@ -6,6 +6,7 @@ const Client = require("../../models/client");
 const Validations = require("../../validators");
 const response = require("../../utils/response");
 const Building = require("../../models/building");
+const UserSites = require("../../models/userSites");
 const CustomError = require("../../utils/customError");
 const ENV = process.env;
 
@@ -43,6 +44,26 @@ class SuperAdminSitesController {
       levelType: "STORAGE",
       building: building._id,
     });
+
+    // Check if the userSites Obj exists
+    const userSitesCheck = await UserSites.findOne({
+      userId: validatedData.adminId,
+    });
+    if (userSitesCheck) {
+      await UserSites.findByIdAndUpdate(userSitesCheck._id, {
+        $addToSet: { sites: { siteId: site._id, role: STRINGS.ROLES.ADMIN } },
+      });
+    } else {
+      await UserSites.create({
+        userId: validatedData.adminId,
+        sites: [
+          {
+            siteId: site._id,
+            role: STRINGS.ROLES.ADMIN,
+          },
+        ],
+      });
+    }
 
     await Building.findByIdAndUpdate(
       building._id,
@@ -133,6 +154,7 @@ class SuperAdminSitesController {
     const itemCheck = await Site.findById(validatedData.siteId, {
       _id: 1,
       zacId: 1,
+      adminId: 1,
     }).lean();
     if (!itemCheck) throw new CustomError(STRINGS.TEXTS.siteNotFound, 404);
 
@@ -162,6 +184,30 @@ class SuperAdminSitesController {
       });
     }
 
+    if (String(itemCheck.adminId) !== String(validatedData.adminId)) {
+      // Check if the userSites Obj exists
+      const userSitesCheck = await UserSites.findOne({
+        userId: validatedData.adminId,
+      });
+      if (userSitesCheck) {
+        await UserSites.findByIdAndUpdate(userSitesCheck._id, {
+          $addToSet: {
+            sites: { siteId: validatedData.siteId, role: STRINGS.ROLES.ADMIN },
+          },
+        });
+      } else {
+        await UserSites.create({
+          userId: validatedData.adminId,
+          sites: [
+            {
+              siteId: validatedData.siteId,
+              role: STRINGS.ROLES.ADMIN,
+            },
+          ],
+        });
+      }
+    }
+
     const result = await Site.findByIdAndUpdate(
       validatedData.siteId,
       {
@@ -186,10 +232,16 @@ class SuperAdminSitesController {
       });
     }
 
+    await UserSites.updateMany(
+      { "sites.siteId": id },
+      {
+        $pull: { sites: { siteId: id } },
+      }
+    );
     await Building.deleteMany({ _id: { $in: result.buildings } });
     await Level.deleteMany({ building: { $in: result.buildings } });
 
-    res.status(201).send(response(STRINGS.TEXTS.siteDeleted, result));
+    res.status(201).send(response(STRINGS.TEXTS.siteDeleted, "result"));
   }
 
   async getSitesByClient(req, res) {

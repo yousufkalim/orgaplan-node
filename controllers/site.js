@@ -7,9 +7,9 @@ const UserSites = require("../models/userSites");
 const SiteCompanies = require("../models/SiteCompanies");
 const SitePenalties = require("../models/sitePenalties");
 const CompanyTrades = require("../models/companyTrades");
+
 class SiteController {
   async create(req, res) {
-    console.log("HERE");
     const body = req.body;
     if (req.file) {
       body.logo = req.file.path;

@@ -227,9 +227,9 @@ class SuperAdminAdminsController {
       $set: {
         firstName: userCheck.firstName[0],
         lastName: userCheck.lastName[0],
-        email: `AAA@${countUsers}.com`,
-        phone: 9999999999,
         image: "uploads/avatar.jpeg",
+        phone: 9999999999,
+        email: `AAA@${countUsers}.com`,
         status: STRINGS.STATUS.DELETED,
       },
     });
@@ -270,6 +270,7 @@ class SuperAdminAdminsController {
     );
 
     validatedData.password = hashedPassword;
+    validatedData.isVerified = true;
 
     const user = await User.findOneAndUpdate(
       { _id: validatedData.adminId },
