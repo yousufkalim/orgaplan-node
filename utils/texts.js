@@ -4,6 +4,7 @@ module.exports = {
     verifiedAlready: "Verified already",
     resourceNotFound: "Resource not found!",
     meanBookingNotFound: "Mean Booking not found!",
+    unverifiedEmail: "Kindly verify your email first!",
     adminExistsForCompany: "Admin exists for this company!",
     siteNameExists: "Site with this name exists!",
     deleteAdminFirst: "Delete it's admin first",
@@ -275,6 +276,7 @@ module.exports = {
     sendSubscriptionActivationConfirmationSubject:
       "Subscription activated successfully",
 
+    tokenIsValid: "Token is valid",
     success: "Success",
     clientUpdated: "Client Updated",
     emailVerificationSent: "Email verfication link sent",

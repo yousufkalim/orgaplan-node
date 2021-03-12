@@ -66,22 +66,6 @@ const schemas = {
       additionalInfo: Joi.string().optional().allow(""),
       notificationPriorToDays: Joi.number().optional().allow("0"),
       notificationTo: Joi.array().items(Joi.string()).optional(),
-      // buildings: Joi.array()
-      //   .items(
-      //     Joi.object().keys({
-      //       name: Joi.number().required(),
-      //       buildingType: Joi.number().required(),
-      //     })
-      //   )
-      //   .optional(),
-      // levels: Joi.array().items(
-      //   Joi.object().keys({
-      //     name: Joi.string().required(),
-      //     number: Joi.number().required(),
-      //     levelType: Joi.number().required(),
-      //     image: Joi.string().optional(),
-      //   })
-      // ),
     });
 
     Helpers.isDateOccuranceChronological(data.start, data.end);
@@ -169,8 +153,6 @@ const schemas = {
       notificationPriorToDays: Joi.number().optional().allow("0"),
       notificationTo: Joi.array().items(Joi.string()).optional(),
     });
-
-    // Helpers.isDateOccuranceChronological(data.start, data.end);
 
     data.addresses = JSON.parse(data.addresses);
     data.trades = JSON.parse(data.trades);

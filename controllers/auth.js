@@ -60,6 +60,9 @@ class AuthContoller {
     const user = await User.findOne({ email: data.email });
     if (!user) throw new CustomError(STRINGS.ERRORS.emailInvalid, 401);
 
+    if (!user.isVerified)
+      throw new CustomError(STRINGS.ERRORS.unverifiedEmail, 401);
+
     // Check if user password is correct
     const isCorrect = await bcrypt.compare(data.password, user.password);
     if (!isCorrect) throw new CustomError(STRINGS.ERRORS.passwordInvalid, 401);
@@ -237,6 +240,23 @@ class AuthContoller {
     };
 
     res.status(200).send(response(STRINGS.TEXTS.passwordSuccess, result));
+  }
+
+  async validateToken(req, res) {
+    const userId = req.params.userId;
+    const verifyToken = req.params.token;
+
+    let VToken = await Token.findOne({ userId });
+    if (!VToken) throw new CustomError(STRINGS.ERRORS.invalidToken);
+
+    const isValid = await bcrypt.compare(verifyToken, VToken.token);
+    if (!isValid) throw new CustomError(STRINGS.ERRORS.invalidToken);
+
+    const result = {
+      userId: VToken.userId,
+    };
+
+    res.status(200).send(response(STRINGS.TEXTS.tokenIsValid, result));
   }
 }
 
