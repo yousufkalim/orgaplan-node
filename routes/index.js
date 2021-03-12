@@ -24,5 +24,6 @@ router.use("/v1/site-incidents", require("./siteIncidents"));
 router.use("/v1/company-sites", require("./siteCompanies"));
 router.use("/v1/location", require("./location"));
 router.use("/v1/superadmin", require("./SuperAdmin"));
+router.use("/v1/organigramme", require("./organigramme"));
 
 module.exports = router;

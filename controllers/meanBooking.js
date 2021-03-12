@@ -2,10 +2,47 @@ const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const Booking = require("../models/meanBooking");
+const SiteCompanies = require("../models/SiteCompanies");
+const Mean = require("../models/mean");
 class MeanBookingController {
   async create(req, res) {
     const result = await new Booking(req.body).save();
     res.status(200).send(response(STRINGS.TEXTS.meanBookingCreated, result));
+  }
+
+  async getMeanCalendar(req, res) {
+    const siteId = req.params.siteId;
+    const meanId = req.params.meanId;
+    const bookings = await Booking.find({
+      siteId: siteId,
+      meanId: meanId,
+    }).populate("companyId");
+    const site_companies = await SiteCompanies.find({
+      siteId: siteId,
+    }).populate("companies");
+
+    const site_means = await Mean.find({ siteId: siteId });
+    let result = { bookings, site_companies, site_means };
+
+    res.status(200).send(response(STRINGS.TEXTS.meanRequested, result));
+  }
+
+  async filterBookingCalendar(req, res) {
+    const body = req.body;
+    const siteId = body.siteId;
+    const meanId = body.meanId;
+    const endDate = body.endDate;
+    const result = await Booking.find({
+      siteId: siteId,
+      $and: [
+        meanId ? { meanId: { $eq: meanId } } : {},
+        endDate ? { endDate: { $eq: endDate } } : {},
+      ],
+    }).populate("companyId");
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.meanNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.meanRequested, result));
   }
 
   async getAll(req, res) {
@@ -22,6 +59,49 @@ class MeanBookingController {
     res.status(200).send(response(STRINGS.TEXTS.meanBookingRequested, result));
   }
 
+  async getHistory(req, res) {
+    const meanId = req.params.meanId;
+    const siteId = req.params.siteId;
+
+    const siteCompanies = await SiteCompanies.findOne({
+      siteId: siteId,
+    }).populate("companies");
+
+    const siteMeans = await Mean.find({ siteId: siteId });
+
+    const history = await Booking.find({ siteId: siteId, meanId: meanId })
+      .populate("meanId")
+      .populate("companyId");
+    const result = {
+      site_means: siteMeans,
+      history,
+      site_companies: siteCompanies,
+    };
+    if (!result) throw new CustomError(STRINGS.ERRORS.meanBookingNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.meanBookingRequested, result));
+  }
+
+  async filterHistory(req, res) {
+    const body = req.body;
+    const siteId = body.siteId;
+    const companyId = body.companyId;
+    const meanId = body.meanId;
+
+    const result = await Booking.find({
+      siteId: siteId,
+      $and: [
+        companyId ? { companyId: { $eq: companyId } } : {},
+        meanId ? { meanId: { $eq: meanId } } : {},
+      ],
+    })
+      .populate("meanId")
+      .populate("companyId");
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.meanBookingNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.meanBookingRequested, result));
+  }
   async update(req, res) {
     const id = req.params.id;
     const data = req.body;

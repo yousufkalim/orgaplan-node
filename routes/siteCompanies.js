@@ -8,6 +8,7 @@ router.get("/:siteId", auth(), siteCompanyController.getOne);
 
 // POSTS
 router.post("/", auth(), siteCompanyController.create);
+router.post("/filter", siteCompanyController.filterCompanies);
 
 // PUTS
 router.put("/:id", auth(), siteCompanyController.update);

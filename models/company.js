@@ -30,6 +30,7 @@ const companySchema = new Schema(
     users: [
       {
         userId: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.USER },
+        siteId: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.SITE },
         role: {
           type: String,
           enum: [

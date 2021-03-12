@@ -6,6 +6,8 @@ const incidentSchema = new Schema(
   {
     name: String,
     date: Date,
+    time: String,
+    description: String,
     isBillable: Boolean,
     price: Number,
     location: {

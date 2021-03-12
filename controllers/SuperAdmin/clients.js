@@ -159,7 +159,6 @@ class SuperAdminClientsController {
     ]);
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
     totalItems = totalItems.length > 0 ? totalItems[0].Total : 0;
-
     const result = {
       items,
       totalItems,
