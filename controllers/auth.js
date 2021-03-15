@@ -36,20 +36,6 @@ class AuthContoller {
     return user;
   }
 
-  async registerUser(req, res) {
-    const data = req.body;
-
-    let user = await User.findOne({ email: data.email });
-    if (user) throw new CustomError(STRINGS.ERRORS.passwordInvalid);
-
-    const hash = await bcrypt.hash(data.password, +ENV.BCRYPT_SALT);
-    data.password = hash;
-
-    user = await new User(data).save();
-
-    res.status(200).send(response(STRINGS.TEXTS.userCreated, user));
-  }
-
   async signin(req, res) {
     const data = req.body;
     if (!data.email) throw new CustomError(STRINGS.ERRORS.emailRequired, 401);
@@ -80,6 +66,20 @@ class AuthContoller {
     res.status(200).send(response(STRINGS.TEXTS.loginSuccess, result));
   }
 
+  async registerUser(req, res) {
+    const data = req.body;
+
+    let user = await User.findOne({ email: data.email });
+    if (user) throw new CustomError(STRINGS.ERRORS.passwordInvalid);
+
+    const hash = await bcrypt.hash(data.password, +ENV.BCRYPT_SALT);
+    data.password = hash;
+
+    user = await new User(data).save();
+
+    res.status(200).send(response(STRINGS.TEXTS.userCreated, user));
+  }
+
   async getProfile(req, res) {
     const userId = req.userId;
     if (!userId) throw new CustomError(STRINGS.ERRORS.error);
@@ -108,16 +108,12 @@ class AuthContoller {
 
     const hash = await bcrypt.hash(data.password, +ENV.BCRYPT_SALT);
 
-    const result = await User.updateOne(
-      { _id: userId },
-      { $set: { password: hash } },
-      { new: true }
-    );
+    await user.update({ $set: { password: hash } });
 
-    res.status(200).send(response(STRINGS.TEXTS.passwordSuccess, result));
+    res.status(200).send(response(STRINGS.TEXTS.passwordSuccess, user));
   }
 
-  async RequestEmailVerification(req, res) {
+  async requestEmailVerification(req, res) {
     const email = req.query.email;
 
     const user = await User.findOne({ email });
@@ -148,10 +144,10 @@ class AuthContoller {
     res.status(200).send(response(STRINGS.TEXTS.emailVerificationSent, result));
   }
 
-  async VerifyEmail(req, res) {
+  async verifyEmail(req, res) {
     const { userId, verifyToken } = req.body;
 
-    const user = await User.findOne({ _id: userId });
+    const user = await User.findById(userId);
     if (!user) throw new CustomError(STRINGS.ERRORS.userNotFound);
     if (user.isVerified) throw new CustomError(STRINGS.ERRORS.alreadyVerified);
 
@@ -182,18 +178,17 @@ class AuthContoller {
     res.status(200).send(response(STRINGS.TEXTS.emailVerified, result));
   }
 
-  async RequestPasswordReset(req, res) {
+  async requestPasswordReset(req, res) {
     const email = req.query.email;
 
     const user = await User.findOne({ email });
     if (!user) throw new CustomError(STRINGS.ERRORS.emailInvalid);
 
-    let token = await Token.findOne({ userId: user._id });
-    if (token) await token.deleteOne();
+    await Token.findOneAndDelete({ userId: user._id });
 
-    let resetToken = crypto.randomBytes(32).toString("hex");
-    const hash = await bcrypt.hash(resetToken, +ENV.BCRYPT_SALT);
-    const verifyLink = `${ENV.CLIENT_URL}/reset-password?uid=${user._id}&resetToken=${resetToken}`;
+    let verifyToken = crypto.randomBytes(32).toString("hex");
+    const hash = await bcrypt.hash(verifyToken, +ENV.BCRYPT_SALT);
+    const verifyLink = `${ENV.CLIENT_URL}/reset-password?uid=${user._id}&verifyToken=${verifyToken}`;
 
     await new Token({
       userId: user._id,
@@ -213,21 +208,21 @@ class AuthContoller {
   }
 
   async resetPassword(req, res) {
-    const { userId, resetToken, password } = req.body;
+    const { userId, verifyToken, password } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) throw new CustomError(STRINGS.ERRORS.userNotFound);
+    if (!user.isVerified) throw new CustomError(STRINGS.ERRORS.unverifiedEmail);
 
     let RToken = await Token.findOne({ userId });
     if (!RToken) throw new CustomError(STRINGS.ERRORS.invalidToken);
 
-    const isValid = await bcrypt.compare(resetToken, RToken.token);
+    const isValid = await bcrypt.compare(verifyToken, RToken.token);
     if (!isValid) throw new CustomError(STRINGS.ERRORS.invalidToken);
 
     const hash = await bcrypt.hash(password, +ENV.BCRYPT_SALT);
 
-    const user = await User.updateOne(
-      { _id: userId },
-      { $set: { password: hash } },
-      { new: true }
-    );
+    await user.update({ $set: { password: hash } });
 
     await RToken.deleteOne();
 
