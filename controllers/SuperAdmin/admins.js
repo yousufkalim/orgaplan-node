@@ -4,6 +4,7 @@ const JWT = require("jsonwebtoken");
 const User = require("../../models/user");
 const Token = require("../../models/token");
 const Site = require("../../models/site");
+const UserSites = require("../../models/userSites");
 const STRINGS = require("../../utils/texts");
 const Client = require("../../models/client");
 const Company = require("../../models/company");
@@ -40,6 +41,11 @@ class SuperAdminAdminsController {
     // Update Company
     await Company.findByIdAndUpdate(validatedData.companyId, {
       $addToSet: { adminIds: user._id },
+    });
+
+    await UserSites.create({
+      userId: user._id,
+      sites: [],
     });
 
     const result = await User.findById(user._id).populate("company");

@@ -12,6 +12,7 @@ router.get(
   authController.getProfile
 );
 router.get("/validate-token/:userId/:token", authController.validateToken);
+router.get("/request-password-reset", authController.requestPasswordReset);
 
 // Posts
 router.post(
@@ -22,10 +23,9 @@ router.post(
 router.post("/sign-in", authController.signin);
 router.post(
   "/request-email-verification",
-  authController.RequestEmailVerification
+  authController.requestEmailVerification
 );
-router.post("/verify-email", authController.VerifyEmail);
-router.post("/request-password-reset", authController.RequestPasswordReset);
+router.post("/verify-email", authController.verifyEmail);
 router.post("/reset-password", authController.resetPassword);
 
 // Puts
