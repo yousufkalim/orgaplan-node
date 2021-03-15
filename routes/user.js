@@ -8,7 +8,8 @@ const userController = require("../controllers/user");
 router.get("/", auth("admin"), userController.getAll);
 router.get("/:userId", userController.getOne);
 router.get("/add_user/:siteId/:adminId", userController.getAddUser);
-
+router.get("/get_user_company/:siteId/:userId", userController.getUserCompany);
+//getUserCompany
 //POSTS
 router.post("/", upload("user", "image"), userController.create);
 router.post(

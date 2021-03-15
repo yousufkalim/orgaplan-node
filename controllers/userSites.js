@@ -87,6 +87,16 @@ class UserSitesController {
     res.status(200).send(response(STRINGS.TEXTS.sitesRequested, result));
   }
 
+  async getSiteByUserId(req, res) {
+    const userId = req.params.userId;
+
+    const result = await UserSites.findOne({ userId: userId }).populate(
+      "sites.siteId"
+    );
+    if (!result) throw new CustomError(STRINGS.ERRORS.userSitesNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.userSiteRequested, result));
+  }
   async deleteUserSite(req, res) {
     const userId = req.params.userId;
     const data = req.body;

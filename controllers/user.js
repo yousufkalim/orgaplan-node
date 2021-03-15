@@ -11,7 +11,7 @@ const ENV = process.env;
 class UserContoller {
   async create(req, res) {
     const body = req.body;
-    body.address = JSON.parse(body.address);
+    if (body.address) body.address = JSON.parse(body.address);
     body.password = await bcrypt.hash(body.password, +ENV.BCRYPT_SALT);
 
     const result = await new User(body).save();
@@ -20,7 +20,7 @@ class UserContoller {
 
   async register(req, res) {
     const body = req.body;
-    body.address = JSON.parse(body.address);
+    if (body.address) body.address = JSON.parse(body.address);
     body.password = await bcrypt.hash(body.password, +ENV.BCRYPT_SALT);
     const user = await User.findOne({ email: body.email });
     user.password = body.password;
@@ -51,19 +51,16 @@ class UserContoller {
     const userSites = await UserSites.find({
       "sites.siteId": siteId,
       $and: [{ "sites.role": { $ne: STRINGS.ROLES.ADMIN } }],
-    }).populate("userId");
+    })
+      .populate("userId")
+      .populate("sites.siteId");
     const site_companies = await SiteCompanies.findOne({
       siteId: siteId,
     }).populate("companies");
 
-    const admin_sites = await UserSites.findOne({
-      userId: adminId,
-      $and: [{ "sites.role": { $eq: STRINGS.ROLES.ADMIN } }],
-    }).populate("sites.siteId");
     let result = {
       users: userSites,
       site_companies,
-      admin_sites,
       roles: [
         STRINGS.ROLES.BUFFER,
         STRINGS.ROLES.TRAFFIC,
@@ -71,6 +68,18 @@ class UserContoller {
       ],
     };
     res.status(200).send(response(STRINGS.TEXTS.allUsers, result));
+  }
+
+  async getUserCompany(req, res) {
+    const siteId = req.params.siteId;
+    const userId = req.params.userId;
+
+    const result = await Company.findOne({
+      "users.userId": userId,
+      "users.siteId": siteId,
+    });
+    if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound);
+    res.status(200).send(response(STRINGS.TEXTS.companyData, result));
   }
 
   async adminCreateUser(req, res) {
@@ -83,6 +92,18 @@ class UserContoller {
     const user = await User.findOne({ email: body.email });
     if (user) {
       // User Already Exists
+      const user_sites = await UserSites.findOne({
+        userId: user._id,
+      }).populate("sites.siteId");
+      const user_companies = await Company.find({ "users.userId": user._id });
+
+      res.status(200).send(
+        response(STRINGS.TEXTS.userCreated, {
+          user_sites,
+          user_companies: user_companies,
+          userExists: true,
+        })
+      );
     } else {
       const newUser = await User.create(req.body); // Create new user
       const userId = newUser._id;
@@ -104,8 +125,11 @@ class UserContoller {
         },
         { new: true }
       );
-      console.log(JSON.stringify(company, null, 2));
-      res.status(200).send(response(STRINGS.TEXTS.userCreated, newUser));
+      res
+        .status(200)
+        .send(
+          response(STRINGS.TEXTS.userCreated, newUser, { userExists: false })
+        );
     }
 
     //  if (!user) throw new CustomError(STRINGS.ERRORS.userNotFound);

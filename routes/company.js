@@ -12,6 +12,8 @@ router.get(
   companyController.getCompanyUsersPerSite
 );
 
+router.get("/add_company/:siteId/", companyController.getAddCompany);
+
 // POSTS
 // router.post("/", auth(), upload("logo"), companyController.create);
 router.post("/", upload("company", "logo"), companyController.create);

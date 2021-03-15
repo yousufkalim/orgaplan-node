@@ -6,7 +6,7 @@ const userSitesController = require("../controllers/userSites");
 router.get("/", userSitesController.getAll);
 router.get("/get/:id", userSitesController.getOne);
 router.get("/user/:userId", userSitesController.getSitesByUser);
-
+router.get("/single/:userId", auth(), userSitesController.getSiteByUserId);
 // POSTS
 router.post("/", userSitesController.create);
 

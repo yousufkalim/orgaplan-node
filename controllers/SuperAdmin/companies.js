@@ -42,7 +42,7 @@ class SuperAdminAdminsController {
 
   async getById(req, res) {
     const id = req.params.id;
-
+    console.log(id);
     const result = await Company.findById(id, { password: 0, __v: 0 }).populate(
       "adminIds"
     );

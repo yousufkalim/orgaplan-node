@@ -110,6 +110,7 @@ module.exports = {
   TEXTS: {
     allUsers: "All users",
     userData: "User data",
+
     userAdded: "User Added",
     userCreated: "User created",
     userUpdated: "User updated",
@@ -137,6 +138,7 @@ module.exports = {
     adminsRequested: "Admins requested",
     adminExistsAlready: "Admin exists already",
 
+    companyData: "Company data",
     companyCreated: "Company created",
     companyUpdated: "Company updated",
     companyDeleted: "Company deleted",

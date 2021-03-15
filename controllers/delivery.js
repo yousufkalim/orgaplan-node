@@ -26,10 +26,10 @@ class DeliveryController {
     if (!body.isExterior) {
       if (!body.level) throw new CustomError(STRINGS.ERRORS.leveRequired);
     }
-    const companyTrades = await Company.findOne({
-      _id: body.companyId,
-      "connection.siteId": body.siteId,
-      "connection.trades": body.trades,
+    const companyTrades = await CompanyTrades.findOne({
+      companyId: body.companyId,
+      siteId: body.siteId,
+      trades: body.trades,
     });
     if (!companyTrades)
       throw new CustomError(STRINGS.ERRORS.invalidCompanyTradeAssign);
@@ -64,8 +64,8 @@ class DeliveryController {
     const { userId, siteId } = req.params;
     console.log(siteId);
     const userCompany = await Company.findOne({
-      adminId: userId,
-      "connection.siteId": siteId,
+      "users.userId": userId,
+      "users.siteId": siteId,
     })
       .populate({
         path: "connection",

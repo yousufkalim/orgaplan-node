@@ -4,6 +4,7 @@ const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const Auth = require("../controllers/auth");
 const UserSites = require("../models/userSites");
+const Site = require("../models/site");
 class CompanyController {
   async create(req, res) {
     const data = req.body;
@@ -174,6 +175,16 @@ class CompanyController {
     if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.companyRequested, result));
+  }
+
+  async getAddCompany(req, res) {
+    const siteId = req.params.siteId;
+    const result = await Site.findById({ _id: siteId }).populate("trades");
+
+    //   const result = await Company.findOne({ _id: id }, { password: 0, __v: 0 });
+    if (!result) throw new CustomError(STRINGS.ERRORS.siteNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.siteRequested, result));
   }
 
   async getUserCompany(req, res) {
