@@ -3,21 +3,11 @@ const auth = require("../middlewares/auth");
 const meanBookingController = require("../controllers/meanBooking");
 // GETS
 router.get("/", auth(), meanBookingController.getAll);
-router.get("/:id", auth(), meanBookingController.getOne);
-router.get("/:meanId/:siteId", auth(), meanBookingController.getHistory);
-router.get(
-  "/get_mean_bookings_calendar/:siteId/:meanId",
-  meanBookingController.getMeanCalendar
-);
-// POSTS
-router.post("/", auth(), meanBookingController.create);
-router.post("/filter", meanBookingController.filterHistory);
-router.post("/filter_calendar", meanBookingController.filterBookingCalendar);
-
+router.get("/get/:id", auth(), meanBookingController.getOne);
 // POSTS
 router.post("/", auth(), meanBookingController.create);
 // PUTS
-router.put("/:id", meanBookingController.update);
+router.put("/update/:id", meanBookingController.update);
 // DELETES
-router.delete("/:id", meanBookingController.delete);
+router.delete("/delete/:id", meanBookingController.delete);
 module.exports = router;
