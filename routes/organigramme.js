@@ -6,26 +6,25 @@ const organigrammeController = require("../controllers/organigramme");
 
 // GETS
 router.get("/", auth("admin"), organigrammeController.getAll);
-router.get("/:id", organigrammeController.getOne);
+router.get("/get/:id", organigrammeController.getOne);
 
 router.get("/site/:siteId", organigrammeController.getBySiteId);
 
 //POSTS
 router.post(
   "/",
-  upload("organigramme", "image"),
+  upload("organigramme", "image", "single"),
   organigrammeController.create
 );
 
 //PUTS
 router.put(
-  "/:id",
-
-  upload("organigramme", "image"),
+  "/update/:id",
+  upload("organigramme", "image", "single"),
   organigrammeController.update
 );
 
 // DELETES
-router.delete("/:id", auth("admin"), organigrammeController.delete);
+router.delete("/delete/:id", auth("admin"), organigrammeController.delete);
 
 module.exports = router;

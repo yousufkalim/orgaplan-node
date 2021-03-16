@@ -1,10 +1,12 @@
 const router = require("express").Router();
+
+const STRINGS = require("../utils/texts");
 const auth = require("../middlewares/auth");
 const upload = require("../middlewares/multer");
 
 const deliveryAreaController = require("../controllers/deliveryArea");
 // GETS
-router.get("/", auth(), deliveryAreaController.getAll);
+router.get("/", auth(STRINGS.ROLES.ALL), deliveryAreaController.getAll);
 router.get("/:id", auth(), deliveryAreaController.getOne);
 router.get(
   "/get_delivery_area_means/enterprise/:id",

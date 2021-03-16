@@ -5,7 +5,7 @@ const Organigramme = require("../models/organigramme");
 
 class OrganigrammeController {
   async create(req, res) {
-    if (req.file) req.body.image = req.file.path;
+    console.log(req.body);
     const result = await new Organigramme(req.body).save();
     res.status(200).send(response(STRINGS.TEXTS.organigrammeCreated, result));
   }
