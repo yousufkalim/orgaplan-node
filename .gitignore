@@ -105,7 +105,7 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
-
+package-lock.json
 
 
 
@@ -324,4 +324,5 @@ dist
 .yarn/unplugged
 .yarn/build-state.yml
 .yarn/install-state.gz
-.pnp.*
+.pnp.*.env
+package-lock.json
