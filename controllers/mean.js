@@ -7,7 +7,6 @@ const Site = require("../models/site");
 const Building = require("../models/building");
 const DeliveryArea = require("../models/deliveryArea");
 const StorageArea = require("../models/storageArea");
-const Location = require("../models/location");
 const Company = require("../models/company");
 const {
   isDateBefore,
@@ -219,12 +218,6 @@ class MeanController {
 
     if (!siteStorageAreas)
       throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
-
-    const siteLocations = await Location.find({
-      siteId: siteId,
-    })
-      .populate("storage")
-      .populate("building");
 
     const siteCompanies = await Company.find({
       "connection.siteId": siteId,

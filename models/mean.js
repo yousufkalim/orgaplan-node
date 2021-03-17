@@ -61,7 +61,13 @@ const meanSchema = new Schema(
       end: Date,
     },
     unavailability: [
-      { date: Date, reason: String, startingHour: Number, endingHour: Number },
+      {
+        date: Date,
+        reason: String,
+        startingHour: Number,
+        endingHour: Number,
+        dayOff: { type: Boolean, default: false },
+      },
     ],
   },
 

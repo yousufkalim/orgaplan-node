@@ -9,7 +9,6 @@ const deliverySchema = new Schema(
       enum: [STRINGS.STATUS.SCHEDULED, STRINGS.STATUS.UNSCHEDULED],
       default: STRINGS.STATUS.SCHEDULED,
     },
-
     deliveryArea: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.DELIVERYAREA,

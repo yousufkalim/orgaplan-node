@@ -2,43 +2,56 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const STRINGS = require("../utils/texts");
 const randomColor = require("../utils/colorGenerator");
+
 const deliveryArea = new Schema(
   {
     name: String,
-    document: String,
-    addresses: [{ lat: Number, long: Number }],
+    // document: String,
+    color: {
+      type: String,
+      default: randomColor,
+    },
+    addresses: [
+      {
+        pdf: String,
+        startDate: Date,
+        endData: Date,
+        location: [{ type: Number }], //lat: Number, long: Number
+      },
+    ],
+    availability: {
+      start: Date,
+      end: Date,
+    },
+    unavailability: [
+      {
+        date: Date,
+        reason: String,
+        startingHour: Number,
+        endingHour: Number,
+        dayOff: { type: Boolean, default: false },
+      },
+    ],
+    vehicles: [{ name: String }],
+    deliveryAreaEndNotificaionTime: Number,
+    siteId: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.SITE,
+    },
     means: [
       {
         type: Schema.Types.ObjectId,
         ref: STRINGS.MODALS.MEAN,
       },
     ],
-    status: {
-      type: String,
-      enum: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],
-    },
-    unavailability: [
-      { date: Date, reason: String, startingHour: Number, endingHour: Number },
-    ],
-    color: {
-      type: String,
-      default: randomColor,
-    },
-    availability: {
-      start: Date,
-      end: Date,
-    },
-    vehicles: [{ name: String }],
     picCoordinates: {
       x: { type: Number },
       y: { type: Number },
     },
-
-    siteId: {
-      type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.SITE,
+    status: {
+      type: String,
+      enum: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],
     },
-    deliveryAreaEndNotificaionTime: Number,
   },
   {
     timestamps: true,

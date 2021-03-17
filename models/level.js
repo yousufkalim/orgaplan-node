@@ -7,12 +7,10 @@ const levelSchema = new Schema(
     name: String,
     number: Number,
     image: String,
-
     storage: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.STORAGEAREA,
     },
-
     building: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.BUILDING,

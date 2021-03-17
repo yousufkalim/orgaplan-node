@@ -3,12 +3,10 @@ const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const Delivery = require("../models/delivery");
 const Company = require("../models/company");
-const CompanyTrades = require("../models/companyTrades");
 const DeliveryArea = require("../models/deliveryArea");
 const StorageArea = require("../models/storageArea");
 const Building = require("../models/building");
 const Means = require("../models/mean");
-const Location = require("../models/location");
 const EmailService = require("../services/mail.service");
 var HTMLParser = require("node-html-parser");
 
@@ -26,14 +24,6 @@ class DeliveryController {
     if (!body.isExterior) {
       if (!body.level) throw new CustomError(STRINGS.ERRORS.leveRequired);
     }
-    const companyTrades = await CompanyTrades.findOne({
-      companyId: body.companyId,
-      siteId: body.siteId,
-      trades: body.trades,
-    });
-    if (!companyTrades)
-      throw new CustomError(STRINGS.ERRORS.invalidCompanyTradeAssign);
-
     const result = await new Delivery(req.body).save();
 
     if (body.sendDeliverySummary) {
@@ -99,12 +89,6 @@ class DeliveryController {
       siteId: siteId,
       meanType: STRINGS.MEANTYPES.ROUTING,
     });
-    const siteLocations = await Location.find({
-      siteId: siteId,
-    })
-      .populate("storage")
-      .populate("building");
-    if (!siteLocations) throw new CustomError(STRINGS.ERRORS.locationNotFound);
     const data = {
       user_company: userCompany,
       site_delivery_areas: siteDeliveryAreas,
@@ -112,7 +96,6 @@ class DeliveryController {
       site_buildings: siteBuildings,
       site_lifting_means: siteLiftingMeans,
       site_routing_means: siteRoutingMeans,
-      site_locations: siteLocations,
     };
     res.status(200).send(response(STRINGS.TEXTS.deliveryRequested, data));
     // const result = await Delivery.findOne({ _id: id }, { password: 0, __v: 0 });

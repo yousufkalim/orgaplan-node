@@ -14,7 +14,6 @@ const organigrammeSchema = new Schema({
   image: String,
   company: String,
   role: String,
-
   siteId: {
     type: Schema.Types.ObjectId,
     ref: STRINGS.MODALS.SITE,

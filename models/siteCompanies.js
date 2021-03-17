@@ -7,13 +7,37 @@ const siteCompaniesSchema = new Schema(
     siteId: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.SITE,
-      unique: true,
     },
     companies: [
       {
-        type: Schema.Types.ObjectId,
-        ref: STRINGS.MODALS.COMPANY,
-        unique: true,
+        companyId: {
+          type: Schema.Types.ObjectId,
+          ref: STRINGS.MODALS.COMPANY,
+        },
+        subContractors: [
+          {
+            type: Schema.Types.ObjectId,
+            ref: STRINGS.MODALS.COMPANY,
+          },
+        ],
+        users: [
+          {
+            userId: {
+              type: Schema.Types.ObjectId,
+              ref: STRINGS.MODALS.USER,
+            },
+            role: {
+              type: String,
+              enum: [
+                STRINGS.ROLES.ENTERPRISE,
+                STRINGS.ROLES.TRAFFIC,
+                STRINGS.ROLES.BUFFER,
+              ],
+              required: true,
+            },
+          },
+        ],
+        trades: [String],
       },
     ],
   },

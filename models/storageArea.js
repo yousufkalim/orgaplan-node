@@ -5,12 +5,10 @@ const STRINGS = require("../utils/texts");
 const storageArea = new Schema(
   {
     name: String,
-
     level: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.LEVEL,
     },
-
     location: {
       type: String,
       enum: [STRINGS.STATUS.INSIDE, STRINGS.STATUS.OUTSIDE],

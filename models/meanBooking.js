@@ -4,6 +4,7 @@ const STRINGS = require("../utils/texts");
 
 const meanBookingSchema = new Schema(
   {
+    // Just for history
     startDate: Date,
     endDate: Date,
     startTime: String,

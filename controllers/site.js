@@ -5,8 +5,6 @@ const CustomError = require("../utils/customError");
 const Company = require("../models/company");
 const UserSites = require("../models/userSites");
 const SiteCompanies = require("../models/SiteCompanies");
-const SitePenalties = require("../models/sitePenalties");
-const CompanyTrades = require("../models/companyTrades");
 
 class SiteController {
   async create(req, res) {
@@ -25,22 +23,10 @@ class SiteController {
         "users.userId": body.adminId,
         "users.role": STRINGS.ROLES.ADMIN,
       });
-      await new SitePenalties({
-        siteId: result._id,
-        lateCost: body.lateCost,
-        unexptectedCost: body.unexptectedCost,
-      }).save();
       await new SiteCompanies({
         siteId: result._id,
         companies: [adminCompany._id],
       }).save();
-      if (body.trades) {
-        await new CompanyTrades({
-          siteId: result._id,
-          companyId: adminCompany._id,
-          trades: body.trades,
-        });
-      }
 
       res.status(200).send(response(STRINGS.TEXTS.siteRequested, result));
     }

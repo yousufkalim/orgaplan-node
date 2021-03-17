@@ -4,13 +4,13 @@ const STRINGS = require("../utils/texts");
 
 const userSitesSchema = new Schema(
   {
+    // May be redundant cause the user is related to a company in a site, not just a site
     userId: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.USER,
     },
     sites: [
       {
-        _id: false,
         siteId: {
           type: Schema.Types.ObjectId,
           ref: STRINGS.MODALS.SITE,
