@@ -4,30 +4,22 @@ const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 class SiteCompanies {
   async create(req, res) {
+    console.log("HERE");
     const data = req.body;
-    const result = await SiteCompaniesModel.findOne({ siteId: data.siteId });
-    if (!result) {
-      const siteCompanies = await new SiteCompaniesModel({
-        siteId: data.siteId,
-        companies: [data.companyId],
-      }).save();
-      res
-        .status(200)
-        .send(response(STRINGS.TEXTS.siteCompanyRequested, siteCompanies));
-    } else {
-      const siteIndex = result.companies.findIndex(
-        (comp) => String(comp) === String(data.companyId)
-      );
-      if (siteIndex == -1) {
-        result.companies.push(data.companyId);
-        await result.save();
-        res
-          .status(200)
-          .send(response(STRINGS.TEXTS.siteCompanyRequested, result));
-      } else {
-        throw new CustomError(STRINGS.ERRORS.companyAlreadyAdded);
-      }
-    }
+    const result = await SiteCompaniesModel.create(req.body);
+    res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
+  }
+  // Ony for use in postman
+  async addCompanies(req, res) {
+    const data = req.body;
+
+    const result = await SiteCompaniesModel.findOneAndUpdate(
+      { siteId: data.siteId },
+      { $push: { companies: data.company, users: data.users } },
+
+      { new: true }
+    );
+    res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
   }
 
   async getAll(req, res) {
@@ -39,21 +31,26 @@ class SiteCompanies {
     const siteId = req.params.siteId;
     const result = await SiteCompaniesModel.findOne({
       siteId: siteId,
-    }).populate({
-      path: "companies",
-      model: STRINGS.MODALS.COMPANY,
-      populate: {
-        path: "connection",
-        model: STRINGS.MODALS.COMPANY,
-        populate: {
-          path: "childCompanyId",
-          model: STRINGS.MODALS.COMPANY,
-        },
-        match: {
-          siteId: { $eq: siteId },
-        },
-      },
-    });
+    })
+      .populate("companies.subContractors")
+      .populate("companies.companyId")
+      .populate("users.userId");
+
+    // .populate({
+    //   path: "companies",
+    //   model: STRINGS.MODALS.COMPANY,
+    //   populate: {
+    //     path: "connection",
+    //     model: STRINGS.MODALS.COMPANY,
+    //     populate: {
+    //       path: "childCompanyId",
+    //       model: STRINGS.MODALS.COMPANY,
+    //     },
+    //     match: {
+    //       siteId: { $eq: siteId },
+    //     },
+    //   },
+    // });
     if (!result) throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));

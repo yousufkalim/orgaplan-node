@@ -5,7 +5,11 @@ const buildingController = require("../controllers/building");
 // GETS
 router.get("/", auth(), buildingController.getAll);
 router.get("/:id", auth(), buildingController.getOne);
+router.get(
+  "/get_by_site_id/:siteId",
 
+  buildingController.getBuildingsBySiteId
+);
 // POSTS
 router.post("/", auth(), buildingController.create);
 

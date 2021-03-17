@@ -28,6 +28,18 @@ class BuildingController {
     res.status(200).send(response(STRINGS.TEXTS.buildingRequested, result));
   }
 
+  async getBuildingsBySiteId(req, res) {
+    const siteId = req.params.siteId;
+
+    const result = await Building.find({
+      siteId: siteId,
+      buildingType: STRINGS.LOCATIONTYPE.INTERIOR,
+    });
+    if (!result) throw new CustomError(STRINGS.ERRORS.buildingNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.buildingRequested, result));
+  }
+
   async update(req, res) {
     const id = req.params.id;
     const data = req.body;
