@@ -47,19 +47,20 @@ class IncidentsController {
 
     const siteCompanies = await SiteCompanies.findOne({
       siteId: id,
-    }).populate({
-      path: "companies",
-      populate: {
-        path: "connection.parentCompanyId",
-        model: STRINGS.MODALS.COMPANY,
-      },
-    });
+    }).populate("companies.companyId");
 
+    const result = {
+      site_companies: siteCompanies.companies,
+      locationTypes: [
+        STRINGS.MEANLOCATIONTYPE.STORAGEAREA,
+        STRINGS.MEANLOCATIONTYPE.DELIVERYAREA,
+      ],
+    };
     // const result = await Incidents.findOne(
     //   { _id: id },
     //   { password: 0, __v: 0 }
     // );
-    const result = { site_companies: siteCompanies };
+
     if (!result) throw new CustomError(STRINGS.ERRORS.indcidentNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.incidentRequested, result));

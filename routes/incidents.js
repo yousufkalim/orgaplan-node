@@ -4,7 +4,7 @@ const upload = require("../middlewares/multer");
 const incidentsController = require("../controllers/incidents");
 
 // GETS
-router.get("/", auth(), incidentsController.getAll);
+router.get("/", incidentsController.getAll);
 router.get("/:id", auth(), incidentsController.getOne);
 
 router.get("/admin/:id", auth(), incidentsController.getIncidentAdmin);

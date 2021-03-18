@@ -6,6 +6,13 @@ const siteCompanyController = require("../controllers/siteCompanies");
 router.get("/", auth(), siteCompanyController.getAll);
 router.get("/:siteId", auth(), siteCompanyController.getOne);
 
+router.get("/add_company/:siteId", siteCompanyController.getAddCompany);
+router.get(
+  "/:siteId/:companyId",
+
+  siteCompanyController.getGeneralContractor
+);
+
 // POSTS
 router.post("/", siteCompanyController.create);
 router.post("/filter", siteCompanyController.filterCompanies);

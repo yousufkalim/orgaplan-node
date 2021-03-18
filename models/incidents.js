@@ -10,6 +10,7 @@ const incidentSchema = new Schema(
     description: String,
     isBillable: Boolean,
     price: Number,
+    comment: String,
     location: {
       deliveryArea: {
         type: Schema.Types.ObjectId,

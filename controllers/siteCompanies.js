@@ -1,4 +1,6 @@
 const SiteCompaniesModel = require("../models/SiteCompanies");
+const Site = require("../models/site");
+
 const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
@@ -27,6 +29,37 @@ class SiteCompanies {
     res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
   }
 
+  async getAddCompany(req, res) {
+    const siteId = req.params.siteId;
+    const companies = await SiteCompaniesModel.findOne({
+      siteId: siteId,
+    }).populate("companies.companyId");
+    const siteTrades = await Site.findById(siteId);
+    // .populate({
+    //   path: "companies",
+    //   model: STRINGS.MODALS.COMPANY,
+    //   populate: {
+    //     path: "connection",
+    //     model: STRINGS.MODALS.COMPANY,
+    //     populate: {
+    //       path: "childCompanyId",
+    //       model: STRINGS.MODALS.COMPANY,
+    //     },
+    //     match: {
+    //       siteId: { $eq: siteId },
+    //     },
+    //   },
+    // });
+    if (!companies) throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound);
+
+    const result = {
+      site_companies: companies.companies,
+      site_trades: siteTrades.trades,
+    };
+
+    res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
+  }
+
   async getOne(req, res) {
     const siteId = req.params.siteId;
     const result = await SiteCompaniesModel.findOne({
@@ -35,6 +68,40 @@ class SiteCompanies {
       .populate("companies.subContractors")
       .populate("companies.companyId")
       .populate("users.userId");
+
+    // .populate({
+    //   path: "companies",
+    //   model: STRINGS.MODALS.COMPANY,
+    //   populate: {
+    //     path: "connection",
+    //     model: STRINGS.MODALS.COMPANY,
+    //     populate: {
+    //       path: "childCompanyId",
+    //       model: STRINGS.MODALS.COMPANY,
+    //     },
+    //     match: {
+    //       siteId: { $eq: siteId },
+    //     },
+    //   },
+    // });
+    if (!result) throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
+  }
+
+  async getGeneralContractor(req, res) {
+    console.log("HERE");
+    const siteId = req.params.siteId;
+    const companyId = req.params.companyId;
+    const result = await SiteCompaniesModel.findOne(
+      {
+        siteId: siteId,
+      },
+      { companies: { $elemMatch: { subContractors: companyId } } }
+    ).populate("companies.companyId");
+    // .populate("companies.subContractors")
+    // .populate("companies.companyId")
+    // .populate("users.userId");
 
     // .populate({
     //   path: "companies",

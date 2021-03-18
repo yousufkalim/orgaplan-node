@@ -3,6 +3,7 @@ const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const Mean = require("../models/mean");
 const Site = require("../models/site");
+const SiteCompanies = require("../models/SiteCompanies");
 
 const Building = require("../models/building");
 const DeliveryArea = require("../models/deliveryArea");
@@ -219,12 +220,12 @@ class MeanController {
     if (!siteStorageAreas)
       throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
 
-    const siteCompanies = await Company.find({
-      "connection.siteId": siteId,
-    });
+    const siteCompanies = await SiteCompanies.findOne({
+      siteId: siteId,
+    }).populate("companies.companyId");
     if (!siteCompanies) throw new CustomError(STRINGS.ERRORS.companyNotFound);
     if (!result) throw new CustomError(STRINGS.ERRORS.meanNotFound);
-
+    console.log(JSON.stringify(siteCompanies, null, 2));
     res.status(200).send(
       response(STRINGS.TEXTS.meanRequested, {
         means: result,
@@ -232,7 +233,7 @@ class MeanController {
         site_delivery_areas: siteDeliveryAreas,
         siteStorageAreas: siteStorageAreas,
         // site_locations: siteLocations,
-        site_companies: siteCompanies,
+        site_companies: siteCompanies.companies,
         mean_types: [STRINGS.MEANTYPES.LIFTING, STRINGS.MEANTYPES.ROUTING],
         mean_status: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],
       })
