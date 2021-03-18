@@ -115,6 +115,7 @@ module.exports = {
     userCreated: "User created",
     userUpdated: "User updated",
     userDeleted: "User deleted",
+    quoteCreated: "Quote Created",
 
     clientCreated: "Client created",
     clientUpdated: "Client deleted",

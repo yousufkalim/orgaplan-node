@@ -7,6 +7,7 @@ const schemas = {
   create: (data) => {
     const Validation = Joi.object().keys({
       name: Joi.string().required(),
+      city: Joi.string().required(),
       firstName: Joi.string().allow(""),
       lastName: Joi.string().allow(""),
       email: Joi.string()
@@ -26,6 +27,7 @@ const schemas = {
           STRINGS.CONTRACTTYPES.CLIENTPERSITE,
           STRINGS.CONTRACTTYPES.MASTERCLIENT
         ),
+      description: Joi.string().allow(""),
     });
 
     const { error, value } = Validation.validate(data);
@@ -39,6 +41,7 @@ const schemas = {
   update: (data) => {
     const Validation = Joi.object().keys({
       name: Joi.string().required(),
+      city: Joi.string().required(),
       firstName: Joi.string().allow(""),
       lastName: Joi.string().allow(""),
       email: Joi.string()
@@ -58,6 +61,7 @@ const schemas = {
           STRINGS.CONTRACTTYPES.CLIENTPERSITE,
           STRINGS.CONTRACTTYPES.MASTERCLIENT
         ),
+      description: Joi.string().allow(""),
     });
 
     const { error, value } = Validation.validate(data);

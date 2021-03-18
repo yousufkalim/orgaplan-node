@@ -36,7 +36,7 @@ class SuperAdminClientsController {
       .populate("contractIds")
       .execPopulate();
 
-    await res.status(200).send(response(STRINGS.TEXTS.clientCreated, client));
+    await res.status(200).send(response(STRINGS.TEXTS.quoteCreated, client));
   }
 
   async getAll(req, res) {
