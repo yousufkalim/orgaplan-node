@@ -187,7 +187,7 @@ class MailService {
     return;
   }
 
-  async sendPasswordResetConfirmation(to) {
+  async sendPasswordResetConfirmation(to, link) {
     if (!to) throw new CustomError(STRINGS.ERRORS.recipientRequired);
 
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
@@ -202,6 +202,7 @@ class MailService {
     const replacements = {
       name: to.firstName + " " + to.lastName,
       email: to.email,
+      link,
     };
     const htmlToSend = template(replacements);
 
