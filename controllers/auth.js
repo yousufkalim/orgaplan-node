@@ -20,7 +20,7 @@ class AuthContoller {
 
     let verifyToken = crypto.randomBytes(32).toString("hex");
     const hash = await bcrypt.hash(verifyToken, +ENV.BCRYPT_SALT);
-    const verifyLink = `${ENV.CLIENT_URL}/email-verification?uid=${user._id}&verifyToken=${verifyToken}`;
+    const verifyLink = `${ENV.CLIENT_URL}/login?request=profile&uid=${user._id}&verifyToken=${verifyToken}`;
     // const verifyLink = `${ENV.CLIENT_URL}/api/v1/users/${user._id}`;
 
     await Token.create({
@@ -125,7 +125,7 @@ class AuthContoller {
 
     let verifyToken = crypto.randomBytes(32).toString("hex");
     const hash = await bcrypt.hash(verifyToken, +ENV.BCRYPT_SALT);
-    const verifyLink = `${ENV.CLIENT_URL}/email-verification?uid=${user._id}&verifyToken=${verifyToken}`;
+    const verifyLink = `${ENV.CLIENT_URL}/login?request=profile?uid=${user._id}&verifyToken=${verifyToken}`;
 
     await new Token({
       userId: user._id,
@@ -163,7 +163,10 @@ class AuthContoller {
 
     // send email
     let emailService = new MailService();
-    await emailService.sendEmailConfirmation(user);
+    await emailService.sendEmailConfirmation(
+      user,
+      `${process.env.CLIENT_URL}/login`
+    );
 
     const token = await JWT.sign(
       { id: user._id, role: user.role },
@@ -188,7 +191,7 @@ class AuthContoller {
 
     let verifyToken = crypto.randomBytes(32).toString("hex");
     const hash = await bcrypt.hash(verifyToken, +ENV.BCRYPT_SALT);
-    const verifyLink = `${ENV.CLIENT_URL}/reset-password?uid=${user._id}&verifyToken=${verifyToken}`;
+    const verifyLink = `${ENV.CLIENT_URL}/login?request=password&uid=${user._id}&verifyToken=${verifyToken}`;
 
     await new Token({
       userId: user._id,
@@ -228,7 +231,10 @@ class AuthContoller {
 
     // send email
     let emailService = new MailService();
-    await emailService.sendPasswordResetConfirmation(user);
+    await emailService.sendPasswordResetConfirmation(
+      user,
+      `${process.env.CLIENT_URL}/login`
+    );
 
     const result = {
       userId: userId,
