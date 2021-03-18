@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Zac = require("../../models/zac");
 const Site = require("../../models/site");
 const Level = require("../../models/level");
@@ -8,6 +9,8 @@ const response = require("../../utils/response");
 const Building = require("../../models/building");
 const UserSites = require("../../models/userSites");
 const CustomError = require("../../utils/customError");
+const StorageArea = require("../../models/storageArea");
+const SiteCompanies = mongoose.model(STRINGS.MODALS.SITECOMPANIES);
 const ENV = process.env;
 
 class SuperAdminSitesController {
@@ -18,6 +21,7 @@ class SuperAdminSitesController {
     // const siteCheck = await Site.findOne({ name: validatedData.name });
     // if (siteCheck) throw new CustomError(STRINGS.ERRORS.siteNameExists, 404);
 
+    // Check Client
     const client = await Client.findOne(
       { adminIds: validatedData.adminId },
       { _id: 1 }
@@ -25,24 +29,46 @@ class SuperAdminSitesController {
     if (!client) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 
     validatedData.clientId = client._id;
+
+    // Create the site
     const site = await Site.create(validatedData);
 
+    // Create Site Companies Doc
+    await SiteCompanies.create({
+      siteId: site._id,
+    });
+
+    // Add site to zac
     if (validatedData.zacId) {
       await Zac.findByIdAndUpdate(validatedData.zacId, {
         $addToSet: { sites: site._id },
       });
     }
 
+    // Create a building
     let building = await Building.create({
       name: "Exterior",
       siteId: site._id,
       buildingType: "EXTERIOR",
     });
 
+    // Create a storage area
+    const storageArea = await StorageArea.create({
+      name: "Storage",
+      location: STRINGS.STATUS.INSIDE,
+      availability: {
+        start: validatedData.start,
+        end: validatedData.end,
+      },
+      siteId: site._id,
+    });
+
+    // Create a level
     let level = await Level.create({
       number: 0,
       levelType: "STORAGE",
       building: building._id,
+      storage: storageArea._id,
     });
 
     // Check if the userSites Obj exists
@@ -65,6 +91,7 @@ class SuperAdminSitesController {
       });
     }
 
+    // Update building
     await Building.findByIdAndUpdate(
       building._id,
       {
@@ -73,6 +100,7 @@ class SuperAdminSitesController {
       { new: true }
     );
 
+    // Update site
     const result = await Site.findByIdAndUpdate(
       site._id,
       {

@@ -8,6 +8,23 @@ const siteCompaniesSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.SITE,
     },
+    users: [
+      {
+        userId: {
+          type: Schema.Types.ObjectId,
+          ref: STRINGS.MODALS.USER,
+        },
+        role: {
+          type: String,
+          enum: [
+            STRINGS.ROLES.ENTERPRISE,
+            STRINGS.ROLES.TRAFFIC,
+            STRINGS.ROLES.BUFFER,
+          ],
+          required: true,
+        },
+      },
+    ],
     companies: [
       {
         companyId: {
@@ -18,23 +35,6 @@ const siteCompaniesSchema = new Schema(
           {
             type: Schema.Types.ObjectId,
             ref: STRINGS.MODALS.COMPANY,
-          },
-        ],
-        users: [
-          {
-            userId: {
-              type: Schema.Types.ObjectId,
-              ref: STRINGS.MODALS.USER,
-            },
-            role: {
-              type: String,
-              enum: [
-                STRINGS.ROLES.ENTERPRISE,
-                STRINGS.ROLES.TRAFFIC,
-                STRINGS.ROLES.BUFFER,
-              ],
-              required: true,
-            },
           },
         ],
         trades: [String],

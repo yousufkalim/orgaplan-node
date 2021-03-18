@@ -5,6 +5,7 @@ const CustomError = require("../utils/customError");
 const Auth = require("../controllers/auth");
 const UserSites = require("../models/userSites");
 const Site = require("../models/site");
+
 class CompanyController {
   async create(req, res) {
     const data = req.body;

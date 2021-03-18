@@ -5,7 +5,7 @@ const upload = require("../middlewares/multer");
 const organigrammeController = require("../controllers/organigramme");
 
 // GETS
-router.get("/", auth("admin"), organigrammeController.getAll);
+router.get("/", auth(), organigrammeController.getAll);
 router.get("/get/:id", organigrammeController.getOne);
 
 router.get("/site/:siteId", organigrammeController.getBySiteId);
@@ -25,6 +25,6 @@ router.put(
 );
 
 // DELETES
-router.delete("/delete/:id", auth("admin"), organigrammeController.delete);
+router.delete("/delete/:id", auth(), organigrammeController.delete);
 
 module.exports = router;

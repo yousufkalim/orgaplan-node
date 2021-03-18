@@ -22,10 +22,10 @@ const userSchema = new Schema(
       location: [{ type: Number }],
     },
     // Only one company per user allowed
-    // company: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: STRINGS.MODALS.COMPANY,
-    // },
+    company: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.COMPANY,
+    },
     role: {
       type: String,
       enum: [STRINGS.ROLES.USER, STRINGS.ROLES.SUPERADMIN],

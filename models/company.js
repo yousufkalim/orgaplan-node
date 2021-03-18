@@ -26,42 +26,6 @@ const companySchema = new Schema(
         ref: STRINGS.MODALS.USER,
       },
     ],
-    // users: [
-    //   {
-    //     userId: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.USER },
-    //     siteId: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.SITE },
-    //     role: {
-    //       type: String,
-    //       enum: [
-    //         STRINGS.ROLES.ENTERPRISE,
-    //         STRINGS.ROLES.TRAFFIC,
-    //         STRINGS.ROLES.BUFFER,
-    //       ],
-    //     },
-    //   },
-    // ],
-    // connection: [
-    //   {
-    //     childCompanyId: [
-    //       {
-    //         // Represents company subcontractors
-    //         type: Schema.Types.ObjectId,
-    //         ref: STRINGS.MODALS.COMPANY,
-    //       },
-    //     ],
-    //     trades: [{ type: Schema.Types.ObjectId, ref: STRINGS.MODALS.TRADES }],
-    //     parentCompanyId: {
-    //       // Represents company's main company if the company us subcontractor
-    //       type: Schema.Types.ObjectId,
-    //       ref: STRINGS.MODALS.COMPANY,
-    //     },
-    //     isSubContractor: {
-    //       type: Boolean,
-    //       default: false,
-    //     },
-    //     siteId: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.SITE },
-    //   },
-    // ],
     type: {
       type: String,
       enum: [
