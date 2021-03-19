@@ -3,7 +3,9 @@ const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const Incidents = require("../models/incidents");
 const SiteCompanies = require("../models/SiteCompanies");
-
+const Building = require("../models/building");
+const DeliveryArea = require("../models/deliveryArea");
+const StorageArea = require("../models/storageArea");
 class IncidentsController {
   async create(req, res) {
     const body = req.body;
@@ -37,6 +39,48 @@ class IncidentsController {
       { _id: id },
       { password: 0, __v: 0 }
     );
+    if (!result) throw new CustomError(STRINGS.ERRORS.indcidentNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.incidentRequested, result));
+  }
+
+  async getIncidentList(req, res) {
+    const id = req.params.id;
+
+    const incidents = await Incidents.find({
+      siteId: id,
+    })
+      .populate("location.deliveryArea")
+      .populate("location.storageArea")
+      .populate("companyId");
+    const siteCompanies = await SiteCompanies.findOne({
+      siteId: id,
+    }).populate("companies.companyId");
+
+    const siteBuildings = await Building.find({
+      siteId: id,
+    }).populate("siteId");
+    const siteDeliveryAreas = await DeliveryArea.find({
+      siteId: id,
+    });
+    const siteStorageAreas = await StorageArea.find({
+      siteId: id,
+    });
+
+    const result = {
+      incidents,
+      site_companies: siteCompanies.companies,
+      site_buildings: siteBuildings,
+      site_storage_areas: siteStorageAreas,
+      site_delivery_areas: siteDeliveryAreas,
+      status: [STRINGS.INCIDENTSTATUS.OPEN, STRINGS.INCIDENTSTATUS.CLOSED],
+      type: [STRINGS.INCIDENTTYPE.DELAY, STRINGS.INCIDENTTYPE.LETIGATON],
+    };
+    // const result = await Incidents.findOne(
+    //   { _id: id },
+    //   { password: 0, __v: 0 }
+    // );
+
     if (!result) throw new CustomError(STRINGS.ERRORS.indcidentNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.incidentRequested, result));

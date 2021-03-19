@@ -8,7 +8,11 @@ router.get("/:siteId", auth(), siteCompanyController.getOne);
 
 router.get("/add_company/:siteId", siteCompanyController.getAddCompany);
 router.get(
-  "/:siteId/:companyId",
+  "/autofill/:siteId/:companyId",
+  siteCompanyController.getCompanyAutofill
+);
+router.get(
+  "/general-contractor/:siteId/:companyId",
 
   siteCompanyController.getGeneralContractor
 );

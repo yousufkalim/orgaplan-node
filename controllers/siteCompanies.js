@@ -29,6 +29,38 @@ class SiteCompanies {
     res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
   }
 
+  async getCompanyAutofill(req, res) {
+    const siteId = req.params.siteId;
+    const companyId = req.params.companyId;
+    const companies = await SiteCompaniesModel.findOne(
+      {
+        siteId: siteId,
+      },
+      { companies: { $elemMatch: { companyId: companyId } } }
+    ).populate("companies.companyId");
+    // .populate({
+    //   path: "companies",
+    //   model: STRINGS.MODALS.COMPANY,
+    //   populate: {
+    //     path: "connection",
+    //     model: STRINGS.MODALS.COMPANY,
+    //     populate: {
+    //       path: "childCompanyId",
+    //       model: STRINGS.MODALS.COMPANY,
+    //     },
+    //     match: {
+    //       siteId: { $eq: siteId },
+    //     },
+    //   },
+    // });
+    if (!companies) throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound);
+
+    const result = {
+      site_companies: companies.companies,
+    };
+
+    res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
+  }
   async getAddCompany(req, res) {
     const siteId = req.params.siteId;
     const companies = await SiteCompaniesModel.findOne({

@@ -82,9 +82,7 @@ class MeanController {
     const siteBuildings = await Building.find({
       siteId: siteId,
     }).populate("siteId");
-    if (!siteBuildings) throw new CustomError(STRINGS.ERRORS.locationNotFound);
-    if (!siteDeliveryAreas)
-      throw new CustomError(STRINGS.ERRORS.deliveyAreaNotFount);
+
     const siteStorageAreas = await StorageArea.find({
       siteId: siteId,
     });

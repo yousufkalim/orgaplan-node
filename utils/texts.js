@@ -360,6 +360,10 @@ module.exports = {
     DELAY: "DELAY",
     LETIGATON: "LETIGATION",
   },
+  INCIDENTSTATUS: {
+    OPEN: "OPEN",
+    CLOSED: "CLOSED",
+  },
   SITEPENALTY: {
     LATE: "LATE",
     UNEXPRECTED: "UNEXPECTED",

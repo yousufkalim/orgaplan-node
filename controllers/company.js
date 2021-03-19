@@ -11,113 +11,94 @@ const SiteCompaniesModel = require("../models/SiteCompanies");
 
 class CompanyController {
   async create(req, res) {
-    const data = req.body;
-
+    const body = req.body;
+    if (req.file) body.logo = req.file.path;
     // Check if company name exists
+    if (!body.trades) body.trades = [];
+    else body.trades = JSON.parse(body.trades);
+    if (body.incharge) body.incharge = JSON.parse(body.incharge);
+    const companyName = await Company.findOne({ name: body.name });
+    if (companyName) {
+      if (body.parentCompanyId) {
+        // Remove pervious general contractor if any exists
 
-    const companyName = await Company.findOne({ name: data.name });
-    if (companyName) throw new CustomError(STRINGS.ERRORS.companyAlreadyAdded);
-
-    if (data.isSubcontractor == "true") {
-      if (data.childCompanyId) {
-        // if the subcontractor exists
-        if (!data.parentCompanyId)
-          throw new CustomError(STRINGS.ERRORS.parentCompanyNotFound);
-
-        // If the subcontractor company already exists
-        const subcontractor = await Company.findOneAndUpdate(
+        await SiteCompaniesModel.findOneAndUpdate(
           {
-            _id: data.childCompanyId,
-            "connection.siteId": data.siteId,
+            siteId: body.siteId,
+            "companies.subContractors": companyName._id,
           },
           {
-            $set: { "connection.$.parentCompanyId": data.parentCompanyId },
+            $pull: {
+              "companies.$.subContractors": companyName._id,
+            },
+          }
+        );
+        // Create New General Contrctor
+
+        await SiteCompaniesModel.findOneAndUpdate(
+          {
+            siteId: body.siteId,
+            "companies.companyId": body.parentCompanyId,
+          },
+          {
+            $addToSet: {
+              "companies.$.subContractors": companyName._id,
+            },
           }
         );
 
-        const parentCompany = await Company.findOneAndUpdate(
+        // Update The Company
+        await Company.findByIdAndUpdate(
+          { _id: companyName._id },
           {
-            _id: data.parentCompanyId,
-            "connection.siteId": data.siteId,
-          },
-          { $addToSet: { "connection.$.childCompanyId": data.childCompanyId } }
-        ); //Get parent company id and add child to that company
-        res
-          .status(200)
-          .send(response(STRINGS.TEXTS.companyRequested, subcontractor));
-
-        //   const subcontractor = await Company.findOneAndUpdate(
-        //     {
-        //       _id: data.parentCompanyId,
-        //       "connection.siteId": data.siteId,
-        //     },
-        //     { $addToSet: { "connection.$.childCompanyId": childCompanyId } }
-        //   ); //Get parent company id and add child to that company
-        //   res
-        //     .status(200)
-        //     .send(response(STRINGS.TEXTS.companyRequested, childCompany));
-        // }
-      }
-      if (!data.childCompanyId) {
-        // It's a sub contractor but the company does not already exists
-        if (data.parentCompanyId) {
-          const parentCompanyId = data.parentCompanyId;
-          const siteId = data.siteId;
-
-          const connection = [
-            {
-              parentCompanyId: parentCompanyId,
-              siteId: siteId,
-              isSubContractor: true,
-            },
-          ];
-          data["connection"] = connection;
-          if (data.users) data.users = JSON.parse(data.users);
-          const childCompany = await Company(data).save(); // Create child company
-          const childCompanyId = childCompany._id;
-
-          const parentCompany = await Company.findOneAndUpdate(
-            {
-              _id: data.parentCompanyId,
-              "connection.siteId": data.siteId,
-            },
-            {
-              $addToSet: {
-                "connection.$.childCompanyId": childCompanyId,
-              },
-            }
-          ); //Get parent company id and add child to that company
-
-          res
-            .status(200)
-            .send(response(STRINGS.TEXTS.companyRequested, childCompany));
-        }
-      }
-    }
-
-    if (data.isSubcontractor == "false") {
-      // If its the
-
-      if (data.parentCompanyId) {
-        // It the company already exists then just assing it a site
-
-        const mainCompany = await Company.findOneAndUpdate(
-          {
-            _id: data.parentCompanyId,
-          },
-          { $addToSet: { connection: { siteId: data.siteId } } }
+            $set: req.body,
+          }
         );
-
-        res
-          .status(200)
-          .send(response(STRINGS.TEXTS.companyRequested, mainCompany));
       } else {
-        if (data.users) data.users = JSON.parse(data.users);
-        const connection = [{ siteId: data.siteId, isSubContractor: false }];
-        data["connection"] = connection;
-        const company = await Company(data).save(); // Create child company
-        res.status(200).send(response(STRINGS.TEXTS.companyRequested, company));
+        // Remove pervious general contractor if any exists
+
+        await SiteCompaniesModel.findOneAndUpdate(
+          {
+            siteId: body.siteId,
+            "companies.subContractors": companyName._id,
+          },
+          {
+            $pull: {
+              "companies.$.subContractors": companyName._id,
+            },
+          }
+        );
+        // Update The Company
+        await Company.findByIdAndUpdate(
+          { _id: companyName._id },
+          {
+            $set: req.body,
+          }
+        );
       }
+    } else {
+      const result = await new Company(req.body).save();
+
+      const siteCompanies = await SiteCompaniesModel.findOneAndUpdate({
+        siteId: body.siteId,
+        $addToSet: {
+          companies: { companyId: result._id, trades: body.trades },
+        },
+      });
+      if (body.parentCompanyId) {
+        const parentCompany = await SiteCompaniesModel.findOneAndUpdate(
+          {
+            siteId: body.siteId,
+            "companies.companyId": body.parentCompanyId,
+          },
+          {
+            $addToSet: {
+              "companies.$.subContractors": result._id,
+            },
+          }
+        );
+      }
+      res.status(200).send(response(STRINGS.TEXTS.companyCreated, result));
     }
   }
 

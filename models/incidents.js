@@ -11,6 +11,10 @@ const incidentSchema = new Schema(
     isBillable: Boolean,
     price: Number,
     comment: String,
+    status: {
+      type: String,
+      enum: [STRINGS.INCIDENTSTATUS.OPEN, STRINGS.INCIDENTSTATUS.CLOSED],
+    },
     location: {
       deliveryArea: {
         type: Schema.Types.ObjectId,
