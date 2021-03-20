@@ -59,7 +59,7 @@ const schemas = {
             startHour: Joi.number().required(),
             endHour: Joi.number().required(),
             dayOff: Joi.bool().required(),
-            reason: Joi.string().optional(),
+            reason: Joi.string().optional().allow(""),
           })
         )
         .optional(),
@@ -145,7 +145,7 @@ const schemas = {
             startHour: Joi.number().required(),
             endHour: Joi.number().required(),
             dayOff: Joi.bool().required(),
-            reason: Joi.string().optional(),
+            reason: Joi.string().optional().allow(""),
           })
         )
         .optional(),
