@@ -4,6 +4,7 @@ const Site = require("../models/site");
 const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
+
 class SiteCompanies {
   async create(req, res) {
     console.log("HERE");
@@ -61,31 +62,17 @@ class SiteCompanies {
 
     res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
   }
+
   async getAddCompany(req, res) {
     const siteId = req.params.siteId;
-    const companies = await SiteCompaniesModel.findOne({
+    const site = await SiteCompaniesModel.findOne({
       siteId: siteId,
     }).populate("companies.companyId");
+
     const siteTrades = await Site.findById(siteId);
-    // .populate({
-    //   path: "companies",
-    //   model: STRINGS.MODALS.COMPANY,
-    //   populate: {
-    //     path: "connection",
-    //     model: STRINGS.MODALS.COMPANY,
-    //     populate: {
-    //       path: "childCompanyId",
-    //       model: STRINGS.MODALS.COMPANY,
-    //     },
-    //     match: {
-    //       siteId: { $eq: siteId },
-    //     },
-    //   },
-    // });
-    if (!companies) throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound);
 
     const result = {
-      site_companies: companies.companies,
+      site_companies: site ? site.companies : [],
       site_trades: siteTrades.trades,
     };
 
@@ -101,28 +88,12 @@ class SiteCompanies {
       .populate("companies.companyId")
       .populate("users.userId");
 
-    // .populate({
-    //   path: "companies",
-    //   model: STRINGS.MODALS.COMPANY,
-    //   populate: {
-    //     path: "connection",
-    //     model: STRINGS.MODALS.COMPANY,
-    //     populate: {
-    //       path: "childCompanyId",
-    //       model: STRINGS.MODALS.COMPANY,
-    //     },
-    //     match: {
-    //       siteId: { $eq: siteId },
-    //     },
-    //   },
-    // });
     if (!result) throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
   }
 
   async getGeneralContractor(req, res) {
-    console.log("HERE");
     const siteId = req.params.siteId;
     const companyId = req.params.companyId;
     const result = await SiteCompaniesModel.findOne(

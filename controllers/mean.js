@@ -104,7 +104,6 @@ class MeanController {
       siteId: siteId,
       "location.locationType": STRINGS.MEANLOCATIONTYPE.EXTERIOR,
     }).populate("location.storageArea");
-    console.log(result, null, 2);
     res.status(200).send(response(STRINGS.TEXTS.allMeans, result));
   }
 
@@ -129,7 +128,6 @@ class MeanController {
     const endDate = body.endDate;
     const status = body.status;
     const name = body.name;
-    console.log("\n\n\n" + name);
 
     const result = await Mean.find({
       siteId: siteId,
@@ -223,7 +221,6 @@ class MeanController {
     }).populate("companies.companyId");
     if (!siteCompanies) throw new CustomError(STRINGS.ERRORS.companyNotFound);
     if (!result) throw new CustomError(STRINGS.ERRORS.meanNotFound);
-    console.log(JSON.stringify(siteCompanies, null, 2));
     res.status(200).send(
       response(STRINGS.TEXTS.meanRequested, {
         means: result,
@@ -246,7 +243,7 @@ class MeanController {
       body.sheet = req.file.path;
     }
     if (body.location) body.location = JSON.parse(body.location);
-    if (!body.availability) body.availability = JSON.parse(body.availability);
+    if (body.availability) body.availability = JSON.parse(body.availability);
     if (body.unavailability)
       body.unavailability = JSON.parse(body.unavailability);
 

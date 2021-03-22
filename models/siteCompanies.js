@@ -21,6 +21,7 @@ const siteCompaniesSchema = new Schema(
         role: {
           type: String,
           enum: [
+            STRINGS.ROLES.ADMIN,
             STRINGS.ROLES.ENTERPRISE,
             STRINGS.ROLES.TRAFFIC,
             STRINGS.ROLES.BUFFER,

@@ -16,8 +16,10 @@ class CompanyController {
     // Check if company name exists
     if (!body.trades) body.trades = [];
     else body.trades = JSON.parse(body.trades);
+
     if (body.incharge) body.incharge = JSON.parse(body.incharge);
     const companyName = await Company.findOne({ name: body.name });
+
     if (companyName) {
       if (body.parentCompanyId) {
         // Remove pervious general contractor if any exists
@@ -48,7 +50,7 @@ class CompanyController {
         );
 
         // Update The Company
-      const result =   await Company.findByIdAndUpdate(
+        const result = await Company.findByIdAndUpdate(
           { _id: companyName._id },
           {
             $set: req.body,

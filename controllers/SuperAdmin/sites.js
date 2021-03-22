@@ -24,7 +24,7 @@ class SuperAdminSitesController {
     // Check Client
     const client = await Client.findOne(
       { adminIds: validatedData.adminId },
-      { _id: 1 }
+      { _id: 1, companyId: 1 }
     ).lean();
     if (!client) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 
@@ -36,6 +36,19 @@ class SuperAdminSitesController {
     // Create Site Companies Doc
     await SiteCompanies.create({
       siteId: site._id,
+      users: [
+        {
+          userId: validatedData.adminId,
+          companyId: client.companyId,
+          role: STRINGS.ROLES.ADMIN,
+        },
+      ],
+      companies: [
+        {
+          companyId: client.companyId,
+          trades: validatedData.trades,
+        },
+      ],
     });
 
     // Add site to zac
