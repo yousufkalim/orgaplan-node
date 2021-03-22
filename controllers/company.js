@@ -48,12 +48,13 @@ class CompanyController {
         );
 
         // Update The Company
-        await Company.findByIdAndUpdate(
+      const result =   await Company.findByIdAndUpdate(
           { _id: companyName._id },
           {
             $set: req.body,
           }
         );
+        res.status(200).send(response(STRINGS.TEXTS.companyUpdated, result));
       } else {
         // Remove pervious general contractor if any exists
 
@@ -69,12 +70,14 @@ class CompanyController {
           }
         );
         // Update The Company
-        await Company.findByIdAndUpdate(
+        const result = await Company.findByIdAndUpdate(
           { _id: companyName._id },
           {
             $set: req.body,
           }
         );
+
+        res.status(200).send(response(STRINGS.TEXTS.companyUpdated, result));
       }
     } else {
       const result = await new Company(req.body).save();
