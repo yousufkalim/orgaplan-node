@@ -1,4 +1,4 @@
-# OrgaPlan By Talha Ahmad (github.com/talha-ah)
+# OrgaPlan
 
 ## Installation
 
