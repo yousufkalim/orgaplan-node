@@ -18,7 +18,6 @@ router.use("/v1/user-sites", require("./userSites"));
 router.use("/v1/company", require("./company"));
 router.use("/v1/company-sites", require("./siteCompanies"));
 router.use("/v1/superadmin", require("./SuperAdmin"));
-router.use("/v1/admin", require("./Admin"));
 router.use("/v1/organigramme", require("./organigramme"));
 
 module.exports = router;
