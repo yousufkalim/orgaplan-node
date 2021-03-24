@@ -7,14 +7,12 @@ const incidentSchema = new Schema(
     name: String,
     date: Date,
     time: String,
-    description: String,
-    isBillable: Boolean,
     price: Number,
     comment: String,
-    status: {
-      type: String,
-      enum: [STRINGS.INCIDENTSTATUS.OPEN, STRINGS.INCIDENTSTATUS.CLOSED],
-    },
+    document: String,
+    isBillable: Boolean,
+    description: String,
+    photos: [{ type: String }],
     location: {
       deliveryArea: {
         type: Schema.Types.ObjectId,
@@ -29,10 +27,6 @@ const incidentSchema = new Schema(
         ref: STRINGS.MODALS.LEVEL,
       },
     },
-    type: {
-      type: String,
-      enum: [STRINGS.INCIDENTTYPE.DELAY, STRINGS.INCIDENTTYPE.LETIGATON],
-    },
     siteId: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.SITE,
@@ -41,8 +35,21 @@ const incidentSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.COMPANY,
     },
-    photos: [{ type: String }],
-    document: String,
+    type: {
+      type: String,
+      enum: [
+        STRINGS.INCIDENTTYPE.MEAN,
+        STRINGS.INCIDENTTYPE.DELAY,
+        STRINGS.INCIDENTTYPE.INCIDENT,
+        STRINGS.INCIDENTTYPE.UNEXPRECTED,
+      ],
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: [STRINGS.INCIDENTSTATUS.OPEN, STRINGS.INCIDENTSTATUS.CLOSED],
+      default: STRINGS.INCIDENTSTATUS.OPEN,
+    },
   },
   {
     timestamps: true,

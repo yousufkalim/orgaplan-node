@@ -357,7 +357,10 @@ module.exports = {
     DELIVERY: "DELIVERY",
   },
   INCIDENTTYPE: {
+    MEAN: "MEAN",
     DELAY: "DELAY",
+    INCIDENT: "INCIDENT",
+    UNEXPRECTED: "UNEXPRECTED",
     LETIGATON: "LETIGATION",
   },
   INCIDENTSTATUS: {
@@ -391,6 +394,7 @@ module.exports = {
     CLIENT: "Client",
     COMPANY: "Company",
     INVOICE: "Invoice",
+    SITEPIC: "SITEPIC",
     INCIDENT: "Incident",
     LOCATION: "Location",
     CONTRACT: "Contract",
