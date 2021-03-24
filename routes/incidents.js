@@ -18,7 +18,7 @@ router.get(
 // router.post("/", auth(), upload("logo"), companyController.create);
 router.post(
   "/",
-  auth(),
+
   upload(
     "incidents",
 
@@ -35,7 +35,6 @@ router.post(
 // PUTS
 router.put(
   "/:id",
-  auth(),
   upload(
     "incidents",
 
@@ -49,5 +48,8 @@ router.put(
 );
 // DELETES
 router.delete("/:id", auth(), incidentsController.delete);
+
+router.post("/filter", incidentsController.filterIncidents);
+
 
 module.exports = router;
