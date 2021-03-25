@@ -47,7 +47,7 @@ router.put(
   incidentsController.update
 );
 // DELETES
-router.delete("/:id", auth(), incidentsController.delete);
+router.delete("/:id", auth() , incidentsController.delete);
 
 router.post("/filter", incidentsController.filterIncidents);
 
