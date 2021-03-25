@@ -11,6 +11,7 @@ module.exports = {
     deleteSiteFirst: "Delete it's sites first",
     deleteClientAdminSitesFirst: "Delete it's admin's sites first",
 
+    picNotFound: "Pic not found",
     siteNotFound: "No Site Found",
     clientNotActive: "Client not active",
 
@@ -116,6 +117,11 @@ module.exports = {
     userUpdated: "User updated",
     userDeleted: "User deleted",
     quoteCreated: "Quote Created",
+
+    picCreated: "Pic created",
+    picUpdated: "Pic updated",
+    picDeleted: "Pic deleted",
+    picRequested: "Pic Requested",
 
     clientCreated: "Client created",
     clientUpdated: "Client deleted",
