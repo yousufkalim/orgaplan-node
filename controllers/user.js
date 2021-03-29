@@ -4,7 +4,14 @@ const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const UserSites = require("../models/userSites");
 const SiteCompanies = require("../models/SiteCompanies");
+const siteCompaniesSchema = require("../models/SiteCompanies");
+const SiteCompaniesModel = require("../models/SiteCompanies");
+
 const Company = require("../models/company");
+const Auth = require("../controllers/auth");
+const Validations = require("../validators");
+const ObjectId = require("mongodb").ObjectID;
+
 const bcrypt = require("bcryptjs");
 const ENV = process.env;
 
@@ -56,7 +63,7 @@ class UserContoller {
       .populate("sites.siteId");
     const site_companies = await SiteCompanies.findOne({
       siteId: siteId,
-    }).populate("companies");
+    }).populate({ path: "companies", populate: { path: "companyId" } });
 
     let result = {
       users: userSites,
@@ -136,6 +143,208 @@ class UserContoller {
 
     //const result = await user.update(user);
     //res.status(200).send(response(STRINGS.TEXTS.userCreated, result));
+  }
+
+  async createCompanyUser(req, res) {
+    // const data = req.body;
+    const {
+      siteId,
+      firstName,
+      lastName,
+      email,
+      phone,
+      companyId,
+      role,
+    } = req.body;
+    console.log(req.body);
+
+    let user_Id;
+
+    const roleCheck = await siteCompaniesSchema.findOne({
+      siteId: siteId,
+      "users.companyId": companyId,
+      "users.role": role,
+    });
+    console.log("---------------------------------", roleCheck);
+    if (roleCheck) {
+      throw new CustomError(STRINGS.ERRORS.roleOfCompanyAlreadyExist, 404);
+    } else {
+      const companyCheck = await Company.findById(companyId);
+      if (!companyCheck)
+        throw new CustomError(STRINGS.ERRORS.companyNotFound, 404);
+      const userCheck = await User.findOne({ email: email });
+      if (userCheck) {
+        console.log(userCheck);
+        user_Id = userCheck._id;
+        console.log("user Exist");
+        //  const siteObj = [
+        //    {
+        //      siteId: siteId,
+        //      role: role,
+        //    },
+        //  ];
+        //  const createdUserSite = await UserSites.findOneAndUpdate({
+        //    userId: userCheck._id,
+        //    $addToSet: { sites: siteObj },
+        //  });
+
+        //  const siteCompany = [
+        //    {
+        //      userId: userCheck._id,
+        //      companyId: companyId,
+        //      role: role,
+        //    },
+        //  ];
+        //  const createdSiteCompany = await siteCompaniesSchema.findOneAndUpdate({
+        //    siteId: siteId,
+        //    $addToSet: { users: siteCompany },
+        //  });
+
+        //  const obj = {
+        //    user: user,
+        //    userSite: createdUserSite,
+        //    siteCompany: createdSiteCompany,
+        //  };
+        //  await res.status(200).send(response(STRINGS.TEXTS.userCreated, obj));
+      } else {
+        const userData = {
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          phone: phone,
+        };
+        const user = await Auth.signup(userData);
+
+        if (!user) throw new CustomError(STRINGS.ERRORS.error, 404);
+
+        user_id = user.id;
+        // const siteObj = [
+        //   {
+        //     siteId: siteId,
+        //     role: role,
+        //   },
+        // ];
+        // const createdUserSite = await UserSites.findOneAndUpdate({
+        //   userId: user._id,
+        //   $addToSet: { sites: siteObj },
+        // });
+
+        // const siteCompany = [
+        //   {
+        //     userId: user._id,
+        //     companyId: companyId,
+        //     role: role,
+        //   },
+        // ];
+        // const createdSiteCompany = await siteCompaniesSchema.findOneAndUpdate({
+        //   siteId: siteId,
+        //   $addToSet: { users: siteCompany },
+        // });
+
+        // const obj = {
+        //   user: user,
+        //   userId: createdUserSite,
+        //   siteCompany: createdSiteCompany,
+        // };
+        // await res.status(200).send(response(STRINGS.TEXTS.userCreated, obj));
+      }
+      const siteObj = [
+        {
+          siteId: siteId,
+          role: role,
+        },
+      ];
+      const createdUserSite = await UserSites.findOneAndUpdate({
+        userId: user_id,
+        $addToSet: { sites: siteObj },
+      });
+
+      const siteCompany = [
+        {
+          userId: user_id,
+          companyId: companyId,
+          role: role,
+        },
+      ];
+      const createdSiteCompany = await siteCompaniesSchema.findOneAndUpdate({
+        siteId: siteId,
+        $addToSet: { users: siteCompany },
+      });
+
+      const obj = {
+        user: user,
+        userId: createdUserSite,
+        siteCompany: createdSiteCompany,
+      };
+      await res.status(200).send(response(STRINGS.TEXTS.userCreated, obj));
+    }
+  }
+
+  async updateCompanyUser(req, res) {
+    const { userId, siteId, email, companyId, role } = req.body;
+    const roleCheck = await siteCompaniesSchema.findOne({
+      siteId: siteId,
+      "users.companyId": companyId,
+      "users.role": role,
+    });
+    if (roleCheck) {
+      throw new CustomError(STRINGS.ERRORS.roleOfCompanyAlreadyExist, 404);
+    } else {
+      const userCheck = await User.findOne({ email: email });
+      if (userCheck) {
+        const createdUserSite = await UserSites.findOneAndUpdate(
+          {
+            userId: ObjectId(userId),
+          },
+          { $set: { "sites.$[el].role": role } },
+          {
+            arrayFilters: [
+              { "el.siteId": ObjectId(siteId) },
+            ],
+            new: true,
+          }
+        );
+        const siteCompanies = await SiteCompaniesModel.findOneAndUpdate(
+          {
+            siteId: ObjectId(siteId),
+          },
+          { $set: { "users.$[el].role": role } },
+          {
+            arrayFilters: [
+              {
+                "el.companyId": ObjectId(companyId),
+                "el.userId": ObjectId(userId),
+              },
+            ],
+            new: true,
+          }
+        );
+        const obj = {
+          userSite: createdUserSite,
+          siteCompany: siteCompanies,
+        };
+        await res.status(200).send(response(STRINGS.TEXTS.userCreated, obj));
+      } else {
+        throw new CustomError(STRINGS.ERRORS.error, 404);
+      }
+    }
+  }
+
+  async userFilter (req, res) {
+    const siteId = req.body.siteId;
+    const companyId = req.body.companyId;
+    // const siteId = req.params.siteId;
+    // const companyId = req.params.companyId;
+
+ const result = await SiteCompaniesModel.findOne({
+    siteId: siteId,
+    users: { $elemMatch: { companyId: ObjectId(companyId) } },
+   })
+   .populate("users.userId")
+   .populate("users.companyId");
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound);
+    res.status(200).send(response(STRINGS.TEXTS.companyData, result));
   }
 
   async update(req, res) {

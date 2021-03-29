@@ -191,96 +191,13 @@ class CompanyController {
   async getCompanyUsersPerSite(req, res) {
     const siteId = req.params.siteId;
     const companyId = req.params.companyId;
-    // const result = await SiteCompaniesModel.findOne(
-    //   {
-    //     siteId: siteId,
-    //     "companies.companyId": companyId,
-    //     "users.companyId": companyId,
-    //   },
-    //   { companies: { $elemMatch: { companyId: companyId } } },
-    //   { users: { $elemMatch: { companyId: companyId } } }
-    // )
-    //   .populate("companies.companyId")
-    //   .populate("users.userId");
-    // const result = await SiteCompaniesModel.aggregate([
-    //   {
-    //     $project: {
-    //       siteId: { $cond: [{ $eq: [siteId, siteId] }, 1, 0] },
-    //     },
-    //   },
-    // ]);
-    console.log(siteId, companyId);
-
-    let result = await SiteCompaniesModel.aggregate([
-      {
-        $match: {
-          siteId: { $eq: ObjectId(siteId) },
-        },
-      },
-      {
-        $project: {
-          siteId: 1,
-          users: {
-            $filter: {
-              input: "$users",
-              as: "users",
-              cond: { $eq: ["$$users.companyId", ObjectId(companyId)] },
-            },
-          },
-          companies: 1,
-        },
-      },
-      {
-        $lookup: {
-          from: User.collection.name,
-          localField: "users.userId",
-          foreignField: "_id",
-          as: "usersArray",
-        },
-      },
-      {
-        $lookup: {
-          from: Company.collection.name,
-          localField: "companies.companyId",
-          foreignField: "_id",
-          as: "companies",
-        },
-      },
-      {
-        $lookup: {
-          from: Company.collection.name,
-          localField: "users.companyId",
-          foreignField: "_id",
-          as: "company",
-        },
-      },
-      {
-        $unwind: "$company",
-      },
-      {
-        $project: {
-          siteId: 1,
-          usersArray: 1,
-          company: 1,
-          companies: 1,
-        },
-      },
-    ]);
-    // .aggregate([
-    //   {
-    //     $lookup: {
-    //       from: User.collection.name,
-    //       localField: "users.userId",
-    //       foreignField: "_id",
-    //       as: "user",
-    //     },
-    //   },
-    //   {
-    //     $match: { siteId: { $eq: siteId } },
-    //   },
-    // ]);
-    // if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound);
-
+    const result = await SiteCompaniesModel.findOne({
+      siteId: siteId,
+      users: { $elemMatch: { companyId: ObjectId(companyId) } },
+    })
+      .populate("users.userId")
+      .populate("users.companyId");
+      
     res.status(200).send(response(STRINGS.TEXTS.companyRequested, result));
   }
 
