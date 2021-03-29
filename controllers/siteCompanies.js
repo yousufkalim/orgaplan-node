@@ -7,9 +7,8 @@ const CustomError = require("../utils/customError");
 
 class SiteCompanies {
   async create(req, res) {
-    console.log("HERE");
     const data = req.body;
-    const result = await SiteCompaniesModel.create(req.body);
+    const result = await SiteCompaniesModel.create(data);
     res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
   }
   // Ony for use in postman
@@ -39,21 +38,6 @@ class SiteCompanies {
       },
       { companies: { $elemMatch: { companyId: companyId } } }
     ).populate("companies.companyId");
-    // .populate({
-    //   path: "companies",
-    //   model: STRINGS.MODALS.COMPANY,
-    //   populate: {
-    //     path: "connection",
-    //     model: STRINGS.MODALS.COMPANY,
-    //     populate: {
-    //       path: "childCompanyId",
-    //       model: STRINGS.MODALS.COMPANY,
-    //     },
-    //     match: {
-    //       siteId: { $eq: siteId },
-    //     },
-    //   },
-    // });
     if (!companies) throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound);
 
     const result = {
@@ -81,6 +65,7 @@ class SiteCompanies {
 
   async getOne(req, res) {
     const siteId = req.params.siteId;
+
     const result = await SiteCompaniesModel.findOne({
       siteId: siteId,
     })

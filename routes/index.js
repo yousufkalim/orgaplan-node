@@ -3,7 +3,6 @@ const router = require("express").Router();
 router.use("/v1/auth", require("./auth"));
 router.use("/v1/users", require("./user"));
 router.use("/v1/client", require("./client"));
-router.use("/v1/site", require("./site"));
 router.use("/v1/zac", require("./zac"));
 router.use("/v1/building", require("./building"));
 router.use("/v1/contract", require("./contract"));
@@ -19,5 +18,7 @@ router.use("/v1/company", require("./company"));
 router.use("/v1/company-sites", require("./siteCompanies"));
 router.use("/v1/superadmin", require("./SuperAdmin"));
 router.use("/v1/organigramme", require("./organigramme"));
+router.use("/v1/pic", require("./sitePic"));
+router.use("/v1/vehicles", require("./vehicles"));
 
 module.exports = router;

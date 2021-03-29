@@ -34,6 +34,7 @@ router.get(
   auth(),
   storageAreaController.getExteriorMeans
 );
+
 // POSTS
 router.post("/", auth(), storageAreaController.create);
 // PUTS

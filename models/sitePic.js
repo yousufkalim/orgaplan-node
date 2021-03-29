@@ -8,6 +8,10 @@ const sitePicSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.SITE,
     },
+    exteriorBuilding: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.BUILDING,
+    },
     shapes: [
       {
         type: {
@@ -18,10 +22,25 @@ const sitePicSchema = new Schema(
         _id: String,
         color: String,
         name: String,
-        opacity: String,
+        opacity: Number,
         image: String,
         points: [],
-        itemId: String,
+        mean: {
+          type: Schema.Types.ObjectId,
+          ref: STRINGS.MODALS.MEAN,
+        },
+        building: {
+          type: Schema.Types.ObjectId,
+          ref: STRINGS.MODALS.BUILDING,
+        },
+        storageArea: {
+          type: Schema.Types.ObjectId,
+          ref: STRINGS.MODALS.STORAGEAREA,
+        },
+        deliveryArea: {
+          type: Schema.Types.ObjectId,
+          ref: STRINGS.MODALS.DELIVERYAREA,
+        },
       },
     ],
   },
