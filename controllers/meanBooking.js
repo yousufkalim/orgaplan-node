@@ -127,5 +127,13 @@ class MeanBookingController {
 
     res.status(200).send(response(STRINGS.TEXTS.meanBookingDeleted, result));
   }
+  async getBookingBySiteId(req, res) {
+    const siteId = req.params.siteId;
+    const bookings = await Booking.find({
+      siteId: siteId,
+    });
+    let result = { bookings };
+    res.status(200).send(response(STRINGS.TEXTS.bookingOfSite, result));
+  }
 }
 module.exports = new MeanBookingController();

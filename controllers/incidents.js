@@ -164,6 +164,7 @@ class IncidentsController {
     const status = body.status;
     const name = body.name;
     const company = body.company;
+    console.log(req.body)
     const result = await Incidents.find({
       siteId: siteId,
       $and: [
@@ -173,13 +174,13 @@ class IncidentsController {
         startDate
           ? { date : { $gte: new Date(startDate) } }
           : {},
-        endDate ? { endDate: { $lte: new Date(endDate) } } : {},
-        deliveryArea ? { "location.deliveryArea": deliveryArea } : {},
-        location ? { "location._id": location } : {},
+        // endDate ? { endDate: { $lte: new Date(endDate) } } : {},
+        // deliveryArea ? { "location.deliveryArea": deliveryArea } : {},
+        // location ? { "location._id": location } : {},
         company ? { companyId: { $eq: company } } : {},
-        storageArea ? { "location.storageArea": storageArea } : {},
-        { "availability.start": { $lte: new Date() } },
-        { "availability.end": { $gte: new Date() } },
+        // storageArea ? { "location.storageArea": storageArea } : {},
+        // { "availability.start": { $lte: new Date() } },
+        // { "availability.end": { $gte: new Date() } },
       ],
     })
       .populate({
@@ -199,7 +200,6 @@ class IncidentsController {
         populate: { path: "deliveryArea", model: STRINGS.MODALS.DELIVERYAREA },
       })
       .populate("companyId");
-
     if (!result) throw new CustomError(STRINGS.ERRORS.siteIncidentsNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.incidentRequested, result));
