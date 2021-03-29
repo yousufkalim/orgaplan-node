@@ -4,6 +4,11 @@ const meanBookingController = require("../controllers/meanBooking");
 // GETS
 router.get("/", auth(), meanBookingController.getAll);
 router.get("/:id", auth(), meanBookingController.getOne);
+router.get(
+  "/getBookingBySiteId/:siteId",
+  auth(),
+  meanBookingController.getBookingBySiteId
+);
 router.get("/:meanId/:siteId", auth(), meanBookingController.getHistory);
 router.get(
   "/get_mean_bookings_calendar/:siteId/:meanId",
