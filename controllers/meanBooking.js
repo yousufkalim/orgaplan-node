@@ -3,6 +3,10 @@ const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const Booking = require("../models/meanBooking");
 const SiteCompanies = require("../models/SiteCompanies");
+const Delivery = require("../models/delivery");
+const DeliveryArea = require("../models/deliveryArea");
+const StorageArea = require("../models/storageArea");
+const Building = require("../models/building");
 const Mean = require("../models/mean");
 class MeanBookingController {
   async create(req, res) {
@@ -43,6 +47,77 @@ class MeanBookingController {
     if (!result) throw new CustomError(STRINGS.ERRORS.meanNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.meanRequested, result));
+  }
+  async filterBookingCalendar(req, res) {
+    const body = req.body;
+    const siteId = body.siteId;
+    const companyId = body.companyId;
+    const typeOfPlaning = body.typeOfPlaning;
+    const status = body.status;
+    const typeOfPlace = body.typeOfPlace;
+    const placeId = body.placeId;
+    let response = {};
+    if (typeOfPlaning === "Deliveries") {
+      if (typeOfPlace === "deliveryArea") {
+        response = await Delivery.find({
+          siteId: siteId,
+          $and: [
+            companyId ? { companyId: { $eq: companyId } } : {},
+            status ? { status: { $eq: status } } : {},
+            placeId ? { deliveryArea: { $eq: placeId } } : {},
+          ],
+        });
+      } else if (typeOfPlace === "storageArea") {
+        response = await Delivery.find({
+          siteId: siteId,
+          $and: [
+            companyId ? { companyId: { $eq: companyId } } : {},
+            status ? { status: { $eq: status } } : {},
+            placeId ? { deliveryArea: { $eq: placeId } } : {},
+          ],
+        });
+      } else if (typeOfPlace === "building") {
+        response = await Delivery.find({
+          siteId: siteId,
+          $and: [
+            companyId ? { companyId: { $eq: companyId } } : {},
+            status ? { status: { $eq: status } } : {},
+            placeId ? { deliveryArea: { $eq: placeId } } : {},
+          ],
+        });
+      } else {
+        response = await Delivery.find({
+          siteId: siteId,
+          $and: [
+            companyId ? { companyId: { $eq: companyId } } : {},
+            status ? { status: { $eq: status } } : {},
+          ],
+        });
+      }
+    } else if (typeOfPlaning === "Means") {
+      response = await Booking.find({
+        siteId: siteId,
+        $and: [companyId ? { companyId: { $eq: companyId } } : {}],
+      }).populate({
+        path: "meanId",
+        match: {
+          siteId: siteId,
+          $and: [
+            status ? { status: { $eq: status } } : {},
+            typeOfPlace === "deliveryArea"
+              ? { "location.deliveryArea": { $eq: placeId } }
+              : {},
+            typeOfPlace === "storageArea"
+              ? { "location.storageArea": { $eq: placeId } }
+              : {},
+            typeOfPlace === "buildingId"
+              ? { "location.buildingId": { $eq: placeId } }
+              : {},
+          ],
+        },
+      });
+    }
+    res.status(200).send(response);
   }
 
   async getAll(req, res) {
