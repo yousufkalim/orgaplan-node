@@ -3,12 +3,14 @@ const auth = require("../middlewares/auth");
 const sitePicController = require("../controllers/sitePic");
 
 // GETS
-router.get("/:id", auth(), sitePicController.getOne);
+router.get("/get/:id", sitePicController.getOne);
+router.get("/site/:siteId", sitePicController.getBySite);
 
 // POSTS
-router.post("/", auth(), sitePicController.create);
+router.post("/", sitePicController.create);
+router.post("/shape/add", sitePicController.addShape);
 
 // PUTS
-router.put("/:id", sitePicController.update);
+router.put("/update/:id", sitePicController.update);
 
 module.exports = router;

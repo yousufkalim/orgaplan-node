@@ -107,11 +107,11 @@ module.exports = {
     delteSiteFirst: "You need to delete user sites before deleting the user",
     locationAddressRequired: "Location Address Reuired For Exterior Location",
     locationBuildingRequired: "Location Building Reuired For Interior Location",
+    roleOfCompanyAlreadyExist: "Role of company already exist",
   },
   TEXTS: {
     allUsers: "All users",
     userData: "User data",
-
     userAdded: "User Added",
     userCreated: "User created",
     userUpdated: "User updated",

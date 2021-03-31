@@ -3,38 +3,14 @@ const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const DeliveryArea = require("../models/deliveryArea");
 const isDateChoronological = require("../utils/date");
+
 class DeliveryAreaController {
   async create(req, res) {
-    const body = req.body;
-    if (!body.name) throw new CustomError(STRINGS.ERRORS.nameRequired);
-    if (req.file) body.document = req.file.path;
-    if (!body.availability)
-      throw new CustomError(STRINGS.ERRORS.startDateIsRequred);
-    if (body.availability) {
-      isDateChoronological(body.availability.start, body.availability.end);
-      body.availability = JSON.parse(body.availability);
+    const validatedData = req.body;
 
-      if (!body.availability.start)
-        throw new CustomError(STRINGS.ERRORS.startDateIsRequred);
-    }
-    if (body.addresses) {
-      body.addresses = JSON.parse(body.addresses);
-    }
-    if (body.vehicles) body.vehicles = JSON.parse(body.vehicles);
-    if (body.unavailability)
-      body.unavailability = JSON.parse(body.unavailability);
+    const result = await DeliveryArea.create(validatedData);
 
-    if (body.picCoordinates)
-      body.picCoordinates = JSON.parse(body.picCoordinates);
-    let result = null;
-    if (body.deliveryAreaId)
-      result = await DeliveryArea.findOneAndUpdate(
-        { _id: body.deliveryAreaId },
-        { $set: body },
-        { new: true }
-      );
-    result = await new DeliveryArea(body).save();
-    res.status(200).send(response(STRINGS.TEXTS.deliveryAreaCreated, result));
+    res.status(201).send(response(STRINGS.TEXTS.deliveryAreaCreated, result));
   }
 
   async getAll(req, res) {
@@ -79,15 +55,7 @@ class DeliveryAreaController {
   async update(req, res) {
     const id = req.params.id;
     const body = req.body;
-    console.log(JSON.stringify(body), null, 2);
-    if (req.file) body.document = req.file.path;
-    if (body.availability) body.availability = JSON.parse(body.availability);
-    if (body.addresses) body.addresses = JSON.parse(body.addresses);
-    if (body.vehicles) body.vehicles = JSON.parse(body.vehicles);
-    if (body.unavailability)
-      body.unavailability = JSON.parse(body.unavailability);
-    if (body.picCoordinates)
-      body.picCoordinates = JSON.parse(body.picCoordinates);
+
     const result = await DeliveryArea.findByIdAndUpdate(
       { _id: id },
       { $set: body },
@@ -102,10 +70,7 @@ class DeliveryAreaController {
   async delete(req, res) {
     const id = req.params.id;
 
-    const result = await DeliveryArea.findOne({
-      _id: id,
-    });
-    result.remove();
+    const result = await DeliveryArea.findByIdAndDelete(id);
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryAreaDeleted, result));
   }

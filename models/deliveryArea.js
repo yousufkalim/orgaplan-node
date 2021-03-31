@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const STRINGS = require("../utils/texts");
-const randomColor = require("../utils/colorGenerator");
 
 const deliveryArea = new Schema(
   {
@@ -9,7 +8,6 @@ const deliveryArea = new Schema(
     // document: String,
     color: {
       type: String,
-      default: randomColor,
     },
     addresses: [
       {
@@ -44,10 +42,10 @@ const deliveryArea = new Schema(
         ref: STRINGS.MODALS.MEAN,
       },
     ],
-    picCoordinates: {
-      x: { type: Number },
-      y: { type: Number },
-    },
+    // picCoordinates: {
+    //   x: { type: Number },
+    //   y: { type: Number },
+    // },
     status: {
       type: String,
       enum: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],

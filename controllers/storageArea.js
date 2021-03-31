@@ -6,21 +6,9 @@ const isDateChoronological = require("../utils/date");
 
 class StorageAreaController {
   async create(req, res) {
-    const body = req.body;
-    if (!body.name) throw new CustomError(STRINGS.ERRORS.nameRequired);
+    const validatedData = req.body;
 
-    if (body.location == STRINGS.STATUS.INSIDE && !body.level)
-      throw new CustomError(STRINGS.ERRORS.leveRequired);
-
-    if (!body.availability)
-      throw new CustomError(STRINGS.ERRORS.startDateIsRequred);
-    if (body.availability) {
-      isDateChoronological(body.availability.start, body.availability.end);
-
-      if (!body.availability.start)
-        throw new CustomError(STRINGS.ERRORS.startDateIsRequred);
-    }
-    const result = await StorageArea.create(body);
+    const result = await StorageArea.create(validatedData);
 
     res.status(200).send(response(STRINGS.TEXTS.storateAreaCreated, result));
   }

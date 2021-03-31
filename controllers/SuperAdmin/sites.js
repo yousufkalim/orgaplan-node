@@ -5,6 +5,7 @@ const Level = require("../../models/level");
 const STRINGS = require("../../utils/texts");
 const Client = require("../../models/client");
 const Validations = require("../../validators");
+const SitePic = require("../../models/sitePic");
 const response = require("../../utils/response");
 const Building = require("../../models/building");
 const UserSites = require("../../models/userSites");
@@ -121,6 +122,11 @@ class SuperAdminSitesController {
       },
       { new: true }
     ).populate({ path: "buildings", populate: { path: "levels" } });
+
+    await SitePic.create({
+      siteId: site._id,
+      exteriorBuilding: building._id,
+    });
 
     await res.status(200).send(response(STRINGS.TEXTS.siteCreated, result));
   }
