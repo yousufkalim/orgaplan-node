@@ -45,6 +45,8 @@ const storageArea = new Schema(
         ref: STRINGS.MODALS.MEAN,
       },
     ],
+    notificationPriorToDays: Number,
+    notificationTo: [{ type: String }],
     status: {
       type: String,
       enum: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],
