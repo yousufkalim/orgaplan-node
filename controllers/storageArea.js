@@ -127,5 +127,15 @@ class StorageAreaController {
 
     res.status(200).send(response(STRINGS.TEXTS.storateAreaDeleted, result));
   }
+  async getAllStorageAreaBySiteId(req, res) {
+    const id = req.params.id;
+    const result = await StorageArea.find({
+      siteId: id,
+    });
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
+
+    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequested, result));
+  }
 }
 module.exports = new StorageAreaController();
