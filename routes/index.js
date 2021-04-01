@@ -20,5 +20,6 @@ router.use("/v1/superadmin", require("./SuperAdmin"));
 router.use("/v1/organigramme", require("./organigramme"));
 router.use("/v1/pic", require("./sitePic"));
 router.use("/v1/vehicles", require("./vehicles"));
+router.use("/v1/file-upload", require("./fileUpload"));
 
 module.exports = router;

@@ -64,6 +64,11 @@ class MeanController {
     // if (body.picCoordinates)
     //   body.picCoordinates = JSON.parse(body.picCoordinates);
     const result = await new Mean(req.body).save();
+
+    await Site.findByIdAndUpdate(body.siteId, {
+      $addToSet: { means: result._id },
+    });
+
     res.status(200).send(response(STRINGS.TEXTS.meanCreated, result));
   }
 
