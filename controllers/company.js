@@ -191,13 +191,18 @@ class CompanyController {
   async getCompanyUsersPerSite(req, res) {
     const siteId = req.params.siteId;
     const companyId = req.params.companyId;
+    console.log(siteId);
+    console.log(companyId);
     const result = await SiteCompaniesModel.findOne({
       siteId: siteId,
       users: { $elemMatch: { companyId: ObjectId(companyId) } },
     })
       .populate("users.userId")
       .populate("users.companyId");
-      
+
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.userNotFound);
+
     res.status(200).send(response(STRINGS.TEXTS.companyRequested, result));
   }
 

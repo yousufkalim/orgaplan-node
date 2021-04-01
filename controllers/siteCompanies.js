@@ -129,51 +129,46 @@ class SiteCompanies {
   async filterCompanies(req, res) {
     const body = req.body;
     const siteId = body.siteId;
-
     const companyName = body.companyName;
     const responsibleName = body.responsibleName;
-
     let companyNameRegex = "";
     let responsibleNameRegex = "";
 
     if (companyName) companyNameRegex = new RegExp(`^${companyName}`, "i");
     if (responsibleName)
       responsibleNameRegex = new RegExp(`^${responsibleName}`, "i");
-
     const result = await SiteCompaniesModel.findOne({
       siteId: siteId,
-    }).populate({
-      path: "companies",
-      model: STRINGS.MODALS.COMPANY,
-      match: {
-        $and: [
-          companyName ? { name: { $regex: companyNameRegex } } : {},
-          responsibleName
-            ? {
-                $or: [
-                  { "incharge.firstName": { $regex: responsibleNameRegex } },
-                  { "incharge.lastName": { $regex: responsibleNameRegex } },
-                ],
-              }
-            : {},
-        ],
-      },
-      populate: {
-        path: "connection",
-        model: STRINGS.MODALS.COMPANY,
-        populate: {
-          path: "childCompanyId",
-          model: STRINGS.MODALS.COMPANY,
-        },
+    })
+      .populate("companies.subContractors")
+      .populate({
+        path: "companies.companyId",
         match: {
-          siteId: { $eq: siteId },
+          $and: [
+            companyName ? { name: { $regex: companyNameRegex } } : {},
+            responsibleName
+              ? { "incharge.firstName": { $regex: responsibleNameRegex } }
+              : {},
+          ],
         },
-      },
-    });
+      })
+      .populate("users.userId");
 
-    if (!result) throw new CustomError(STRINGS.ERRORS.meanNotFound);
+    //     $and: [
+    //       companyName ? { name: { $regex: companyNameRegex } } : {},
+    //       responsibleName
+    //         ? {
+    //             $or: [
+    //               { "incharge.firstName": { $regex: responsibleNameRegex } },
+    //               { "incharge.lastName": { $regex: responsibleNameRegex } },
+    //             ],
+    //           }
+    //         : {},
+    //     ],
 
-    res.status(200).send(response(STRINGS.TEXTS.meanRequested, result));
+    if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.companyRequested, result));
   }
 
   async addUser(req, res) {
