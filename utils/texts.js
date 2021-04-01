@@ -235,6 +235,7 @@ module.exports = {
     allOrganigramme: "All Organigrammes",
 
     allMeanBookings: "All Mean Bookings",
+    FilterBookingCalendar: "Filter Booking Calendar",
     meanBookingDeleted: "Mean Booking Deleted",
     meanBookingCreated: "Mean Booking Created",
     meanBookingUpdated: "Mean Booking Updated",
@@ -329,6 +330,9 @@ module.exports = {
     UNAPPROVED: "UNAPPROVED",
     UNAVAILABLE: "UNAVAILABLE",
     UNSCHEDULED: "UNSCHEDULED",
+    VALIDATED: "Validated",
+    MODIFIED: "Modified",
+    ALERTE: "Alerte",
   },
   INVOICETYPES: {
     WAYS: "WAYS",
