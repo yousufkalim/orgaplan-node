@@ -13,7 +13,10 @@ router.get(
 
   incidentsController.getIncidentList
 );
-
+router.get(
+  "/enterprise/incident_list/:id",
+  incidentsController.getEnterpriseIncidentList
+);
 // POSTS
 // router.post("/", auth(), upload("logo"), companyController.create);
 router.post(
@@ -32,6 +35,19 @@ router.post(
   incidentsController.create
 );
 
+router.post(
+  "/enterprise",
+  upload(
+    "incidents",
+    [
+      { name: "photos", maxCount: 3 },
+      { name: "document", maxCount: 1 },
+    ],
+    "fields"
+  ),
+  incidentsController.createEnterpriseIncidents
+);
+
 // PUTS
 router.put(
   "/:id",
@@ -47,9 +63,8 @@ router.put(
   incidentsController.update
 );
 // DELETES
-router.delete("/:id", auth() , incidentsController.delete);
+router.delete("/:id", auth(), incidentsController.delete);
 
 router.post("/filter", incidentsController.filterIncidents);
-
 
 module.exports = router;
