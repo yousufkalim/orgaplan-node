@@ -56,10 +56,12 @@ class MeanBookingController {
     const status = body.status;
     const typeOfPlace = body.typeOfPlace;
     const placeId = body.placeId;
+    let Deliveries = {};
+    let Means = {};
     let result = {};
     if (typeOfPlaning === "Deliveries") {
       if (typeOfPlace === "deliveryArea") {
-        result = await Delivery.find({
+        Deliveries = await Delivery.find({
           siteId: siteId,
           $and: [
             companyId ? { companyId: { $eq: companyId } } : {},
@@ -68,7 +70,7 @@ class MeanBookingController {
           ],
         });
       } else if (typeOfPlace === "storageArea") {
-        result = await Delivery.find({
+        Deliveries = await Delivery.find({
           siteId: siteId,
           $and: [
             companyId ? { companyId: { $eq: companyId } } : {},
@@ -77,7 +79,7 @@ class MeanBookingController {
           ],
         });
       } else if (typeOfPlace === "building") {
-        result = await Delivery.find({
+        Deliveries = await Delivery.find({
           siteId: siteId,
           $and: [
             companyId ? { companyId: { $eq: companyId } } : {},
@@ -86,7 +88,7 @@ class MeanBookingController {
           ],
         });
       } else {
-        result = await Delivery.find({
+        Deliveries = await Delivery.find({
           siteId: siteId,
           $and: [
             companyId ? { companyId: { $eq: companyId } } : {},
@@ -95,7 +97,7 @@ class MeanBookingController {
         });
       }
     } else if (typeOfPlaning === "Means") {
-      result = await Booking.find({
+      Means = await Booking.find({
         siteId: siteId,
         $and: [companyId ? { companyId: { $eq: companyId } } : {}],
       }).populate({
@@ -117,6 +119,9 @@ class MeanBookingController {
         },
       });
     }
+
+    result = { Deliveries, Means };
+
     res.status(200).send(response(STRINGS.TEXTS.FilterBookingCalendar, result));
   }
 
