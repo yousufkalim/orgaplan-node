@@ -45,9 +45,9 @@ const deliverySchema = new Schema(
       type: String,
       enum: [
         STRINGS.STATUS.PENDING,
-        STRINGS.STATUS.APPROVED,
-        STRINGS.STATUS.REJECTED,
-        STRINGS.STATUS.COMPLETED,
+        STRINGS.STATUS.VALIDATED,
+        STRINGS.STATUS.MODIFIED,
+        STRINGS.STATUS.ALERTE,
       ],
       default: STRINGS.STATUS.PENDING,
     },

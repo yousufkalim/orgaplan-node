@@ -19,7 +19,7 @@ router.post("/", auth(), meanBookingController.create);
 router.post("/filter", meanBookingController.filterHistory);
 router.post("/filter_calendar", meanBookingController.filterBookingCalendar);
 router.post(
-  "/filter_Booking_means_calendar",
+  "/filter_Booking_calendar",
   meanBookingController.filterBookingCalendar
 );
 
