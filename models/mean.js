@@ -54,6 +54,7 @@ const meanSchema = new Schema(
             STRINGS.MEANLOCATIONTYPE.EXTERIOR,
           ],
         },
+        label: String,
       },
     ],
     availability: {
