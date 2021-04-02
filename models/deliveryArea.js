@@ -30,6 +30,8 @@ const deliveryArea = new Schema(
         dayOff: { type: Boolean, default: false },
       },
     ],
+    notificationPriorToDays: Number,
+    notificationTo: [{ type: String }],
     vehicles: [{ name: String }],
     deliveryAreaEndNotificaionTime: Number,
     siteId: {
