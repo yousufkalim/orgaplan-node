@@ -15,10 +15,12 @@ class SuperAdminAdminsController {
     const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
 
     const totalItems = await Company.find({
-      company: { $ne: undefined },
+      status: { $ne: STRINGS.STATUS.DELETED },
     }).countDocuments();
 
-    const items = await Company.find({})
+    const items = await Company.find({
+      status: { $ne: STRINGS.STATUS.DELETED },
+    })
       .skip((page - 1) * ITEMS_PER_PAGE)
       .limit(ITEMS_PER_PAGE)
       .populate("adminIds");
@@ -42,7 +44,6 @@ class SuperAdminAdminsController {
 
   async getById(req, res) {
     const id = req.params.id;
-    console.log(id);
     const result = await Company.findById(id, { password: 0, __v: 0 }).populate(
       "adminIds"
     );
