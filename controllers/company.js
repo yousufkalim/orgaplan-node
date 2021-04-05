@@ -16,14 +16,11 @@ class CompanyController {
     // Check if company name exists
     if (!body.trades) body.trades = [];
     else body.trades = JSON.parse(body.trades);
-
     if (body.incharge) body.incharge = JSON.parse(body.incharge);
     const companyName = await Company.findOne({ name: body.name });
-
     if (companyName) {
       if (body.parentCompanyId) {
         // Remove pervious general contractor if any exists
-
         await SiteCompaniesModel.findOneAndUpdate(
           {
             siteId: body.siteId,
@@ -36,7 +33,6 @@ class CompanyController {
           }
         );
         // Create New General Contrctor
-
         await SiteCompaniesModel.findOneAndUpdate(
           {
             siteId: body.siteId,
@@ -48,7 +44,6 @@ class CompanyController {
             },
           }
         );
-
         // Update The Company
         const result = await Company.findByIdAndUpdate(
           { _id: companyName._id },
@@ -59,7 +54,6 @@ class CompanyController {
         res.status(200).send(response(STRINGS.TEXTS.companyUpdated, result));
       } else {
         // Remove pervious general contractor if any exists
-
         await SiteCompaniesModel.findOneAndUpdate(
           {
             siteId: body.siteId,
@@ -78,7 +72,6 @@ class CompanyController {
             $set: req.body,
           }
         );
-
         res.status(200).send(response(STRINGS.TEXTS.companyUpdated, result));
       }
     } else {
@@ -199,7 +192,6 @@ class CompanyController {
     })
       .populate("users.userId")
       .populate("users.companyId");
-
 
     if (!result) throw new CustomError(STRINGS.ERRORS.userNotFound);
 
