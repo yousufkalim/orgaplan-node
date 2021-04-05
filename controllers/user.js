@@ -9,8 +9,8 @@ const SiteCompaniesModel = require("../models/SiteCompanies");
 
 const Company = require("../models/company");
 const Auth = require("../controllers/auth");
-const Validations = require("../validators");
 const ObjectId = require("mongodb").ObjectID;
+const Validations = require("../validators");
 
 const bcrypt = require("bcryptjs");
 const ENV = process.env;
@@ -147,6 +147,7 @@ class UserContoller {
 
   async createCompanyUser(req, res) {
     // const data = req.body;
+    const validatedData = await Validations.user.createCompanyUser(req.body);
     const {
       siteId,
       firstName,
@@ -155,8 +156,7 @@ class UserContoller {
       phone,
       companyId,
       role,
-    } = req.body;
-    console.log(req.body);
+    } = validatedData;
     const roleCheck = await siteCompaniesSchema.findOne({
       siteId: siteId,
       "users.companyId": companyId,
@@ -170,34 +170,34 @@ class UserContoller {
         throw new CustomError(STRINGS.ERRORS.companyNotFound, 404);
       const userCheck = await User.findOne({ email: email });
       if (userCheck) {
-         const siteObj = [
-           {
-             siteId: siteId,
-             role: role,
-           },
-         ];
-         const createdUserSite = await UserSites.findOneAndUpdate({
-           userId: userCheck._id,
-           $addToSet: { sites: siteObj },
-         });
+        const siteObj = [
+          {
+            siteId: siteId,
+            role: role,
+          },
+        ];
+        const createdUserSite = await UserSites.findOneAndUpdate({
+          userId: userCheck._id,
+          $addToSet: { sites: siteObj },
+        });
 
-         const siteCompany = [
-           {
-             userId: userCheck._id,
-             companyId: companyId,
-             role: role,
-           },
-         ];
-         const createdSiteCompany = await siteCompaniesSchema.findOneAndUpdate({
-           siteId: siteId,
-           $addToSet: { users: siteCompany },
-         });
+        const siteCompany = [
+          {
+            userId: userCheck._id,
+            companyId: companyId,
+            role: role,
+          },
+        ];
+        const createdSiteCompany = await siteCompaniesSchema.findOneAndUpdate({
+          siteId: siteId,
+          $addToSet: { users: siteCompany },
+        });
 
-         const obj = {
-           userSite: createdUserSite,
-           siteCompany: createdSiteCompany,
-         };
-         await res.status(200).send(response(STRINGS.TEXTS.userCreated, obj));
+        const obj = {
+          userSite: createdUserSite,
+          siteCompany: createdSiteCompany,
+        };
+        await res.status(200).send(response(STRINGS.TEXTS.userCreated, obj));
       } else {
         const userData = {
           firstName: firstName,
@@ -273,7 +273,7 @@ class UserContoller {
 
   async updateCompanyUser(req, res) {
     const { userId, siteId, email, companyId, role } = req.body;
-    console.log(req.body)
+    console.log(req.body);
     const roleCheck = await siteCompaniesSchema.findOne({
       siteId: siteId,
       "users.companyId": companyId,
@@ -290,9 +290,7 @@ class UserContoller {
           },
           { $set: { "sites.$[el].role": role } },
           {
-            arrayFilters: [
-              { "el.siteId": ObjectId(siteId) },
-            ],
+            arrayFilters: [{ "el.siteId": ObjectId(siteId) }],
             new: true,
           }
         );
@@ -322,43 +320,41 @@ class UserContoller {
     }
   }
 
-  async userFilter (req, res) {
+  async userFilter(req, res) {
     const siteId = req.body.siteId;
     const companyId = req.body.companyId;
-    const name =  req.body.name;
+    const name = req.body.name;
     let re = new RegExp(`^${name}`);
     let result;
-    console.log(companyId);
-    if(name) {
-     const response = await SiteCompaniesModel.findOne({
-     siteId: siteId,
-     $and: [
-       companyId
-         ? { users: { $elemMatch: { companyId: ObjectId(companyId) } } }
-         : {},
+    if (name) {
+      const response = await SiteCompaniesModel.findOne({
+        siteId: siteId,
+        $and: [
+          companyId
+            ? { users: { $elemMatch: { companyId: ObjectId(companyId) } } }
+            : {},
         ],
       })
-     .populate({
-       path: "users.userId",
-
-       match: { firstName: { $regex: re, $options: "i" } },
-     })
-     .populate("users.companyId");
-     result = response;
+        .populate({
+          path: "users.userId",
+          match: { firstName: { $regex: re, $options: "i" } },
+        })
+        .populate("users.companyId");
+      result = response;
     } else {
       const response = await SiteCompaniesModel.findOne({
         siteId: siteId,
         $and: [
-        companyId
-          ? { users: { $elemMatch: { companyId: ObjectId(companyId) } } }
-          : {},
+          companyId
+            ? { users: { $elemMatch: { companyId: ObjectId(companyId) } } }
+            : {},
         ],
-       })
-      .populate({
-        path: "users.userId",
       })
-      .populate("users.companyId");
-       result = response;
+        .populate({
+          path: "users.userId",
+        })
+        .populate("users.companyId");
+      result = response;
     }
     if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound);
     res.status(200).send(response(STRINGS.TEXTS.companyData, result));
