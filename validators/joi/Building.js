@@ -3,10 +3,11 @@ const Joi = require("joi");
 const schemas = {
   create: (data) => {
     const Validation = Joi.object().keys({
+      siteId: Joi.string().required(),
       name: Joi.string().required(),
+      color: Joi.string().allow(""),
       start: Joi.date().allow(""),
       end: Joi.date().allow(""),
-      siteId: Joi.string().required(),
     });
     const { error, value } = Validation.validate(data);
     if (error) {
@@ -18,10 +19,11 @@ const schemas = {
   },
   update: (data) => {
     const Validation = Joi.object().keys({
-      name: Joi.string().allow(""),
+      buildingId: Joi.string().required(),
+      name: Joi.string().required(),
+      color: Joi.string().allow(""),
       start: Joi.date().allow(""),
       end: Joi.date().allow(""),
-      buildingId: Joi.string().required(),
     });
     const { error, value } = Validation.validate(data);
     if (error) {

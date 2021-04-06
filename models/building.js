@@ -7,6 +7,7 @@ const buildingSchema = new Schema(
     name: String,
     start: Date,
     end: Date,
+    color: String,
     buildingType: {
       type: String,
       enum: [STRINGS.LOCATIONTYPE.EXTERIOR, STRINGS.LOCATIONTYPE.INTERIOR],
