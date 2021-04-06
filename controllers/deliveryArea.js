@@ -7,6 +7,7 @@ const isDateChoronological = require("../utils/date");
 class DeliveryAreaController {
   async create(req, res) {
     const validatedData = req.body;
+    console.log("validatedData", req.body);
 
     const result = await DeliveryArea.create(validatedData);
 

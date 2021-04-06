@@ -1,3 +1,4 @@
+const ObjectId = require("mongodb").ObjectID;
 const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
@@ -125,7 +126,9 @@ class IncidentsController {
 
     const siteCompanies = await SiteCompanies.findOne({
       siteId: id,
-    }).populate("companies.companyId");
+    })
+      .populate("companies.companyId")
+      .populate("companies.subContractors");
 
     const result = {
       site_companies: siteCompanies.companies,

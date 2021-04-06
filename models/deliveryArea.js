@@ -13,7 +13,8 @@ const deliveryArea = new Schema(
       {
         pdf: String,
         startDate: Date,
-        endData: Date,
+        endDate: Date,
+        label: String,
         location: [{ type: Number }], //lat: Number, long: Number
       },
     ],
@@ -32,7 +33,7 @@ const deliveryArea = new Schema(
     ],
     notificationPriorToDays: Number,
     notificationTo: [{ type: String }],
-    vehicles: [{ name: String }],
+    vehicles: [{ type: String }],
     deliveryAreaEndNotificaionTime: Number,
     siteId: {
       type: Schema.Types.ObjectId,
