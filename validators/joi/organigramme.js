@@ -5,7 +5,7 @@ const schemas = {
   create: (data) => {
     const Validation = Joi.object().keys({
       email: Joi.string().required(),
-      phone: Joi.date().required(),
+      phone: Joi.string().required(),
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
       type: Joi.string().required(),

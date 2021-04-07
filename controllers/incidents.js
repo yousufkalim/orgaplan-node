@@ -42,7 +42,6 @@ class IncidentsController {
 
   async getIncidentList(req, res) {
     const id = req.params.id;
-
     const incidents = await Incidents.find({
       siteId: id,
     })
@@ -161,7 +160,6 @@ class IncidentsController {
   async filterIncidents(req, res) {
     const body = req.body;
     const siteId = body.siteId;
-
     const deliveryArea = body.deliveryArea;
     const storageArea = body.storageArea;
     const location = body.location;
@@ -171,7 +169,6 @@ class IncidentsController {
     const status = body.status;
     const name = body.name;
     const company = body.company;
-    console.log(req.body);
     const result = await Incidents.find({
       siteId: siteId,
       $and: [
@@ -180,10 +177,10 @@ class IncidentsController {
         status ? { status: { $eq: status } } : {},
         startDate ? { date: { $gte: new Date(startDate) } } : {},
         endDate ? { date: { $lte: new Date(endDate) } } : {},
-        // deliveryArea ? { "location.deliveryArea": deliveryArea } : {},
+        deliveryArea ? { "location.deliveryArea": deliveryArea } : {},
         // location ? { "location._id": location } : {},
         company ? { companyId: { $eq: company } } : {},
-        // storageArea ? { "location.storageArea": storageArea } : {},
+        storageArea ? { "location.storageArea": storageArea } : {},
         // { "availability.start": { $lte: new Date() } },
         // { "availability.end": { $gte: new Date() } },
       ],

@@ -162,6 +162,8 @@ class UserContoller {
       "users.companyId": companyId,
       "users.role": role,
     });
+    console.log("roleCheck", roleCheck);
+    // return;
     if (roleCheck) {
       throw new CustomError(STRINGS.ERRORS.roleOfCompanyAlreadyExist, 404);
     } else {
