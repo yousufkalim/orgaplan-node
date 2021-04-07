@@ -17,8 +17,14 @@ const storageArea = new Schema(
       type: Boolean,
       default: false,
     },
-    unavailability: [
-      { date: Date, reason: String, startingHour: Number, endingHour: Number },
+    unavailabilityDates: [
+      {
+        date: Date,
+        startHour: Number,
+        endHour: Number,
+        dayOff: { type: Boolean, default: false },
+        reason: String,
+      },
     ],
     availability: {
       start: Date,
