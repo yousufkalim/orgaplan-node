@@ -97,6 +97,8 @@ class SitePicController {
       (shape) => String(shape._id) === String(shapeId)
     );
 
+    if (!shape) throw new CustomError(STRINGS.ERRORS.error, 404);
+
     if (shape.type === "MEAN") {
       await Mean.findByIdAndRemove(shapeId);
       await Site.findByIdAndUpdate(pic.siteId, {
