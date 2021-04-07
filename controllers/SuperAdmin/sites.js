@@ -68,8 +68,8 @@ class SuperAdminSitesController {
 
     // Create a storage area
     const storageArea = await StorageArea.create({
-      name: "Storage",
-      location: STRINGS.STATUS.INSIDE,
+      name: "STORAGE_EXTERIOR_DEFAULT",
+      location: STRINGS.STATUS.OUTSIDE,
       availability: {
         start: validatedData.start,
         end: validatedData.end,

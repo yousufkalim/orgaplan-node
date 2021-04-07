@@ -71,6 +71,7 @@ class IncidentsController {
     });
     const siteStorageAreas = await StorageArea.find({
       siteId: id,
+      location: { $ne: STRINGS.STATUS.OUTSIDE },
     });
 
     const result = {
