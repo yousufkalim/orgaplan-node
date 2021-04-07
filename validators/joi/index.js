@@ -11,6 +11,7 @@ const exportsObj = {
   organigramme: require("./organigramme"),
   user: require("./user"),
   clientInvoice: require("./ClientInvoice"),
+  mean: require("./Mean"),
 };
 
 module.exports = exportsObj;

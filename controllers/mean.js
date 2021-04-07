@@ -7,65 +7,29 @@ const CustomError = require("../utils/customError");
 const StorageArea = require("../models/storageArea");
 const DeliveryArea = require("../models/deliveryArea");
 const SiteCompanies = require("../models/SiteCompanies");
+const Validations = require("../validators");
 
-const {
-  isDateBefore,
-  isDateAfter,
-  isDateOccuranceChronological,
-} = require("../utils/helpers");
+const { isDateBefore, isDateAfter } = require("../utils/helpers");
 
 class MeanController {
   async create(req, res) {
-    const body = req.body;
+    const validatedData = Validations.mean.create(req.body);
 
-    if (req.files) {
-      if (req.files["sheet"]) {
-        body.sheet = req.files["sheet"][0].path;
-      }
+    const site = await Site.findById(validatedData.siteId);
+    if (!site) throw new CustomError(STRINGS.ERRORS.siteNotFound);
 
-      if (req.files["image"]) {
-        body.image = req.files["image"][0].path;
-      }
-    }
+    if (isDateBefore(validatedData.availability.start, site.start))
+      throw new CustomError(STRINGS.ERRORS.meanStartDateBeforeSiteStartDate);
+    if (isDateAfter(validatedData.availability.start, site.end))
+      throw new CustomError(STRINGS.ERRORS.meanStartDateBeforeSiteEndtDate);
+    if (isDateBefore(validatedData.availability.end, site.start))
+      throw new CustomError(STRINGS.ERRORS.meanEndDateBeforeSiteStartDate);
+    if (isDateAfter(validatedData.availability.end, site.end))
+      throw new CustomError(STRINGS.ERRORS.meanEndDateAfterSiteEndtDate);
 
-    if (!body.availability)
-      throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound);
+    const result = await Mean.create(validatedData);
 
-    if (body.availability) {
-      body.availability = JSON.parse(body.availability);
-
-      if (!body.availability.start)
-        throw new CustomError(STRINGS.ERRORS.startDateIsRequred);
-      const site = await Site.findById(body.siteId);
-      if (!site) throw new CustomError(STRINGS.ERRORS.siteNotFound);
-
-      isDateOccuranceChronological(
-        body.availability.start,
-        body.availability.end
-      );
-
-      if (isDateBefore(body.availability.start, site.start))
-        throw new CustomError(STRINGS.ERRORS.meanStartDateBeforeSiteStartDate);
-      if (isDateAfter(body.availability.start, site.end))
-        throw new CustomError(STRINGS.ERRORS.meanStartDateBeforeSiteEndtDate);
-      if (isDateBefore(body.availability.end, site.start))
-        throw new CustomError(STRINGS.ERRORS.meanEndDateBeforeSiteStartDate);
-
-      if (isDateAfter(body.availability.end, site.end))
-        throw new CustomError(STRINGS.ERRORS.meanEndDateAfterSiteEndtDate);
-    }
-    if (body.location) {
-      body.location = JSON.parse(body.location);
-    }
-
-    if (body.unavailability)
-      body.unavailability = JSON.parse(body.unavailability);
-
-    // if (body.picCoordinates)
-    //   body.picCoordinates = JSON.parse(body.picCoordinates);
-    const result = await new Mean(req.body).save();
-
-    await Site.findByIdAndUpdate(body.siteId, {
+    await site.update({
       $addToSet: { means: result._id },
     });
 
@@ -73,40 +37,45 @@ class MeanController {
   }
 
   async getAll(req, res) {
-    const result = await Mean.find({}, { password: 0, __v: 0 });
+    const result = await Mean.find();
     res.status(200).send(response(STRINGS.TEXTS.allMeans, result));
   }
 
   async getOne(req, res) {
     const id = req.params.id;
 
-    const result = await Mean.findOne({ _id: id }, { password: 0, __v: 0 });
+    const result = await Mean.findById(id, { __v: 0 });
     if (!result) throw new CustomError(STRINGS.ERRORS.meanNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.meanRequested, result));
   }
 
   async update(req, res) {
-    const id = req.params.id;
-    const body = req.body;
+    const data = {
+      meanId: req.params.id,
+      ...req.body,
+    };
+    const validatedData = Validations.mean.update(data);
 
-    if (req.file) {
-      body.sheet = req.file.path;
-    }
-    if (body.location) body.location = JSON.parse(body.location);
-    if (body.availability) body.availability = JSON.parse(body.availability);
-    if (body.unavailability)
-      body.unavailability = JSON.parse(body.unavailability);
+    const site = await Site.findById(validatedData.siteId);
+    if (!site) throw new CustomError(STRINGS.ERRORS.siteNotFound);
 
-    if (body.picCoordinates)
-      body.picCoordinates = JSON.parse(body.picCoordinates);
+    if (isDateBefore(validatedData.availability.start, site.start))
+      throw new CustomError(STRINGS.ERRORS.meanStartDateBeforeSiteStartDate);
+    if (isDateAfter(validatedData.availability.start, site.end))
+      throw new CustomError(STRINGS.ERRORS.meanStartDateBeforeSiteEndtDate);
+    if (isDateBefore(validatedData.availability.end, site.start))
+      throw new CustomError(STRINGS.ERRORS.meanEndDateBeforeSiteStartDate);
+    if (isDateAfter(validatedData.availability.end, site.end))
+      throw new CustomError(STRINGS.ERRORS.meanEndDateAfterSiteEndtDate);
+
     const result = await Mean.findByIdAndUpdate(
-      { _id: id },
-      { $set: body },
+      { _id: validatedData.meanId },
+      { $set: validatedData },
       { new: true }
     );
 
-    if (!result) throw new CustomError(STRINGS.ERRORS.meanNotFound, 404);
+    if (!result) throw new CustomError(STRINGS.ERRORS.error, 400);
 
     res.status(200).send(response(STRINGS.TEXTS.meanUpdated, result));
   }
@@ -114,15 +83,12 @@ class MeanController {
   async delete(req, res) {
     const id = req.params.id;
 
-    const result = await Mean.findOne({
-      _id: id,
-    });
-    result.remove();
+    const result = await Mean.findByIdAndDelete(id);
 
     res.status(200).send(response(STRINGS.TEXTS.meadDeleted, result));
   }
 
-  async getSiteMeans(req, res) {
+  async getAllBySite(req, res) {
     const siteId = req.params.siteId;
 
     const result = await Mean.find({
