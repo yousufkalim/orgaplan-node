@@ -11,13 +11,14 @@ const schemas = {
       document: Joi.string().optional().allow(""),
       isBillable: Joi.string().required(),
       description: Joi.string().optional().allow(""),
-      photos: Joi.string().optional(),
+      image: Joi.string().optional(),
       siteId: Joi.string().required(),
       companyId: Joi.string().required(),
       type: Joi.string().required(),
       status: Joi.string().optional().allow(""),
       price: Joi.number().optional().allow(""),
     });
+
     const { error, value } = Validation.validate(data);
     if (error) {
       const { details } = error;
@@ -35,13 +36,17 @@ const schemas = {
       document: Joi.string().optional().allow(""),
       isBillable: Joi.string().required(),
       description: Joi.string().optional().allow(""),
-      photos: Joi.string().optional(),
+      image: Joi.string().optional().allow(""),
       siteId: Joi.string().required(),
       companyId: Joi.string().required(),
       type: Joi.string().required(),
       status: Joi.string().optional().allow(""),
       price: Joi.number().optional().allow(""),
     });
+    if (data.image) {
+      data.photos = data.image;
+      delete data.image;
+    }
     const { error, value } = Validation.validate(data);
     if (error) {
       const { details } = error;

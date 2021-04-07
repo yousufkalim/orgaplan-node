@@ -9,9 +9,9 @@ const schemas = {
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
       type: Joi.string().required(),
-      image: Joi.string().required(),
-      company: Joi.string().optional().allow(""),
-      role: Joi.string().optional(),
+      image: Joi.string().optional().allow(""),
+      company: Joi.string().required(),
+      role: Joi.string().optional().allow(""),
       siteId: Joi.string().required(),
     });
     const { error, value } = Validation.validate(data);

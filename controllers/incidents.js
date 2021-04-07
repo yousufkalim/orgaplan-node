@@ -1,3 +1,4 @@
+const ObjectId = require("mongodb").ObjectID;
 const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
@@ -10,40 +11,15 @@ const Validations = require("../validators");
 
 class IncidentsController {
   async create(req, res) {
-    // const body = req.body;
     const validatedData = await Validations.incident.create(req.body);
-    if (req.files) {
-      let photos = [];
-      if (req.files["photos"]) {
-        req.files["photos"].map((file) => photos.push(file.path));
-        validatedData.photos = photos;
-      }
-
-      if (req.files["document"]) {
-        validatedData.document = req.files["document"][0].path;
-      }
+    if (req.body["image"]) {
+      validatedData.photos = req.body["image"];
+      delete validatedData.image;
     }
-    if (validatedData.location)
+    if (validatedData.location) {
       validatedData.location = JSON.parse(validatedData.location);
-    const result = await new Incidents(validatedData).save();
-
-    res.status(200).send(response(STRINGS.TEXTS.incidentCreated, result));
-  }
-
-  async createEnterpriseIncidents(req, res) {
-    const body = req.body;
-    if (req.files) {
-      let photos = [];
-      if (req.files["photos"]) {
-        req.files["photos"].map((file) => photos.push(file.path));
-        body.photos = photos;
-      }
-      if (req.files["document"]) {
-        body.document = req.files["document"][0].path;
-      }
     }
-    if (body.location) body.location = JSON.parse(body.location);
-    const result = await new Incidents(req.body).save();
+    const result = await new Incidents(validatedData).save();
     res.status(200).send(response(STRINGS.TEXTS.incidentCreated, result));
   }
 
@@ -79,7 +55,17 @@ class IncidentsController {
 
     const siteBuildings = await Building.find({
       siteId: id,
-    }).populate("siteId");
+    })
+      .populate("siteId")
+      .populate({
+        path: "levels",
+        model: STRINGS.MODALS.LEVEL,
+        populate: {
+          path: "storage",
+          model: STRINGS.MODALS.STORAGEAREA,
+        },
+      });
+
     const siteDeliveryAreas = await DeliveryArea.find({
       siteId: id,
     });
@@ -105,27 +91,15 @@ class IncidentsController {
 
     res.status(200).send(response(STRINGS.TEXTS.incidentRequested, result));
   }
-  async getEnterpriseIncidentList(req, res) {
-    const id = req.params.id;
-
-    const incidents = await Incidents.find({
-      siteId: id,
-    })
-      .populate("location.deliveryArea")
-      .populate("location.storageArea")
-      .populate("companyId");
-
-    if (!incidents) throw new CustomError(STRINGS.ERRORS.indcidentNotFound);
-
-    res.status(200).send(response(STRINGS.TEXTS.incidentRequested, incidents));
-  }
 
   async getIncidentAdmin(req, res) {
     const id = req.params.id;
 
     const siteCompanies = await SiteCompanies.findOne({
       siteId: id,
-    }).populate("companies.companyId");
+    })
+      .populate("companies.companyId")
+      .populate("companies.subContractors");
 
     const result = {
       site_companies: siteCompanies.companies,
@@ -147,17 +121,21 @@ class IncidentsController {
   async update(req, res) {
     const id = req.params.id;
     const validatedData = await Validations.incident.update(req.body);
-    const body = validatedData;
-    if (req.files) {
-      let photos = [];
-      if (req.files["photos"]) {
-        req.files["photos"].map((file) => photos.push(file.path));
-        body.photos = photos;
-      }
-      if (req.files["document"]) {
-        body.document = req.files["document"][0].path;
-      }
+    if (req.body["image"]) {
+      validatedData.photos = req.body["image"];
+      delete validatedData.image;
     }
+    const body = validatedData;
+    // if (req.files) {
+    //   let photos = [];
+    //   if (req.files["photos"]) {
+    //     req.files["photos"].map((file) => photos.push(file.path));
+    //     body.photos = photos;
+    //   }
+    //   if (req.files["document"]) {
+    //     body.document = req.files["document"][0].path;
+    //   }
+    // }
     if (body.location) body.location = JSON.parse(body.location);
     const result = await Incidents.findByIdAndUpdate(
       { _id: id },
@@ -200,7 +178,7 @@ class IncidentsController {
         type ? { type: { $eq: type } } : {},
         status ? { status: { $eq: status } } : {},
         startDate ? { date: { $gte: new Date(startDate) } } : {},
-        // endDate ? { endDate: { $lte: new Date(endDate) } } : {},
+        endDate ? { date: { $lte: new Date(endDate) } } : {},
         // deliveryArea ? { "location.deliveryArea": deliveryArea } : {},
         // location ? { "location._id": location } : {},
         company ? { companyId: { $eq: company } } : {},
