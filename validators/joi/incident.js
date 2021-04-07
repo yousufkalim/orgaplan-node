@@ -11,6 +11,7 @@ const schemas = {
       document: Joi.string().optional().allow(""),
       isBillable: Joi.string().required(),
       description: Joi.string().optional().allow(""),
+      location: Joi.string().optional().allow(""),
       image: Joi.string().optional(),
       siteId: Joi.string().required(),
       companyId: Joi.string().required(),
