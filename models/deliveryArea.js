@@ -22,13 +22,14 @@ const deliveryArea = new Schema(
       start: Date,
       end: Date,
     },
-    unavailability: [
+
+    unavailabilityDates: [
       {
         date: Date,
-        reason: String,
-        startingHour: Number,
-        endingHour: Number,
+        startHour: Number,
+        endHour: Number,
         dayOff: { type: Boolean, default: false },
+        reason: String,
       },
     ],
     notificationPriorToDays: Number,

@@ -32,7 +32,7 @@ const deliverySchema = new Schema(
     comment: String,
     sendDeliverySummary: Boolean,
     userEmail: String,
-    trades: [{ type: Schema.Types.ObjectId, ref: STRINGS.MODALS.TRADES }],
+    trades: [String],
     means: [{ type: Schema.Types.ObjectId, ref: STRINGS.MODALS.MEAN }],
     materials: [String],
     isExterior: Boolean,
