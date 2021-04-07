@@ -65,8 +65,8 @@ const meanSchema = new Schema(
       {
         date: Date,
         reason: String,
-        startingHour: Number,
-        endingHour: Number,
+        startHour: Number,
+        endHour: Number,
         dayOff: { type: Boolean, default: false },
       },
     ],
