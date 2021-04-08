@@ -17,7 +17,18 @@ class SitePicController {
   async getOne(req, res) {
     const id = req.params.id;
 
-    const result = await SitePic.findOne({ _id: id });
+    const result = await SitePic.findOne({ _id: id })
+      .populate({
+        path: "exteriorBuilding",
+        populate: { path: "levels" },
+      })
+      .populate("shapes.mean")
+      .populate({
+        path: "shapes.building",
+        populate: { path: "levels" },
+      })
+      .populate("shapes.storageArea")
+      .populate("shapes.deliveryArea");
     if (!result) throw new CustomError(STRINGS.ERRORS.picNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.picRequested, result));
@@ -52,7 +63,18 @@ class SitePicController {
       id,
       { $set: data },
       { new: true }
-    );
+    )
+      .populate({
+        path: "exteriorBuilding",
+        populate: { path: "levels" },
+      })
+      .populate("shapes.mean")
+      .populate({
+        path: "shapes.building",
+        populate: { path: "levels" },
+      })
+      .populate("shapes.storageArea")
+      .populate("shapes.deliveryArea");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.picNotFound, 404);
 
@@ -80,7 +102,18 @@ class SitePicController {
       validatedData.picId,
       { $addToSet: { shapes: validatedData } },
       { new: true }
-    );
+    )
+      .populate({
+        path: "exteriorBuilding",
+        populate: { path: "levels" },
+      })
+      .populate("shapes.mean")
+      .populate({
+        path: "shapes.building",
+        populate: { path: "levels" },
+      })
+      .populate("shapes.storageArea")
+      .populate("shapes.deliveryArea");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
 
@@ -119,7 +152,18 @@ class SitePicController {
       picId,
       { $pull: { shapes: { _id: shapeId } } },
       { new: true }
-    );
+    )
+      .populate({
+        path: "exteriorBuilding",
+        populate: { path: "levels" },
+      })
+      .populate("shapes.mean")
+      .populate({
+        path: "shapes.building",
+        populate: { path: "levels" },
+      })
+      .populate("shapes.storageArea")
+      .populate("shapes.deliveryArea");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
 
