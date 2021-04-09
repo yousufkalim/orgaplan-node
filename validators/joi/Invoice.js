@@ -1,26 +1,16 @@
 const Joi = require("joi");
+const CustomError = require("../../utils/customError");
 
 const schemas = {
   create: (data) => {
     const Validation = Joi.object().keys({
       name: Joi.string().required(),
       date: Joi.date().required(),
-      time: Joi.string().required(),
-      location: Joi.string().required(),
-      price: Joi.number().required(),
-      invoiceType: Joi.string().required(),
-      createdBy: Joi.string().required(),
-      information: Joi.array().items({
-        userId: Joi.string().required(),
-        userName: Joi.string().required(),
-        images: Joi.array().items(Joi.string().optional()),
-        site: Joi.string().optional(),
-        enterprise: Joi.string().optional(),
-        comments: Joi.array().items({
-          comment: Joi.string().required(),
-          userId: Joi.string().required(),
-        }),
-      }),
+      companyId: Joi.string().required(),
+      type: Joi.string().optional().allow(""),
+      photos: Joi.array().optional().allow(""),
+      location: Joi.string().optional().allow(""),
+      description: Joi.string().optional().allow(""),
     });
     const { error, value } = Validation.validate(data);
     if (error) {
@@ -34,22 +24,11 @@ const schemas = {
     const Validation = Joi.object().keys({
       name: Joi.string().required(),
       date: Joi.date().required(),
-      time: Joi.string().required(),
-      location: Joi.string().required(),
-      price: Joi.number().required(),
-      invoiceType: Joi.string().required(),
-      createdBy: Joi.string().required(),
-      information: Joi.array().items({
-        userId: Joi.string().required(),
-        userName: Joi.string().required(),
-        images: Joi.array().items(Joi.string().optional()),
-        site: Joi.string().optional(),
-        enterprise: Joi.string().optional(),
-        comments: Joi.array().items({
-          comment: Joi.string().required(),
-          userId: Joi.string().required(),
-        }),
-      }),
+      companyId: Joi.string().required(),
+      type: Joi.string().optional().allow(""),
+      photos: Joi.array().optional().allow(""),
+      location: Joi.string().optional().allow(""),
+      description: Joi.string().optional().allow(""),
     });
     const { error, value } = Validation.validate(data);
     if (error) {

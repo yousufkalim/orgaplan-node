@@ -15,7 +15,6 @@ class SiteCompanies {
   // Ony for use in postman
   async addCompanies(req, res) {
     const data = req.body;
-
     const result = await SiteCompaniesModel.findOneAndUpdate(
       { siteId: data.siteId },
       { $push: { companies: data.company, users: data.users } },

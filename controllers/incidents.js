@@ -6,23 +6,30 @@ const SiteCompanies = require("../models/SiteCompanies");
 const Building = require("../models/building");
 const DeliveryArea = require("../models/deliveryArea");
 const StorageArea = require("../models/storageArea");
+const Validations = require("../validators");
+
 class IncidentsController {
   async create(req, res) {
     const body = req.body;
+
+    body.photos = body.images;
+    delete body.images;
+    const validatedData = Validations.Invoice.create(body);
 
     if (req.files) {
       let photos = [];
       if (req.files["photos"]) {
         req.files["photos"].map((file) => photos.push(file.path));
-        body.photos = photos;
+        validatedData.photos = photos;
       }
 
       if (req.files["document"]) {
-        body.document = req.files["document"][0].path;
+        validatedData.document = req.files["document"][0].path;
       }
     }
-    if (body.location) body.location = JSON.parse(body.location);
-    const result = await new Incidents(req.body).save();
+    if (validatedData.location)
+      validatedData.location = JSON.parse(validatedData.location);
+    const result = await new Incidents(validatedData).save();
 
     res.status(200).send(response(STRINGS.TEXTS.incidentCreated, result));
   }
@@ -115,22 +122,27 @@ class IncidentsController {
 
     const body = req.body;
 
+    body.photos = body.images;
+    delete body.images;
+    const validatedData = Validations.Invoice.update(body);
+
     if (req.files) {
       let photos = [];
       if (req.files["photos"]) {
         req.files["photos"].map((file) => photos.push(file.path));
-        body.photos = photos;
+        validatedData.photos = photos;
       }
 
       if (req.files["document"]) {
-        body.document = req.files["document"][0].path;
+        validatedData.document = req.files["document"][0].path;
       }
     }
-    if (body.location) body.location = JSON.parse(body.location);
+    if (validatedData.location)
+      validatedData.location = JSON.parse(validatedData.location);
 
     const result = await Incidents.findByIdAndUpdate(
       { _id: id },
-      { $set: body },
+      { $set: validatedData },
       { new: true }
     );
 
@@ -151,7 +163,6 @@ class IncidentsController {
   }
 
   async filterIncidents(req, res) {
-
     const body = req.body;
     const siteId = body.siteId;
 
@@ -170,9 +181,7 @@ class IncidentsController {
         name ? { name: { $eq: name } } : {},
         type ? { type: { $eq: type } } : {},
         status ? { status: { $eq: status } } : {},
-        startDate
-          ? { date : { $gte: new Date(startDate) } }
-          : {},
+        startDate ? { date: { $gte: new Date(startDate) } } : {},
         endDate ? { endDate: { $lte: new Date(endDate) } } : {},
         deliveryArea ? { "location.deliveryArea": deliveryArea } : {},
         location ? { "location._id": location } : {},

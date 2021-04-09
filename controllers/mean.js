@@ -8,6 +8,8 @@ const SiteCompanies = require("../models/SiteCompanies");
 const Building = require("../models/building");
 const DeliveryArea = require("../models/deliveryArea");
 const StorageArea = require("../models/storageArea");
+const Validations = require("../validators");
+
 const Company = require("../models/company");
 const {
   isDateBefore,
@@ -19,52 +21,55 @@ class MeanController {
   async create(req, res) {
     const body = req.body;
 
+    const validatedData = Validations.Mean.create(body);
+    console.log(validatedData);
+
     if (req.files) {
       if (req.files["sheet"]) {
-        body.sheet = req.files["sheet"][0].path;
+        validatedData.sheet = req.files["sheet"][0].path;
       }
 
       if (req.files["image"]) {
-        body.image = req.files["image"][0].path;
+        validatedData.image = req.files["image"][0].path;
       }
     }
 
-    if (!body.availability)
+    if (!validatedData.availability)
       throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound);
 
-    if (body.availability) {
-      body.availability = JSON.parse(body.availability);
+    if (validatedData.availability) {
+      validatedData.availability = JSON.parse(validatedData.availability);
 
-      if (!body.availability.start)
+      if (!validatedData.availability.start)
         throw new CustomError(STRINGS.ERRORS.startDateIsRequred);
-      const site = await Site.findById(body.siteId);
+      const site = await Site.findById(validatedData.siteId);
       if (!site) throw new CustomError(STRINGS.ERRORS.siteNotFound);
 
       isDateOccuranceChronological(
-        body.availability.start,
-        body.availability.end
+        validatedData.availability.start,
+        validatedData.availability.end
       );
 
-      if (isDateBefore(body.availability.start, site.start))
+      if (isDateBefore(validatedData.availability.start, site.start))
         throw new CustomError(STRINGS.ERRORS.meanStartDateBeforeSiteStartDate);
-      if (isDateAfter(body.availability.start, site.end))
+      if (isDateAfter(validatedData.availability.start, site.end))
         throw new CustomError(STRINGS.ERRORS.meanStartDateBeforeSiteEndtDate);
-      if (isDateBefore(body.availability.end, site.start))
+      if (isDateBefore(validatedData.availability.end, site.start))
         throw new CustomError(STRINGS.ERRORS.meanEndDateBeforeSiteStartDate);
 
-      if (isDateAfter(body.availability.end, site.end))
+      if (isDateAfter(validatedData.availability.end, site.end))
         throw new CustomError(STRINGS.ERRORS.meanEndDateAfterSiteEndtDate);
     }
-    if (body.location) {
-      body.location = JSON.parse(body.location);
+    if (validatedData.location) {
+      validatedData.location = JSON.parse(validatedData.location);
     }
 
-    if (body.unavailability)
-      body.unavailability = JSON.parse(body.unavailability);
+    if (validatedData.unavailability)
+      validatedData.unavailability = JSON.parse(validatedData.unavailability);
 
     // if (body.picCoordinates)
     //   body.picCoordinates = JSON.parse(body.picCoordinates);
-    const result = await new Mean(req.body).save();
+    const result = await new Mean(validatedData).save();
     res.status(200).send(response(STRINGS.TEXTS.meanCreated, result));
   }
 

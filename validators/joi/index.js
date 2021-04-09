@@ -8,6 +8,8 @@ const exportsObj = {
   client: require("./Client"),
   building: require("./Building"),
   clientInvoice: require("./ClientInvoice"),
+  Invoice: require("./Invoice"),
+  Mean: require("./Mean"),
 };
 
 module.exports = exportsObj;
