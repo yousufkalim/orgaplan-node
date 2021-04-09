@@ -334,6 +334,7 @@ module.exports = {
     VALIDATED: "VALIDATED",
     MODIFIED: "MODIFIED",
     ALERTE: "ALERTE",
+    REFUSE: "REFUSE",
   },
   INVOICETYPES: {
     WAYS: "WAYS",

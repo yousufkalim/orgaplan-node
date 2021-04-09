@@ -68,7 +68,9 @@ class MeanBookingController {
             status ? { status: { $eq: status } } : {},
             placeId ? { deliveryArea: { $eq: placeId } } : {},
           ],
-        });
+        })
+          .populate("companyId")
+          .populate("means");
       } else if (typeOfPlace === "storageArea") {
         Deliveries = await Delivery.find({
           siteId: siteId,
@@ -94,7 +96,9 @@ class MeanBookingController {
             companyId ? { companyId: { $eq: companyId } } : {},
             status ? { status: { $eq: status } } : {},
           ],
-        });
+        })
+          .populate("companyId")
+          .populate("means.mean");
       }
     } else if (typeOfPlaning === "Means") {
       Means = await Booking.find({
