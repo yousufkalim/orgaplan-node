@@ -100,24 +100,26 @@ class MeanBookingController {
       Means = await Booking.find({
         siteId: siteId,
         $and: [companyId ? { companyId: { $eq: companyId } } : {}],
-      }).populate({
-        path: "meanId",
-        match: {
-          siteId: siteId,
-          $and: [
-            status ? { status: { $eq: status } } : {},
-            typeOfPlace === "deliveryArea" && placeId
-              ? { "location.deliveryArea": { $eq: placeId } }
-              : {},
-            typeOfPlace === "storageArea" && placeId
-              ? { "location.storageArea": { $eq: placeId } }
-              : {},
-            typeOfPlace === "buildingId" && placeId
-              ? { "location.buildingId": { $eq: placeId } }
-              : {},
-          ],
-        },
-      });
+      })
+        .populate("companyId")
+        .populate({
+          path: "meanId",
+          match: {
+            siteId: siteId,
+            $and: [
+              status ? { status: { $eq: status } } : {},
+              typeOfPlace === "deliveryArea" && placeId
+                ? { "location.deliveryArea": { $eq: placeId } }
+                : {},
+              typeOfPlace === "storageArea" && placeId
+                ? { "location.storageArea": { $eq: placeId } }
+                : {},
+              typeOfPlace === "buildingId" && placeId
+                ? { "location.buildingId": { $eq: placeId } }
+                : {},
+            ],
+          },
+        });
     }
 
     result = { Deliveries, Means };
