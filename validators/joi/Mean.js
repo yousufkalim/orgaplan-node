@@ -111,11 +111,6 @@ const schemas = {
     data.availability = JSON.parse(data.availability);
     data.unavailability = JSON.parse(data.unavailability);
 
-    Helpers.isDateOccuranceChronological(
-      data.availability.start,
-      data.availability.end
-    );
-
     if (data.images) {
       if (data.images["sheet"]) {
         data.sheet = data.images["sheet"].files[0];

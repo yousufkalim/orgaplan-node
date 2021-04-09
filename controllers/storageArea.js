@@ -1,8 +1,8 @@
+const Means = require("../models/mean");
 const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const StorageArea = require("../models/storageArea");
-const isDateChoronological = require("../utils/date");
 
 class StorageAreaController {
   async create(req, res) {
@@ -85,13 +85,14 @@ class StorageAreaController {
 
   async getStorageMeans(req, res) {
     const id = req.params.id;
-    const result = await StorageArea.findOne({
-      _id: id,
-    }).populate("means");
 
-    if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
+    const result = await Means.find({
+      "location.storageArea": id,
+    });
 
-    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequested, result));
+    if (!result) throw new CustomError(STRINGS.ERRORS.meanNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.meanRequested, result));
   }
 
   async getOne(req, res) {

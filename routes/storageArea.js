@@ -19,11 +19,7 @@ router.get(
   auth(),
   storageAreaController.getByCompanyId
 );
-router.get(
-  "/get_storage_means/enterprise/:id",
-  auth(),
-  storageAreaController.getStorageMeans
-);
+router.get("/storage-area-means/:id", storageAreaController.getStorageMeans);
 router.get(
   "/get_storage_site/enterprise/:id",
   auth(),
