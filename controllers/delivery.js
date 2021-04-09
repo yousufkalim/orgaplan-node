@@ -77,6 +77,7 @@ class DeliveryController {
     const siteStorageAreas = await StorageArea.find({
       siteId: siteId,
       companies: userCompanyId,
+      location: { $ne: STRINGS.STATUS.OUTSIDE },
     });
     if (!siteStorageAreas)
       throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
