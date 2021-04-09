@@ -5,24 +5,20 @@ const STRINGS = require("../utils/texts");
 const deliveryArea = new Schema(
   {
     name: String,
-    // document: String,
-    color: {
-      type: String,
-    },
+    color: String,
     addresses: [
       {
         pdf: String,
         startDate: Date,
         endDate: Date,
         label: String,
-        location: [{ type: Number }], //lat: Number, long: Number
+        location: [{ type: Number }], // lat: Number, long: Number
       },
     ],
     availability: {
       start: Date,
       end: Date,
     },
-
     unavailabilityDates: [
       {
         date: Date,
@@ -40,12 +36,12 @@ const deliveryArea = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.SITE,
     },
-    means: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: STRINGS.MODALS.MEAN,
-      },
-    ],
+    // means: [
+    //   {
+    //     type: Schema.Types.ObjectId,
+    //     ref: STRINGS.MODALS.MEAN,
+    //   },
+    // ],
     // picCoordinates: {
     //   x: { type: Number },
     //   y: { type: Number },

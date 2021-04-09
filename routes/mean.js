@@ -2,9 +2,10 @@ const router = require("express").Router();
 const upload = require("../middlewares/multer");
 
 const meanController = require("../controllers/mean");
+
 // GETS
-router.get("/", meanController.getAll);
 router.get("/get/:id", meanController.getOne);
+
 router.get("/get_site_means/:siteId", meanController.getAllBySite);
 router.get("/get_list_of_means/:siteId", meanController.getListOfMeans);
 

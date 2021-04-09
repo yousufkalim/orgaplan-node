@@ -18,15 +18,6 @@ const meanSchema = new Schema(
       type: String,
       enum: [STRINGS.MEANTYPES.LIFTING, STRINGS.MEANTYPES.ROUTING],
     },
-    status: {
-      type: String,
-      default: STRINGS.STATUS.AVAILABLE,
-      enum: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],
-    },
-    picCoordinates: {
-      x: Number,
-      y: Number,
-    },
     location: [
       {
         deliveryArea: {
@@ -70,6 +61,11 @@ const meanSchema = new Schema(
         dayOff: { type: Boolean, default: false },
       },
     ],
+    status: {
+      type: String,
+      default: STRINGS.STATUS.AVAILABLE,
+      enum: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],
+    },
   },
 
   {
