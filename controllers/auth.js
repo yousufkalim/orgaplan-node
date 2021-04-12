@@ -3,11 +3,14 @@ const bcrypt = require("bcryptjs");
 const JWT = require("jsonwebtoken");
 
 const User = require("../models/user");
+const UserSites = require("../models/userSites");
 const Token = require("../models/token");
 const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const MailService = require("../services/mail.service");
+const SiteCompanies = require("../models/SiteCompanies");
+
 const ENV = process.env;
 
 class AuthContoller {
@@ -246,18 +249,38 @@ class AuthContoller {
   async validateToken(req, res) {
     const userId = req.params.userId;
     const verifyToken = req.params.token;
-
     let VToken = await Token.findOne({ userId });
+    console.log("VToken", VToken);
     if (!VToken) throw new CustomError(STRINGS.ERRORS.invalidToken);
-
+    console.log("verifyToken", verifyToken);
     const isValid = await bcrypt.compare(verifyToken, VToken.token);
+    console.log("isValid", isValid);
     if (!isValid) throw new CustomError(STRINGS.ERRORS.invalidToken);
-
     const result = {
       userId: VToken.userId,
     };
 
     res.status(200).send(response(STRINGS.TEXTS.tokenIsValid, result));
+  }
+
+  async getUserProfile(req, res) {
+    const id = req.params.id;
+    const user = await User.findById(id, { password: 0, __v: 0 });
+    if (!user) throw new CustomError(STRINGS.ERRORS.userNotFound, 404);
+
+    const userSite = await UserSites.findOne({ userId: id });
+    if (!userSite) throw new CustomError(STRINGS.ERRORS.siteNotFound, 404);
+    const siteId = userSite.sites[0].siteId;
+    if (!siteId) throw new CustomError(STRINGS.ERRORS.siteNotFound, 404);
+
+    const userCompany = await SiteCompanies.findOne({
+      siteId: siteId,
+      "users.userId": id,
+    }).populate("users.companyId");
+    if (!userCompany) throw new CustomError(STRINGS.ERRORS.userNotFound, 404);
+    const company = userCompany.users[0].companyId;
+    user.company = company;
+    res.status(200).send(response(STRINGS.TEXTS.userData, user));
   }
 }
 

@@ -215,6 +215,18 @@ class SiteCompanies {
 
     res.status(200).send(response(STRINGS.TEXTS.compantDeleted, result));
   }
+
+  async enterpriseDelivery(req, res) {
+    const siteId = req.params.siteId;
+    const userId = req.params.userId;
+    const result = await SiteCompaniesModel.findOne({
+      siteId: siteId,
+      "users.userId": userId,
+    })
+      .populate("users.userId")
+      .populate("users.companyId");
+    res.status(200).send(response(STRINGS.TEXTS.enterpriseDelivery, result));
+  }
 }
 
 module.exports = new SiteCompanies();

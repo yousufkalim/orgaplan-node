@@ -13,6 +13,8 @@ router.get(
 );
 router.get("/validate-token/:userId/:token", authController.validateToken);
 router.get("/request-password-reset", authController.requestPasswordReset);
+//
+router.get("/get/:id", authController.getUserProfile);
 
 // Posts
 router.post(

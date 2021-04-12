@@ -196,6 +196,8 @@ module.exports = {
     storateAreaUpdated: "Storage Area Updated",
     storateAreaRequested: "Storage Area Requested",
 
+    storateAreaRequestCreated: "Storage Area Request Created",
+
     allSiteIncident: "All Incidents",
     siteIncidentsCreated: "Incidents Created",
     siteIncidentsDeleted: "Incidents Deleted",
@@ -273,6 +275,7 @@ module.exports = {
     userSitesDeleted: "Site deleted",
     companyUpdated: "Company Updated",
     compantDeleted: "Company deleted",
+    enterpriseDelivery: "Enterprise Delivery",
     userSiteRequested: "Site Requested",
     passwordSuccess: "Password updated",
     clientRequest: "Client Request Sent",
@@ -330,9 +333,10 @@ module.exports = {
     UNAPPROVED: "UNAPPROVED",
     UNAVAILABLE: "UNAVAILABLE",
     UNSCHEDULED: "UNSCHEDULED",
-    VALIDATED: "Validated",
-    MODIFIED: "Modified",
-    ALERTE: "Alerte",
+    VALIDATED: "VALIDATED",
+    MODIFIED: "MODIFIED",
+    ALERTE: "ALERTE",
+    REFUSE: "REFUSE",
   },
   INVOICETYPES: {
     WAYS: "WAYS",
@@ -391,6 +395,11 @@ module.exports = {
     SITE: "SITE",
     LOGISTICS: "LOGISTICS",
   },
+  STORAGEAREAREQUESTSTATUS: {
+    ACCEPTED: "ACCEPTED",
+    PENDING: "PENDING",
+    REJECTED: "REJECTED",
+  },
   MODALS: {
     ZAC: "Zac",
     MEAN: "Mean",
@@ -415,6 +424,8 @@ module.exports = {
     USERSITES: "UserSites",
     MEANBOOKING: "MeanBooking",
     STORAGEAREA: "StorageArea",
+    STORAGEAREAREQUEST: "StorageAreaRequest",
+
     ORGANIGRAMME: "ORGANIGRAMME",
     DELIVERYAREA: "DeliveryArea",
     SUBSCRIPTION: "Subscription",
