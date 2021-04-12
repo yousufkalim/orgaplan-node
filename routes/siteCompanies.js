@@ -12,6 +12,11 @@ router.get(
   siteCompanyController.getCompanyAutofill
 );
 router.get(
+  "/enterpriseDelivery/:siteId/:userId",
+  siteCompanyController.enterpriseDelivery
+);
+
+router.get(
   "/general-contractor/:siteId/:companyId",
 
   siteCompanyController.getGeneralContractor

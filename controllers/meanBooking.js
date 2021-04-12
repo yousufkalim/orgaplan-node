@@ -68,7 +68,9 @@ class MeanBookingController {
             status ? { status: { $eq: status } } : {},
             placeId ? { deliveryArea: { $eq: placeId } } : {},
           ],
-        });
+        })
+          .populate("companyId")
+          .populate("means");
       } else if (typeOfPlace === "storageArea") {
         Deliveries = await Delivery.find({
           siteId: siteId,
@@ -94,30 +96,34 @@ class MeanBookingController {
             companyId ? { companyId: { $eq: companyId } } : {},
             status ? { status: { $eq: status } } : {},
           ],
-        });
+        })
+          .populate("companyId")
+          .populate("means.mean");
       }
     } else if (typeOfPlaning === "Means") {
       Means = await Booking.find({
         siteId: siteId,
         $and: [companyId ? { companyId: { $eq: companyId } } : {}],
-      }).populate({
-        path: "meanId",
-        match: {
-          siteId: siteId,
-          $and: [
-            status ? { status: { $eq: status } } : {},
-            typeOfPlace === "deliveryArea" && placeId
-              ? { "location.deliveryArea": { $eq: placeId } }
-              : {},
-            typeOfPlace === "storageArea" && placeId
-              ? { "location.storageArea": { $eq: placeId } }
-              : {},
-            typeOfPlace === "buildingId" && placeId
-              ? { "location.buildingId": { $eq: placeId } }
-              : {},
-          ],
-        },
-      });
+      })
+        .populate("companyId")
+        .populate({
+          path: "meanId",
+          match: {
+            siteId: siteId,
+            $and: [
+              status ? { status: { $eq: status } } : {},
+              typeOfPlace === "deliveryArea" && placeId
+                ? { "location.deliveryArea": { $eq: placeId } }
+                : {},
+              typeOfPlace === "storageArea" && placeId
+                ? { "location.storageArea": { $eq: placeId } }
+                : {},
+              typeOfPlace === "buildingId" && placeId
+                ? { "location.buildingId": { $eq: placeId } }
+                : {},
+            ],
+          },
+        });
     }
 
     result = { Deliveries, Means };

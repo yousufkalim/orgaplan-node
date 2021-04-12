@@ -10,6 +10,11 @@ const meanBookingSchema = new Schema(
     startTime: String,
     endTime: String,
     bookingReason: String,
+    status: {
+      type: String,
+      enum: [STRINGS.STATUS.PENDING, STRINGS.STATUS.VALIDATED],
+      default: STRINGS.STATUS.PENDING,
+    },
     siteId: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.SITE,
