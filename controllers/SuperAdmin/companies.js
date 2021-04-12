@@ -1,4 +1,6 @@
+const User = require("../../models/user");
 const STRINGS = require("../../utils/texts");
+const Client = require("../../models/client");
 const Company = require("../../models/company");
 const response = require("../../utils/response");
 const CustomError = require("../../utils/customError");
@@ -12,32 +14,53 @@ class SuperAdminAdminsController {
 
   async getAll(req, res) {
     const page = +req.query.page || 1;
-    const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
+    const limit = +ENV.ITEMS_PER_PAGE;
+    let aggregate = Client.aggregate();
 
-    const totalItems = await Company.find({
-      status: { $ne: STRINGS.STATUS.DELETED },
-    }).countDocuments();
+    aggregate
+      .lookup({
+        from: Company.collection.name,
+        localField: "companyId",
+        foreignField: "_id",
+        as: "companyId",
+      })
+      .unwind("$companyId")
+      .project({
+        _id: 0,
+        companyId: 1,
+      })
+      .replaceRoot("$companyId")
+      .match({
+        status: { $ne: STRINGS.STATUS.DELETED },
+      })
+      .lookup({
+        from: User.collection.name,
+        localField: "adminIds",
+        foreignField: "_id",
+        as: "adminIds",
+      });
 
-    const items = await Company.find({
-      status: { $ne: STRINGS.STATUS.DELETED },
-    })
-      .skip((page - 1) * ITEMS_PER_PAGE)
-      .limit(ITEMS_PER_PAGE)
-      .populate("adminIds");
+    let options = {
+      page: page,
+      limit: limit,
+      lean: true,
+      sort: { createdAt: -1 },
+    };
 
-    if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
+    const total_data = await Client.aggregatePaginate(aggregate, options);
 
+    const { docs, total, pages } = total_data;
     const result = {
-      items,
-      totalItems,
-      totalPages: Math.ceil(totalItems / ITEMS_PER_PAGE),
-      itemsPerPage: ITEMS_PER_PAGE,
-      currentPage: page,
-      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
-      hasNextPage: ITEMS_PER_PAGE * page < totalItems,
-      hasPreviousPage: page > 1,
-      nextPage: page + 1,
-      previousPage: page - 1,
+      items: docs,
+      totalItems: total,
+      totalPages: pages,
+      currentPage: total_data.page,
+      itemsPerPage: total_data.limit,
+      lastPage: Math.ceil(total / total_data.limit),
+      hasNextPage: total_data.limit * total_data.page < docs,
+      hasPreviousPage: total_data.page > 1,
+      nextPage: total_data.page + 1,
+      previousPage: total_data.page - 1,
     };
     res.status(200).send(response(STRINGS.TEXTS.companysRequested, result));
   }

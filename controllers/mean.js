@@ -1,13 +1,14 @@
-const STRINGS = require("../utils/texts");
-const response = require("../utils/response");
+const ObjectId = require("mongodb").ObjectID;
 const Mean = require("../models/mean");
 const Site = require("../models/site");
+const STRINGS = require("../utils/texts");
+const Validations = require("../validators");
+const response = require("../utils/response");
 const Building = require("../models/building");
 const CustomError = require("../utils/customError");
 const StorageArea = require("../models/storageArea");
 const DeliveryArea = require("../models/deliveryArea");
 const SiteCompanies = require("../models/SiteCompanies");
-const Validations = require("../validators");
 
 const { isDateBefore, isDateAfter } = require("../utils/helpers");
 
@@ -34,11 +35,6 @@ class MeanController {
     });
 
     res.status(200).send(response(STRINGS.TEXTS.meanCreated, result));
-  }
-
-  async getAll(req, res) {
-    const result = await Mean.find();
-    res.status(200).send(response(STRINGS.TEXTS.allMeans, result));
   }
 
   async getOne(req, res) {
@@ -139,30 +135,36 @@ class MeanController {
     const siteId = body.siteId;
 
     const deliveryArea = body.deliveryArea;
+    // const location = body.location;
+    // const building = body.building;
+    // const level = body.level;
     const storageArea = body.storageArea;
-    const location = body.location;
     const type = body.type;
+    const company = body.company;
+    const status = body.status;
     const startDate = body.startDate;
     const endDate = body.endDate;
-    const status = body.status;
-    const name = body.name;
+    const name = body.name || "";
+
+    var re = new RegExp(`^${name}`, "i");
+
+    let filters = [];
+    filters.push({ name: { $regex: re } });
+    type && filters.push({ meanType: { $eq: type } });
+    status && filters.push({ status: { $eq: status } });
+    startDate &&
+      filters.push({ "availability.start": { $gte: new Date(startDate) } });
+    endDate &&
+      filters.push({ "availability.end": { $lte: new Date(endDate) } });
+    deliveryArea && filters.push({ "location.deliveryArea": deliveryArea });
+    storageArea && filters.push({ "location.storageArea": storageArea });
+    // location && filters.push({ "location._id": location });
+    // filters.push({ "availability.start": { $lte: new Date() } });
+    // filters.push({ "availability.end": { $gte: new Date() } });
 
     const result = await Mean.find({
       siteId: siteId,
-      $and: [
-        name ? { name: { $eq: name } } : {},
-        type ? { meanType: { $eq: type } } : {},
-        status ? { status: { $eq: status } } : {},
-        startDate
-          ? { "availability.start": { $gte: new Date(startDate) } }
-          : {},
-        endDate ? { "availability.end": { $lte: new Date(endDate) } } : {},
-        deliveryArea ? { "location.deliveryArea": deliveryArea } : {},
-        location ? { "location._id": location } : {},
-        storageArea ? { "location.storageArea": storageArea } : {},
-        { "availability.start": { $lte: new Date() } },
-        { "availability.end": { $gte: new Date() } },
-      ],
+      $and: filters,
     })
       .populate({
         path: "location",
@@ -184,59 +186,41 @@ class MeanController {
   async getListOfMeans(req, res) {
     const siteId = req.params.siteId;
 
-    const result = await Mean.find({
+    const total_means = await Mean.find({
       siteId: siteId,
       $and: [
         { "availability.start": { $lte: new Date() } },
         { "availability.end": { $gte: new Date() } },
       ],
-    })
-      .populate({
-        path: "location",
-        populate: {
-          path: "storageArea",
-          model: STRINGS.MODALS.STORAGEAREA,
-        },
-      })
-      .populate({
-        path: "location",
-        populate: { path: "deliveryArea", model: STRINGS.MODALS.DELIVERYAREA },
-      });
+    }).countDocuments();
 
-    const building = await Building.find({ siteId: siteId });
-    if (!building) throw new CustomError(STRINGS.ERRORS.buildingNotFound);
-
-    const siteDeliveryAreas = await DeliveryArea.find({
+    const locations = await Building.find({ siteId: siteId }).populate(
+      "levels"
+    );
+    const deliveryAreas = await DeliveryArea.find({
       siteId: siteId,
     });
-
-    if (!siteDeliveryAreas)
-      throw new CustomError(STRINGS.ERRORS.deliveyAreaNotFount);
-    const siteStorageAreas = await StorageArea.find({
+    const storageAreas = await StorageArea.find({
       siteId: siteId,
-      location: { $ne: STRINGS.STATUS.OUTSIDE },
+      // location: { $ne: STRINGS.STATUS.OUTSIDE },
     });
-
-    if (!siteStorageAreas)
-      throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
 
     const siteCompanies = await SiteCompanies.findOne({
       siteId: siteId,
     }).populate("companies.companyId");
     if (!siteCompanies) throw new CustomError(STRINGS.ERRORS.companyNotFound);
-    if (!result) throw new CustomError(STRINGS.ERRORS.meanNotFound);
-    res.status(200).send(
-      response(STRINGS.TEXTS.meanRequested, {
-        means: result,
-        site_locations: building,
-        site_delivery_areas: siteDeliveryAreas,
-        siteStorageAreas: siteStorageAreas,
-        // site_locations: siteLocations,
-        site_companies: siteCompanies.companies,
-        mean_types: [STRINGS.MEANTYPES.LIFTING, STRINGS.MEANTYPES.ROUTING],
-        mean_status: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],
-      })
-    );
+
+    const result = {
+      total_means: total_means,
+      site_locations: locations,
+      site_storage_areas: storageAreas,
+      site_delivery_areas: deliveryAreas,
+      site_companies: siteCompanies.companies,
+      mean_types: [STRINGS.MEANTYPES.LIFTING, STRINGS.MEANTYPES.ROUTING],
+      mean_status: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],
+    };
+
+    res.status(200).send(response(STRINGS.TEXTS.meanRequested, result));
   }
 }
 module.exports = new MeanController();

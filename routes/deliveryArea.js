@@ -6,7 +6,7 @@ const deliveryAreaController = require("../controllers/deliveryArea");
 router.get("/", deliveryAreaController.getAll);
 router.get("/:id", deliveryAreaController.getOne);
 router.get(
-  "/get_delivery_area_means/enterprise/:id",
+  "/delivery-area-means/:id",
   deliveryAreaController.getDeliveryAreaMeans
 );
 

@@ -196,6 +196,8 @@ module.exports = {
     storateAreaUpdated: "Storage Area Updated",
     storateAreaRequested: "Storage Area Requested",
 
+    storateAreaRequestCreated: "Storage Area Request Created",
+
     allSiteIncident: "All Incidents",
     siteIncidentsCreated: "Incidents Created",
     siteIncidentsDeleted: "Incidents Deleted",
@@ -393,6 +395,11 @@ module.exports = {
     SITE: "SITE",
     LOGISTICS: "LOGISTICS",
   },
+  STORAGEAREAREQUESTSTATUS: {
+    ACCEPTED: "ACCEPTED",
+    PENDING: "PENDING",
+    REJECTED: "REJECTED",
+  },
   MODALS: {
     ZAC: "Zac",
     MEAN: "Mean",
@@ -417,6 +424,8 @@ module.exports = {
     USERSITES: "UserSites",
     MEANBOOKING: "MeanBooking",
     STORAGEAREA: "StorageArea",
+    STORAGEAREAREQUEST: "StorageAreaRequest",
+
     ORGANIGRAMME: "ORGANIGRAMME",
     DELIVERYAREA: "DeliveryArea",
     SUBSCRIPTION: "Subscription",
