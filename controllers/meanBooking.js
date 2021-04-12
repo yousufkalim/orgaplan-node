@@ -79,7 +79,9 @@ class MeanBookingController {
             status ? { status: { $eq: status } } : {},
             placeId ? { deliveryArea: { $eq: placeId } } : {},
           ],
-        });
+        })
+          .populate("companyId")
+          .populate("means");
       } else if (typeOfPlace === "building") {
         Deliveries = await Delivery.find({
           siteId: siteId,
@@ -88,7 +90,9 @@ class MeanBookingController {
             status ? { status: { $eq: status } } : {},
             placeId ? { deliveryArea: { $eq: placeId } } : {},
           ],
-        });
+        })
+          .populate("companyId")
+          .populate("means");
       } else {
         Deliveries = await Delivery.find({
           siteId: siteId,
@@ -98,7 +102,7 @@ class MeanBookingController {
           ],
         })
           .populate("companyId")
-          .populate("means.mean");
+          .populate("means");
       }
     } else if (typeOfPlaning === "Means") {
       Means = await Booking.find({
@@ -125,9 +129,7 @@ class MeanBookingController {
           },
         });
     }
-
     result = { Deliveries, Means };
-
     res.status(200).send(response(STRINGS.TEXTS.FilterBookingCalendar, result));
   }
 
