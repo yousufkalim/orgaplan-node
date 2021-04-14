@@ -9,10 +9,6 @@ const deliverySchema = new Schema(
       enum: [STRINGS.STATUS.SCHEDULED, STRINGS.STATUS.UNSCHEDULED],
       default: STRINGS.STATUS.SCHEDULED,
     },
-    deliveryArea: {
-      type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.DELIVERYAREA,
-    },
     siteId: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.SITE,
@@ -21,21 +17,26 @@ const deliverySchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.COMPANY,
     },
-    storageArea: {
-      type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.STORAGEAREA,
-    },
     userId: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.USER,
+    },
+    deliveryArea: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.DELIVERYAREA,
+    },
+    storageArea: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.STORAGEAREA,
     },
     comment: String,
     sendDeliverySummary: Boolean,
     userEmail: String,
     trades: [String],
-    means: [{ type: Schema.Types.ObjectId, ref: STRINGS.MODALS.MEAN }],
+    liftingMeans: [{ type: Schema.Types.ObjectId, ref: STRINGS.MODALS.MEAN }],
+    routingMeans: [{ type: Schema.Types.ObjectId, ref: STRINGS.MODALS.MEAN }],
     materials: [String],
-    isExterior: Boolean,
+    // isExterior: Boolean,
     building: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.BUILDING },
     level: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.LEVEL },
     date: Date,
@@ -51,7 +52,6 @@ const deliverySchema = new Schema(
       ],
       default: STRINGS.STATUS.PENDING,
     },
-    statusReason: String,
   },
   {
     timestamps: true,

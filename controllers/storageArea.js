@@ -21,80 +21,6 @@ class StorageAreaController {
     res.status(200).send(response(STRINGS.TEXTS.allStorateAreas, result));
   }
 
-  async getByLevelIdAndCompany(req, res) {
-    const levelId = req.params.level_id;
-    const companyId = req.params.company_id;
-    const result = await StorageArea.find({
-      level: levelId,
-      companies: companyId,
-      location: { $ne: STRINGS.STATUS.OUTSIDE },
-    });
-
-    if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
-
-    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequested, result));
-  }
-
-  async getByLevelId(req, res) {
-    const levelId = req.params.level_id;
-    const result = await StorageArea.find({
-      level: levelId,
-      location: { $ne: STRINGS.STATUS.OUTSIDE },
-    });
-
-    if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
-
-    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequested, result));
-  }
-
-  async getByCompanyId(req, res) {
-    const companyId = req.params.company_id;
-    const result = await StorageArea.find({
-      companies: companyId,
-      location: STRINGS.STATUS.OUTSIDE,
-    });
-
-    if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
-
-    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequested, result));
-  }
-
-  async getExteriorMeans(req, res) {
-    const siteId = req.params.siteId;
-    const result = await StorageArea.find({
-      siteId: siteId,
-      location: STRINGS.STATUS.OUTSIDE,
-    });
-
-    if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
-
-    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequested, result));
-  }
-
-  async getStorageAreaBySiteId(req, res) {
-    const id = req.params.id;
-    const result = await StorageArea.findOne({
-      siteId: id,
-      location: { $ne: STRINGS.STATUS.OUTSIDE },
-    });
-
-    if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
-
-    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequested, result));
-  }
-
-  async getStorageMeans(req, res) {
-    const id = req.params.id;
-
-    const result = await Means.find({
-      "location.storageArea": id,
-    });
-
-    if (!result) throw new CustomError(STRINGS.ERRORS.meanNotFound);
-
-    res.status(200).send(response(STRINGS.TEXTS.meanRequested, result));
-  }
-
   async getOne(req, res) {
     const id = req.params.id;
 
@@ -132,8 +58,34 @@ class StorageAreaController {
 
     res.status(200).send(response(STRINGS.TEXTS.storateAreaDeleted, result));
   }
-  async getAllStorageAreaBySiteId(req, res) {
+
+  async getStorageMeans(req, res) {
     const id = req.params.id;
+
+    const result = await Means.find({
+      "location.storageArea": id,
+    });
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.meanNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.meanRequested, result));
+  }
+
+  async getStorageAreaBySiteId(req, res) {
+    const id = req.params.id;
+    const result = await StorageArea.findOne({
+      siteId: id,
+      location: { $ne: STRINGS.STATUS.OUTSIDE },
+    });
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
+
+    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequested, result));
+  }
+
+  async getStorageAreasBySite(req, res) {
+    const id = req.params.id;
+
     const result = await StorageArea.find({
       siteId: id,
       location: { $ne: STRINGS.STATUS.OUTSIDE },
