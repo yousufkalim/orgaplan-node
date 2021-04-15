@@ -38,20 +38,6 @@ const schemas = {
     }
     return value;
   },
-  updateImage: (data) => {
-    const Validation = Joi.object().keys({
-      image: Joi.string().required("Image is required"),
-      levelId: Joi.string().required("Level ref is required"),
-    });
-
-    const { error, value } = Validation.validate(data);
-    if (error) {
-      const { details } = error;
-      const message = details.map((i) => i.message).join(",");
-      throw new CustomError(message, 400);
-    }
-    return value;
-  },
 };
 
 module.exports = schemas;

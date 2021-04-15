@@ -1,12 +1,14 @@
-const STRINGS = require("../utils/texts");
 const Site = require("../models/site");
 const Mean = require("../models/mean");
-const StorageArea = require("../models/storageArea");
-const DeliveryArea = require("../models/deliveryArea");
+const Level = require("../models/level");
+const STRINGS = require("../utils/texts");
+const Validations = require("../validators");
 const SitePic = require("../models/sitePic");
 const response = require("../utils/response");
 const Building = require("../models/building");
 const CustomError = require("../utils/customError");
+const StorageArea = require("../models/storageArea");
+const DeliveryArea = require("../models/deliveryArea");
 
 class SitePicController {
   async create(req, res) {
@@ -168,6 +170,33 @@ class SitePicController {
     if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
 
     res.status(200).send(response(STRINGS.TEXTS.picUpdated, result));
+  }
+
+  async picPdf(req, res) {
+    const validatedData = await Validations.pic.updatePdf(req.body);
+
+    let result;
+    if (validatedData.siteId) {
+      result = await Site.findByIdAndUpdate(
+        validatedData.siteId,
+        {
+          $set: { plan: validatedData.image },
+        },
+        { new: true }
+      );
+    } else if (validatedData.levelId) {
+      result = await Level.findByIdAndUpdate(
+        validatedData.levelId,
+        {
+          $set: { plan: validatedData.image },
+        },
+        { new: true }
+      );
+    }
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.error, 400);
+
+    res.status(201).send(response(STRINGS.TEXTS.picUpdated, result));
   }
 }
 

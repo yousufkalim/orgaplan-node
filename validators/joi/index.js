@@ -1,5 +1,6 @@
 const exportsObj = {
   zac: require("./Zac"),
+  pic: require("./pic"),
   mean: require("./Mean"),
   site: require("./Site"),
   user: require("./user"),

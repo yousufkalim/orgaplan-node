@@ -1,16 +1,13 @@
 const mongoose = require("mongoose");
 const Zac = require("../../models/zac");
 const Site = require("../../models/site");
-const Level = require("../../models/level");
 const STRINGS = require("../../utils/texts");
 const Client = require("../../models/client");
 const Validations = require("../../validators");
 const SitePic = require("../../models/sitePic");
 const response = require("../../utils/response");
-const Building = require("../../models/building");
 const UserSites = require("../../models/userSites");
 const CustomError = require("../../utils/customError");
-const StorageArea = require("../../models/storageArea");
 const SiteCompanies = mongoose.model(STRINGS.MODALS.SITECOMPANIES);
 const ENV = process.env;
 
@@ -31,10 +28,10 @@ class SuperAdminSitesController {
 
     validatedData.clientId = client._id;
 
-    // Create the site
+    // 1- Create the site
     const site = await Site.create(validatedData);
 
-    // Create Site Companies Doc
+    // 2- Create Site Companies Doc
     await SiteCompanies.create({
       siteId: site._id,
       users: [
@@ -52,40 +49,14 @@ class SuperAdminSitesController {
       ],
     });
 
-    // Add site to zac
+    // 3- Add site to zac
     if (validatedData.zacId) {
       await Zac.findByIdAndUpdate(validatedData.zacId, {
         $addToSet: { sites: site._id },
       });
     }
 
-    // Create a building
-    let building = await Building.create({
-      name: "Exterior",
-      siteId: site._id,
-      buildingType: "EXTERIOR",
-    });
-
-    // Create a storage area
-    const storageArea = await StorageArea.create({
-      name: "STORAGE_EXTERIOR_DEFAULT",
-      location: STRINGS.STATUS.OUTSIDE,
-      availability: {
-        start: validatedData.start,
-        end: validatedData.end,
-      },
-      siteId: site._id,
-    });
-
-    // Create a level
-    let level = await Level.create({
-      number: 0,
-      levelType: "STORAGE",
-      building: building._id,
-      storage: storageArea._id,
-    });
-
-    // Check if the userSites Obj exists
+    // 4- Check if the userSites Obj exists
     const userSitesCheck = await UserSites.findOne({
       userId: validatedData.adminId,
     });
@@ -105,28 +76,12 @@ class SuperAdminSitesController {
       });
     }
 
-    // Update building
-    await Building.findByIdAndUpdate(
-      building._id,
-      {
-        $addToSet: { levels: level._id },
-      },
-      { new: true }
-    );
-
-    // Update site
-    const result = await Site.findByIdAndUpdate(
-      site._id,
-      {
-        $addToSet: { buildings: building._id },
-      },
-      { new: true }
-    ).populate({ path: "buildings", populate: { path: "levels" } });
-
+    // 5- Create Site PIC
     await SitePic.create({
       siteId: site._id,
-      exteriorBuilding: building._id,
     });
+
+    let result = site;
 
     await res.status(200).send(response(STRINGS.TEXTS.siteCreated, result));
   }
@@ -190,7 +145,7 @@ class SuperAdminSitesController {
       .populate("clientId")
       .populate("adminId");
 
-    if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
+    if (!result) throw new CustomError(STRINGS.ERRORS.siteNotFound, 404);
 
     res.status(200).send(response(STRINGS.TEXTS.siteRequested, result));
   }
@@ -285,8 +240,8 @@ class SuperAdminSitesController {
         $pull: { sites: { siteId: id } },
       }
     );
-    await Building.deleteMany({ _id: { $in: result.buildings } });
-    await Level.deleteMany({ building: { $in: result.buildings } });
+    // await Building.deleteMany({ _id: { $in: result.buildings } });
+    // await Level.deleteMany({ building: { $in: result.buildings } });
 
     res.status(201).send(response(STRINGS.TEXTS.siteDeleted, "result"));
   }

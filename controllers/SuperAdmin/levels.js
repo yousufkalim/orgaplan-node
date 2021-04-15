@@ -2,6 +2,7 @@ const Level = require("../../models/level");
 const STRINGS = require("../../utils/texts");
 const Validations = require("../../validators");
 const response = require("../../utils/response");
+const LevelPic = require("../../models/levelPic");
 const Building = require("../../models/building");
 const CustomError = require("../../utils/customError");
 const ENV = process.env;
@@ -17,6 +18,7 @@ class SuperAdminZacsController {
     if (level) throw new CustomError(STRINGS.ERRORS.levelExists, 404);
 
     let result = await Level.create(validatedData);
+    await LevelPic.create({ levelId: result._id });
 
     await Building.findByIdAndUpdate(validatedData.building, {
       $addToSet: { levels: result._id },
@@ -66,12 +68,12 @@ class SuperAdminZacsController {
     const validatedData = await Validations.level.update(req.body);
 
     let levelCheck = await Level.findById(validatedData.levelId);
-    if (!levelCheck) throw new CustomError(STRINGS.ERRORS.levelNotFouned, 404);
+    if (!levelCheck) throw new CustomError(STRINGS.ERRORS.levelNotFound, 404);
 
-    if (levelCheck.name !== validatedData.name) {
+    if (levelCheck.number !== validatedData.number) {
       let levelCheck2 = await Level.findOne({
-        name: validatedData.name,
         building: validatedData.building,
+        number: { $eq: Number(validatedData.number) },
       });
       if (levelCheck2) throw new CustomError(STRINGS.ERRORS.levelExists, 404);
 
@@ -104,6 +106,7 @@ class SuperAdminZacsController {
     const id = req.params.id;
 
     const result = await Level.findByIdAndRemove(id);
+    await LevelPic.findOneAndDelete({ levelId: result._id });
     if (!result) throw new CustomError(STRINGS.ERRORS.error);
 
     res.status(201).send(response(STRINGS.TEXTS.levelDeleted, result));
@@ -143,12 +146,12 @@ class SuperAdminZacsController {
     const validatedData = await Validations.level.updateImage(req.body);
 
     let levelCheck = await Level.findById(validatedData.levelId);
-    if (!levelCheck) throw new CustomError(STRINGS.ERRORS.levelNotFouned, 404);
+    if (!levelCheck) throw new CustomError(STRINGS.ERRORS.levelNotFound, 404);
 
     const result = await Level.findByIdAndUpdate(
       validatedData.levelId,
       {
-        $set: { image: validatedData.image },
+        $set: { plan: validatedData.image },
       },
       {
         new: true,

@@ -9,11 +9,6 @@ const storageArea = new Schema(
       type: Boolean,
       default: false,
     },
-    location: {
-      type: String,
-      enum: [STRINGS.STATUS.INSIDE, STRINGS.STATUS.OUTSIDE],
-      default: STRINGS.STATUS.INSIDE,
-    },
     availability: {
       start: Date,
       end: Date,
@@ -27,16 +22,27 @@ const storageArea = new Schema(
         reason: String,
       },
     ],
+    materials: [{ type: String }],
+    notificationPriorToDays: Number,
+    notificationTo: [{ type: String }],
     siteId: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.SITE,
     },
-    level: {
-      type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.LEVEL,
+    location: {
+      type: String,
+      enum: [STRINGS.STATUS.INSIDE, STRINGS.STATUS.OUTSIDE],
+      default: STRINGS.STATUS.INSIDE,
     },
+    // level: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: STRINGS.MODALS.LEVEL,
+    // },
     deliveryArea: [
-      { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.DELIVERYAREA },
+      {
+        type: Schema.Types.ObjectId,
+        ref: STRINGS.MODALS.DELIVERYAREA,
+      },
     ],
     companies: [
       {
@@ -44,12 +50,10 @@ const storageArea = new Schema(
         ref: STRINGS.MODALS.COMPANY,
       },
     ],
-    materials: [{ type: String }],
-    notificationPriorToDays: Number,
-    notificationTo: [{ type: String }],
     status: {
       type: String,
       enum: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],
+      default: STRINGS.STATUS.AVAILABLE,
     },
   },
   {

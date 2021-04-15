@@ -8,10 +8,6 @@ const sitePicSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.SITE,
     },
-    exteriorBuilding: {
-      type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.BUILDING,
-    },
     shapes: [
       {
         type: {
