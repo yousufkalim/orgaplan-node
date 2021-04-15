@@ -160,11 +160,12 @@ class UserContoller {
     } = validatedData;
     const roleCheck = await siteCompaniesSchema.findOne({
       siteId: siteId,
-      "users.companyId": companyId,
-      "users.role": role,
     });
+    const filterData = roleCheck.users.filter(
+      (x) => x.companyId === companyId && x.role === role
+    );
 
-    if (roleCheck) {
+    if (filterData) {
       throw new CustomError(STRINGS.ERRORS.roleOfCompanyAlreadyExist, 404);
     } else {
       const companyCheck = await Company.findById(companyId);
@@ -297,18 +298,28 @@ class UserContoller {
   }
 
   async updateCompanyUser(req, res) {
-    const { userId, siteId, email, companyId, role } = req.body;
-    console.log(req.body);
+    const { userId, siteId, email, companyId, role, phone, image } = req.body;
     const roleCheck = await siteCompaniesSchema.findOne({
       siteId: siteId,
-      "users.companyId": companyId,
-      "users.role": role,
     });
-    if (roleCheck) {
+
+    const filterData = roleCheck.users.filter(
+      (x) => x.companyId === companyId && x.role === role
+    );
+    console.log("filterData", filterData);
+    if (filterData.length) {
       throw new CustomError(STRINGS.ERRORS.roleOfCompanyAlreadyExist, 404);
     } else {
       const userCheck = await User.findOne({ email: email });
       if (userCheck) {
+        const userData = {
+          phone: phone,
+        };
+        image && (userData.image = image);
+
+        await userCheck.update({
+          $set: userData,
+        });
         const createdUserSite = await UserSites.findOneAndUpdate(
           {
             userId: ObjectId(userId),
@@ -381,7 +392,7 @@ class UserContoller {
         .populate("users.companyId");
       result = response;
     }
-    if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound);
+    if (!result) throw new CustomError(STRINGS.ERRORS.userNotFound);
     res.status(200).send(response(STRINGS.TEXTS.companyData, result));
   }
 

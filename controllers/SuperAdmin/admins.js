@@ -189,7 +189,7 @@ class SuperAdminAdminsController {
       company: validatedData.companyId,
     };
     validatedData.image && (userData.image = validatedData.image);
-
+    //working
     // Update user
     const result = await User.findByIdAndUpdate(
       validatedData.adminId,
