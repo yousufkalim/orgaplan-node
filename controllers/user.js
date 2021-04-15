@@ -156,14 +156,14 @@ class UserContoller {
       phone,
       companyId,
       role,
+      image,
     } = validatedData;
     const roleCheck = await siteCompaniesSchema.findOne({
       siteId: siteId,
       "users.companyId": companyId,
       "users.role": role,
     });
-    console.log("roleCheck", roleCheck);
-    // return;
+
     if (roleCheck) {
       throw new CustomError(STRINGS.ERRORS.roleOfCompanyAlreadyExist, 404);
     } else {
@@ -178,10 +178,12 @@ class UserContoller {
             role: role,
           },
         ];
-        const createdUserSite = await UserSites.findOneAndUpdate({
-          userId: userCheck._id,
-          $addToSet: { sites: siteObj },
-        });
+        const createdUserSite = await UserSites.findOneAndUpdate(
+          { userId: userCheck._id },
+          {
+            $addToSet: { sites: siteObj },
+          }
+        );
 
         const siteCompany = [
           {
@@ -190,10 +192,14 @@ class UserContoller {
             role: role,
           },
         ];
-        const createdSiteCompany = await siteCompaniesSchema.findOneAndUpdate({
-          siteId: siteId,
-          $addToSet: { users: siteCompany },
-        });
+        const createdSiteCompany = await siteCompaniesSchema.findOneAndUpdate(
+          {
+            siteId: siteId,
+          },
+          {
+            $addToSet: { users: siteCompany },
+          }
+        );
 
         const obj = {
           userSite: createdUserSite,
@@ -202,10 +208,12 @@ class UserContoller {
         await res.status(200).send(response(STRINGS.TEXTS.userCreated, obj));
       } else {
         const userData = {
+          //working
           firstName: firstName,
           lastName: lastName,
           email: email,
           phone: phone,
+          image: image,
         };
         const user = await Auth.signup(userData);
 
@@ -217,10 +225,14 @@ class UserContoller {
             role: role,
           },
         ];
-        const createdUserSite = await UserSites.findOneAndUpdate({
-          userId: user._id,
-          $addToSet: { sites: siteObj },
-        });
+        const createdUserSite = await UserSites.findOneAndUpdate(
+          {
+            userId: user._id,
+          },
+          {
+            $addToSet: { sites: siteObj },
+          }
+        );
 
         const siteCompany = [
           {
@@ -229,10 +241,14 @@ class UserContoller {
             role: role,
           },
         ];
-        const createdSiteCompany = await siteCompaniesSchema.findOneAndUpdate({
-          siteId: siteId,
-          $addToSet: { users: siteCompany },
-        });
+        const createdSiteCompany = await siteCompaniesSchema.findOneAndUpdate(
+          {
+            siteId: siteId,
+          },
+          {
+            $addToSet: { users: siteCompany },
+          }
+        );
 
         const obj = {
           user: user,
@@ -247,10 +263,14 @@ class UserContoller {
           role: role,
         },
       ];
-      const createdUserSite = await UserSites.findOneAndUpdate({
-        userId: user._id,
-        $addToSet: { sites: siteObj },
-      });
+      const createdUserSite = await UserSites.findOneAndUpdate(
+        {
+          userId: user._id,
+        },
+        {
+          $addToSet: { sites: siteObj },
+        }
+      );
 
       const siteCompany = [
         {
@@ -259,13 +279,16 @@ class UserContoller {
           role: role,
         },
       ];
-      const createdSiteCompany = await siteCompaniesSchema.findOneAndUpdate({
-        siteId: siteId,
-        $addToSet: { users: siteCompany },
-      });
+      const createdSiteCompany = await siteCompaniesSchema.findOneAndUpdate(
+        {
+          siteId: siteId,
+        },
+        {
+          $addToSet: { users: siteCompany },
+        }
+      );
 
       const obj = {
-        // user: user,
         userId: createdUserSite,
         siteCompany: createdSiteCompany,
       };

@@ -77,12 +77,16 @@ class CompanyController {
     } else {
       const result = await new Company(req.body).save();
 
-      const siteCompanies = await SiteCompaniesModel.findOneAndUpdate({
-        siteId: body.siteId,
-        $addToSet: {
-          companies: { companyId: result._id, trades: body.trades },
+      const siteCompanies = await SiteCompaniesModel.findOneAndUpdate(
+        {
+          siteId: body.siteId,
         },
-      });
+        {
+          $addToSet: {
+            companies: { companyId: result._id, trades: body.trades },
+          },
+        }
+      );
       if (body.parentCompanyId) {
         const parentCompany = await SiteCompaniesModel.findOneAndUpdate(
           {
