@@ -8,6 +8,7 @@ const Building = require("../models/building");
 const DeliveryArea = require("../models/deliveryArea");
 const StorageArea = require("../models/storageArea");
 const Validations = require("../validators");
+const { isDateBefore, isDateAfter } = require("../utils/helpers");
 
 class IncidentsController {
   async create(req, res) {
@@ -19,6 +20,15 @@ class IncidentsController {
     if (validatedData.location) {
       validatedData.location = JSON.parse(validatedData.location);
     }
+    const site = await Site.findById(validatedData.siteId);
+    if (!site) throw new CustomError(STRINGS.ERRORS.siteNotFound);
+
+    if (isDateBefore(validatedData.date, site.start))
+      throw new CustomError(STRINGS.ERRORS.incidentDateBeforeSiteStartDate);
+
+    if (isDateAfter(validatedData.date, site.end))
+      throw new CustomError(STRINGS.ERRORS.incidentDateBeforeSiteEndtDate);
+
     const result = await new Incidents(validatedData).save();
     res.status(200).send(response(STRINGS.TEXTS.incidentCreated, result));
   }

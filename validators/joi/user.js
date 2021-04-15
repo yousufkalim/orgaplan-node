@@ -6,6 +6,7 @@ const schemas = {
     const Validation = Joi.object().keys({
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
+      image: Joi.string().optional(),
       phone: Joi.number()
         .integer()
         .custom((value, helper) => {

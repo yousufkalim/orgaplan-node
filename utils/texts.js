@@ -15,6 +15,12 @@ module.exports = {
     siteNotFound: "No Site Found",
     clientNotActive: "Client not active",
 
+    incidentDateBeforeSiteStartDate:
+      "Incident Date Cannot Be Before Site's Start Date ",
+
+    incidentDateBeforeSiteEndtDate:
+      "Incident Date Cannot Be After Site's End Date ",
+
     meanStartDateBeforeSiteStartDate:
       "Mean Start Date Cannot Be Before Site's Start Date ",
 
@@ -197,6 +203,7 @@ module.exports = {
     storateAreaRequested: "Storage Area Requested",
 
     storateAreaRequestCreated: "Storage Area Request Created",
+    storateAreaRequestDeleted: "Storage Area Request Deleted",
 
     allSiteIncident: "All Incidents",
     siteIncidentsCreated: "Incidents Created",
