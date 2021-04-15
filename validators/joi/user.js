@@ -7,14 +7,7 @@ const schemas = {
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
       image: Joi.string().optional(),
-      phone: Joi.number()
-        .integer()
-        .custom((value, helper) => {
-          if (String(value).startsWith("0") || String(value).length !== 9)
-            return helper.message("phone is invalid");
-          return value;
-        })
-        .allow(""),
+      phone: Joi.string().optional().allow(""),
       email: Joi.string()
         .email({ tlds: { allow: false } })
         .allow(""),

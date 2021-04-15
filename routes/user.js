@@ -3,6 +3,7 @@ const router = require("express").Router();
 const auth = require("../middlewares/auth");
 const upload = require("../middlewares/multer");
 const userController = require("../controllers/user");
+const multer = require("../middlewares/multer");
 
 // GETS
 router.get("/", userController.getAll);
@@ -30,6 +31,8 @@ router.post(
 
 router.put(
   "/update_company_user",
+  multer("user", "image", "single"),
+
   userController.updateCompanyUser
 );
 
