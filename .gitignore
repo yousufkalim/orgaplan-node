@@ -51,6 +51,12 @@ uploads/user/*.jpg
 uploads/user/*.jpeg
 
 
+uploads/pic/*.pdf
+uploads/pic/*.png
+uploads/pic/*.jpg
+uploads/pic/*.jpeg
+
+
 # Logs
 logs
 *.log

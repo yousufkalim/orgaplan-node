@@ -36,7 +36,7 @@ module.exports = {
     organigrammeNotFound: "No Organigramme Found",
     adminNotFound: "No Admin Found",
 
-    levelNotFouned: "No Level Found",
+    levelNotFound: "No Level Found",
     levelExists: "Level Already Exists",
 
     userAlreadyExists: "User exists",
@@ -421,6 +421,7 @@ module.exports = {
     COMPANY: "Company",
     INVOICE: "Invoice",
     SITEPIC: "SITEPIC",
+    LEVELPIC: "LEVELPIC",
     INCIDENT: "Incident",
     LOCATION: "Location",
     CONTRACT: "Contract",

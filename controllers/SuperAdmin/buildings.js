@@ -3,6 +3,7 @@ const Level = require("../../models/level");
 const STRINGS = require("../../utils/texts");
 const Validations = require("../../validators");
 const response = require("../../utils/response");
+const LevelPic = require("../../models/levelPic");
 const Building = require("../../models/building");
 const CustomError = require("../../utils/customError");
 const ENV = process.env;
@@ -21,12 +22,14 @@ class SuperAdminZacsController {
     let building = await Building.create(validatedData);
     let level = await Level.create({
       number: 0,
-      levelType: "STORAGE",
       building: building._id,
     });
-    await Site.findByIdAndUpdate(validatedData.siteId, {
-      $addToSet: { buildings: building._id },
+    await LevelPic.create({
+      levelId: level._id,
     });
+    // await Site.findByIdAndUpdate(validatedData.siteId, {
+    //   $addToSet: { buildings: building._id },
+    // });
     const result = await Building.findByIdAndUpdate(
       building._id,
       {
@@ -46,8 +49,8 @@ class SuperAdminZacsController {
     const items = await Building.find({}, { __v: 0, password: 0 })
       .skip((page - 1) * ITEMS_PER_PAGE)
       .limit(ITEMS_PER_PAGE)
-      .populate("levels")
-      .populate("means");
+      .populate("levels");
+    // .populate("means");
 
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
 
@@ -66,9 +69,8 @@ class SuperAdminZacsController {
   async getById(req, res) {
     const id = req.params.id;
 
-    const result = await Building.findById(id, { __v: 0 })
-      .populate("levels")
-      .populate("means");
+    const result = await Building.findById(id, { __v: 0 }).populate("levels");
+    // .populate("means");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
 
@@ -98,9 +100,8 @@ class SuperAdminZacsController {
       {
         new: true,
       }
-    )
-      .populate("levels")
-      .populate("means");
+    ).populate("levels");
+    // .populate("means");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
 
@@ -113,9 +114,9 @@ class SuperAdminZacsController {
     const result = await Building.findByIdAndRemove(id);
     if (!result) throw new CustomError(STRINGS.ERRORS.error);
 
-    await Site.findByIdAndUpdate(result.siteId, {
-      $pull: { buildings: id },
-    });
+    // await Site.findByIdAndUpdate(result.siteId, {
+    //   $pull: { buildings: id },
+    // });
 
     res.status(201).send(response(STRINGS.TEXTS.buildingDeleted, result));
   }
@@ -129,8 +130,8 @@ class SuperAdminZacsController {
     const items = await Building.find({ siteId }, { __v: 0, password: 0 })
       .skip((page - 1) * ITEMS_PER_PAGE)
       .limit(ITEMS_PER_PAGE)
-      .populate("levels")
-      .populate("means");
+      .populate("levels");
+    // .populate("means");
 
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
 

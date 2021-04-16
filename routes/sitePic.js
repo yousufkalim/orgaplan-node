@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const auth = require("../middlewares/auth");
+const multer = require("../middlewares/multer");
 const sitePicController = require("../controllers/sitePic");
 
 // GETS
@@ -13,6 +14,7 @@ router.post("/shape", sitePicController.addShape);
 // PUTS
 router.put("/update/:id", sitePicController.update);
 router.put("/shape/:picId/:shapeId", sitePicController.updateShape);
+router.put("/pdf", multer("pic", "image", "single"), sitePicController.picPdf);
 
 // DELETE
 router.delete("/shape/:picId/:shapeId", sitePicController.deleteShape);
