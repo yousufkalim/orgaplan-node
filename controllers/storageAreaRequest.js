@@ -2,6 +2,7 @@ const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const StorageAreaRequest = require("../models/storageAreaRequest");
+const StorageArea = require("../models/storageArea");
 
 class StorageAreaRequestController {
   async create(req, res) {
@@ -22,7 +23,7 @@ class StorageAreaRequestController {
     const siteId = req.params.siteId;
     const result = await StorageAreaRequest.find({
       siteId: siteId,
-      status: "PENDING",
+      status: STRINGS.STORAGEAREAREQUESTSTATUS.PENDING,
     })
       .populate("companyId")
       .populate("storageAreaId");
@@ -37,26 +38,34 @@ class StorageAreaRequestController {
     const storageRequest = await StorageAreaRequest.findOne({ _id: id });
 
     await storageRequest.update({
-      $set: { status: "REJECTED" },
+      $set: { status: STRINGS.STORAGEAREAREQUESTSTATUS.REJECTED },
     });
 
-    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequestDeleted));
+    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequestRejected));
   }
 
   async acceptRequest(req, res) {
-    console.log("callled");
-    // const { companyId, storageAreaRequestId } = req.body;
-    // const storageRequest = await StorageAreaRequest.findOne({
-    //   _id: storageAreaRequestId,
-    //   // status: "PENDING",
-    // });
+    const storageAreaRequestId = req.params.id;
+    const storageRequest = await StorageAreaRequest.findOne({
+      _id: storageAreaRequestId,
+      status: STRINGS.STORAGEAREAREQUESTSTATUS.PENDING,
+    });
+    if (!storageRequest)
+      throw new CustomError(STRINGS.ERRORS.storageAreaRequestNotFound);
 
-    // console.log("storageRequest", storageRequest);
-    // await storageRequest.update({
-    //   $set: { status: "ACCEPTED" },
-    // });
+    const storageArea = await StorageArea.findOne({
+      _id: storageRequest.storageAreaId,
+    });
+    if (!storageArea) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
+    await storageArea.update({
+      $addToSet: { companies: storageRequest.companyId },
+    });
 
-    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequestDeleted));
+    await storageRequest.update({
+      $set: { status: STRINGS.STORAGEAREAREQUESTSTATUS.ACCEPTED },
+    });
+
+    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequestAccepted));
   }
 }
 module.exports = new StorageAreaRequestController();

@@ -21,5 +21,6 @@ router.use("/v1/pic", require("./sitePic"));
 router.use("/v1/vehicles", require("./vehicles"));
 router.use("/v1/file-upload", require("./fileUpload"));
 router.use("/v1/storage-area-request", require("./storageAreaRequest"));
+router.use("/v1/alert", require("./alert"));
 
 module.exports = router;
