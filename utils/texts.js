@@ -81,6 +81,8 @@ module.exports = {
     subscriptionExpired: "Subscription Expired",
     sitePenaltyNotFound: "No Site Panelty Found",
     storageAreaNotFount: "No Storage Area Found",
+    storageAreaRequestNotFound: "No Storage Area Request Found",
+
     siteCompanyNotFound: "No Site Company Found",
     startDateIsRequred: "Start Date Is Requried",
     userNameExists: "Username is not available!",
@@ -204,6 +206,8 @@ module.exports = {
 
     storateAreaRequestCreated: "Storage Area Request Created",
     storateAreaRequestDeleted: "Storage Area Request Deleted",
+    storateAreaRequestAccepted: "Storage Area Request Accepted",
+    storateAreaRequestRejected: "Storage Area Request Rejected",
 
     allSiteIncident: "All Incidents",
     siteIncidentsCreated: "Incidents Created",
