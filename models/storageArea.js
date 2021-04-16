@@ -9,6 +9,10 @@ const storageArea = new Schema(
       type: Boolean,
       default: false,
     },
+    level: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.LEVEL,
+    },
     isFull: {
       type: Boolean,
       default: false,
@@ -38,10 +42,10 @@ const storageArea = new Schema(
       enum: [STRINGS.STATUS.INSIDE, STRINGS.STATUS.OUTSIDE],
       default: STRINGS.STATUS.INSIDE,
     },
-    // level: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: STRINGS.MODALS.LEVEL,
-    // },
+    level: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.LEVEL,
+    },
     deliveryArea: [
       {
         type: Schema.Types.ObjectId,

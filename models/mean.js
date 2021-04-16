@@ -14,6 +14,10 @@ const meanSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    level: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.LEVEL,
+    },
     siteId: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.SITE,
