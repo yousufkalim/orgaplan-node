@@ -20,10 +20,6 @@ class SitePicController {
     const id = req.params.id;
 
     const result = await SitePic.findOne({ _id: id })
-      .populate({
-        path: "exteriorBuilding",
-        populate: { path: "levels" },
-      })
       .populate("shapes.mean")
       .populate({
         path: "shapes.building",
@@ -40,10 +36,6 @@ class SitePicController {
     const siteId = req.params.siteId;
 
     const result = await SitePic.findOne({ siteId })
-      .populate({
-        path: "exteriorBuilding",
-        populate: { path: "levels" },
-      })
       .populate("shapes.mean")
       .populate({
         path: "shapes.building",
@@ -66,10 +58,6 @@ class SitePicController {
       { $set: data },
       { new: true }
     )
-      .populate({
-        path: "exteriorBuilding",
-        populate: { path: "levels" },
-      })
       .populate("shapes.mean")
       .populate({
         path: "shapes.building",
@@ -105,10 +93,6 @@ class SitePicController {
       { $addToSet: { shapes: validatedData } },
       { new: true }
     )
-      .populate({
-        path: "exteriorBuilding",
-        populate: { path: "levels" },
-      })
       .populate("shapes.mean")
       .populate({
         path: "shapes.building",
@@ -155,10 +139,6 @@ class SitePicController {
       { $pull: { shapes: { _id: shapeId } } },
       { new: true }
     )
-      .populate({
-        path: "exteriorBuilding",
-        populate: { path: "levels" },
-      })
       .populate("shapes.mean")
       .populate({
         path: "shapes.building",

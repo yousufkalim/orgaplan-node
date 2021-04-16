@@ -10,6 +10,10 @@ const schemas = {
       meanType: Joi.string().required("Mean type is required"),
       color: Joi.string().required("Color is required"),
       image: Joi.string().optional().allow(""),
+      isInside: Joi.bool().required().messages({
+        "boolean.base": "Mean location (isInside) must be a boolean type",
+        "any.required": "Mean location (isInside) is required",
+      }),
       location: Joi.array()
         .items(
           Joi.object().keys({
@@ -76,6 +80,10 @@ const schemas = {
       meanType: Joi.string().required("Mean type is required"),
       color: Joi.string().required("Color is required"),
       image: Joi.string().optional().allow(""),
+      isInside: Joi.bool().required().messages({
+        "boolean.base": "Mean location (isInside) must be a boolean type",
+        "any.required": "Mean location (isInside) is required",
+      }),
       location: Joi.array()
         .items(
           Joi.object().keys({

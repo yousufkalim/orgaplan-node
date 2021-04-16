@@ -5,6 +5,10 @@ const STRINGS = require("../utils/texts");
 const storageArea = new Schema(
   {
     name: String,
+    isInside: {
+      type: Boolean,
+      default: false,
+    },
     isFull: {
       type: Boolean,
       default: false,

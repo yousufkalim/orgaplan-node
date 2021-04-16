@@ -6,6 +6,10 @@ const deliveryArea = new Schema(
   {
     name: String,
     color: String,
+    isInside: {
+      type: Boolean,
+      default: false,
+    },
     addresses: [
       {
         pdf: String,

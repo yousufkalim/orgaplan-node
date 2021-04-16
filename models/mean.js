@@ -10,6 +10,10 @@ const meanSchema = new Schema(
     color: String,
     pricePerHour: Number,
     additionalInfo: String,
+    isInside: {
+      type: Boolean,
+      default: false,
+    },
     siteId: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.SITE,
