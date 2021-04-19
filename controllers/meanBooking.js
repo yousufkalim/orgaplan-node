@@ -70,7 +70,8 @@ class MeanBookingController {
           ],
         })
           .populate("companyId")
-          .populate("means")
+          .populate("liftingMeans")
+          .populate("routingMeans")
           .populate("deliveryArea")
           .populate("storageArea")
           .populate("building");
@@ -84,7 +85,8 @@ class MeanBookingController {
           ],
         })
           .populate("companyId")
-          .populate("means")
+          .populate("liftingMeans")
+          .populate("routingMeans")
           .populate("deliveryArea")
           .populate("storageArea")
           .populate("building"); 
@@ -98,7 +100,8 @@ class MeanBookingController {
           ],
         })
           .populate("companyId")
-          .populate("means")
+          .populate("liftingMeans")
+          .populate("routingMeans")
           .populate("deliveryArea")
           .populate("storageArea")
           .populate("building");
@@ -111,7 +114,8 @@ class MeanBookingController {
           ],
         })
           .populate("companyId")
-          .populate("means")
+          .populate("liftingMeans")
+          .populate("routingMeans")
           .populate("deliveryArea")
           .populate("storageArea")
           .populate("building");
