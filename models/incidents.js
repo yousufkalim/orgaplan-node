@@ -11,6 +11,7 @@ const incidentSchema = new Schema(
     comment: String,
     document: String,
     isBillable: Boolean,
+    isPaid: Boolean,
     description: String,
     photos: [{ type: String }],
     location: {
