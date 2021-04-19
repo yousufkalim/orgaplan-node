@@ -34,6 +34,26 @@ class DeliveryController {
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryRequested, result));
   }
+  async getSiteAlerts(req, res) {
+    const id = req.params.id;
+
+    const result = await Delivery.find({ siteId: id }).populate("deliveryArea");
+    // .populate("storageArea")
+    // .populate("liftingMeans");
+    // console.log("result---------", result);
+    const resultData = [];
+    result.forEach((element, index) => {
+      let data = JSON.parse(JSON.stringify(element));
+      if (element.deliveryArea.availability.end) {
+        data.deliveryArea["alert"] = {
+          alert: true,
+          reason: "Near to end date",
+        };
+        resultData.push(data);
+      }
+    });
+    res.status(200).send(response(STRINGS.TEXTS.allDeliveries, resultData));
+  }
 
   async update(req, res) {
     const id = req.params.id;
