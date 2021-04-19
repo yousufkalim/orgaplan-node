@@ -70,7 +70,10 @@ class MeanBookingController {
           ],
         })
           .populate("companyId")
-          .populate("means");
+          .populate("means")
+          .populate("deliveryArea")
+          .populate("storageArea")
+          .populate("building");
       } else if (typeOfPlace === "storageArea") {
         Deliveries = await Delivery.find({
           siteId: siteId,
@@ -81,7 +84,10 @@ class MeanBookingController {
           ],
         })
           .populate("companyId")
-          .populate("means");
+          .populate("means")
+          .populate("deliveryArea")
+          .populate("storageArea")
+          .populate("building"); 
       } else if (typeOfPlace === "building") {
         Deliveries = await Delivery.find({
           siteId: siteId,
@@ -92,7 +98,10 @@ class MeanBookingController {
           ],
         })
           .populate("companyId")
-          .populate("means");
+          .populate("means")
+          .populate("deliveryArea")
+          .populate("storageArea")
+          .populate("building");
       } else {
         Deliveries = await Delivery.find({
           siteId: siteId,
@@ -102,7 +111,10 @@ class MeanBookingController {
           ],
         })
           .populate("companyId")
-          .populate("means");
+          .populate("means")
+          .populate("deliveryArea")
+          .populate("storageArea")
+          .populate("building");
       }
     } else if (typeOfPlaning === "Means") {
       Means = await Booking.find({
@@ -207,6 +219,7 @@ class MeanBookingController {
 
   async delete(req, res) {
     const id = req.params.id;
+    const data = req.body;
 
     const result = await Booking.findOne({
       _id: id,
@@ -222,6 +235,18 @@ class MeanBookingController {
     });
     let result = { bookings };
     res.status(200).send(response(STRINGS.TEXTS.bookingOfSite, result));
+  }
+  async updateStatus(req, res) {
+    const id = req.params.id;  
+    const result = await Booking.findByIdAndUpdate(
+      { _id: id },
+      { $set: {status: "VALIDATED" } },
+      { new: true }
+    );
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.meanBookingNotFound, 404);
+
+    res.status(200).send(response(STRINGS.TEXTS.meanBookingUpdated, result));
   }
 }
 module.exports = new MeanBookingController();
