@@ -27,6 +27,7 @@ router.post(
 router.post("/", auth(), meanBookingController.create);
 // PUTS
 router.put("/:id", meanBookingController.update);
+router.put("/updateStatus/:id", meanBookingController.updateStatus);
 // DELETES
 router.delete("/:id", meanBookingController.delete);
 module.exports = router;
