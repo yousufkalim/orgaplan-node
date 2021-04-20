@@ -37,15 +37,6 @@ const storageArea = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.SITE,
     },
-    location: {
-      type: String,
-      enum: [STRINGS.STATUS.INSIDE, STRINGS.STATUS.OUTSIDE],
-      default: STRINGS.STATUS.INSIDE,
-    },
-    level: {
-      type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.LEVEL,
-    },
     deliveryArea: [
       {
         type: Schema.Types.ObjectId,
