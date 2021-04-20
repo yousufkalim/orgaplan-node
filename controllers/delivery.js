@@ -4,6 +4,10 @@ const response = require("../utils/response");
 const Delivery = require("../models/delivery");
 const CustomError = require("../utils/customError");
 const EmailService = require("../services/mail.service");
+const {
+  isDateEqualToDate,
+  isDateBetweenEndDateAndDateNumber,
+} = require("../utils/helpers");
 
 class DeliveryController {
   async create(req, res) {
@@ -68,22 +72,104 @@ class DeliveryController {
   async getSiteAlerts(req, res) {
     const id = req.params.id;
 
-    const result = await Delivery.find({ siteId: id }).populate("deliveryArea");
-    // .populate("storageArea")
-    // .populate("liftingMeans");
-    // console.log("result---------", result);
+    const result = await Delivery.find({ siteId: id })
+      .populate("deliveryArea")
+      .populate("storageArea")
+      .populate("liftingMeans")
+      .populate("routingMeans");
     const resultData = [];
     result.forEach((element, index) => {
       let data = JSON.parse(JSON.stringify(element));
-      if (element.deliveryArea.availability.end) {
-        data.deliveryArea["alert"] = {
-          alert: true,
-          reason: "Near to end date",
-        };
-        resultData.push(data);
+      data["alert"] = false;
+      if (element.deliveryArea?.availability.end) {
+        if (
+          isDateBetweenEndDateAndDateNumber(
+            element.deliveryArea?.availability.end,
+            element.deliveryArea?.notificationPriorToDays
+          )
+        ) {
+          data.deliveryArea["alert"] = {
+            reason: "Near to end date",
+          };
+          data["alert"] = true;
+        }
       }
+      if (element.storageArea) {
+        if (element.storageArea?.availability.end) {
+          if (
+            isDateBetweenEndDateAndDateNumber(
+              element.storageArea?.availability.end,
+              element.storageArea?.notificationPriorToDays
+            )
+          ) {
+            data.storageArea["alert"] = [
+              {
+                alert: true,
+                reason: "Near to end date",
+              },
+            ];
+
+            data["alert"] = true;
+          }
+        }
+        if (element.storageArea?.isFull) {
+          data["alert"] = true;
+
+          if (data.storageArea.alert) {
+            data.storageArea["alert"].push({
+              reason: "Storage Area is Full",
+            });
+          } else {
+            data.storageArea["alert"] = [
+              {
+                reason: "Storage Area is Full",
+              },
+            ];
+          }
+        }
+      }
+      if (element.liftingMeans) {
+        element.liftingMeans.map((item, index) => {
+          if (isDateEqualToDate(item.availability.end)) {
+            data.liftingMeans[index]["alerts"] = {
+              reason: "Near to End",
+            };
+
+            data["alert"] = true;
+          }
+        });
+      }
+      if (element.routingMeans) {
+        element.routingMeans.map((item, index) => {
+          if (isDateEqualToDate(item.availability.end)) {
+            data.routingMeans[index]["alerts"] = {
+              reason: "Near to End",
+            };
+
+            data["alert"] = true;
+          }
+        });
+      }
+      resultData.push(data);
     });
     res.status(200).send(response(STRINGS.TEXTS.allDeliveries, resultData));
+  }
+  async enterpriseDeliveries(req, res) {
+    const { siteId, companyId, date } = req.body;
+    const result = await Delivery.find({
+      siteId: siteId,
+      companyId: companyId,
+    });
+    res.status(200).send(response(STRINGS.TEXTS.allDeliveries, result));
+  }
+  async trafficAgentDeliveries(req, res) {
+    const { siteId, companyId, status, date } = req.body;
+    const result = await Delivery.find({
+      siteId: siteId,
+      companyId: companyId,
+      $and: [status ? { status: { $eq: status } } : {}],
+    });
+    res.status(200).send(response(STRINGS.TEXTS.allDeliveries, result));
   }
 
   async updateStatus(req, res) {
@@ -98,5 +184,18 @@ class DeliveryController {
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryUpdated, result));
   }
+
+  async delete(req, res) {
+    const id = req.params.id;
+
+    const result = await Delivery.findOne({
+      _id: id,
+    });
+    result.remove();
+
+    res.status(200).send(response(STRINGS.TEXTS.deliveryDeleted, result));
+  }
+
+  async;
 }
 module.exports = new DeliveryController();

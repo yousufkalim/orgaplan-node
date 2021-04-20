@@ -5,10 +5,13 @@ const deliveryController = require("../controllers/delivery");
 // GETS
 router.get("/", auth(), deliveryController.getAll);
 router.get("/:id", auth(), deliveryController.getOne);
-router.get("/alert/:id", deliveryController.getSiteAlerts);
+router.get("/admin/alert/:id", auth(), deliveryController.getSiteAlerts);
 
 // POSTS
 router.post("/", auth(), deliveryController.create);
+// POSTS
+router.post("/enterprise", deliveryController.enterpriseDeliveries);
+router.post("/trafficAgent", deliveryController.trafficAgentDeliveries);
 
 // PUTS
 router.put("/:id", deliveryController.update);
