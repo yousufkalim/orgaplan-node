@@ -53,5 +53,18 @@ class DeliveryController {
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryDeleted, result));
   }
+  async updateStatus(req, res) {
+    const id = req.params.id;  
+    console.log(id);
+    const result = await Delivery.findByIdAndUpdate(
+      { _id: id },
+      { $set: {status: "VALIDATED" } },
+      { new: true }
+    );
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.deliveryNotFound, 404);
+
+    res.status(200).send(response(STRINGS.TEXTS.deliveryUpdated, result));
+  }
 }
 module.exports = new DeliveryController();

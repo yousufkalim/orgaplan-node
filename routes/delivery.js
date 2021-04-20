@@ -10,6 +10,7 @@ router.get("/:id", auth(), deliveryController.getOne);
 router.post("/", auth(), deliveryController.create);
 // PUTS
 router.put("/:id", deliveryController.update);
+router.put("/updateStatus/:id", deliveryController.updateStatus);
 // DELETES
 router.delete("/:id", deliveryController.delete);
 module.exports = router;
