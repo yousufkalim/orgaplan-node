@@ -106,7 +106,6 @@ class MeanController {
 
     const siteStorageAreas = await StorageArea.find({
       siteId: siteId,
-      location: { $ne: STRINGS.STATUS.OUTSIDE },
     });
     const meanTypes = [STRINGS.MEANTYPES.LIFTING, STRINGS.MEANTYPES.ROUTING];
     let result = {
@@ -188,10 +187,10 @@ class MeanController {
 
     const total_means = await Mean.find({
       siteId: siteId,
-      $and: [
-        { "availability.start": { $lte: new Date() } },
-        { "availability.end": { $gte: new Date() } },
-      ],
+      // $and: [
+      //   { "availability.start": { $lte: new Date() } },
+      //   { "availability.end": { $gte: new Date() } },
+      // ],
     }).countDocuments();
 
     const locations = await Building.find({ siteId: siteId }).populate(

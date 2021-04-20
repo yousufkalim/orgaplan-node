@@ -14,10 +14,7 @@ class StorageAreaController {
   }
 
   async getAll(req, res) {
-    const result = await StorageArea.find(
-      { location: { $ne: STRINGS.STATUS.OUTSIDE } },
-      { password: 0, __v: 0 }
-    );
+    const result = await StorageArea.find({}, { password: 0, __v: 0 });
     res.status(200).send(response(STRINGS.TEXTS.allStorateAreas, result));
   }
 
@@ -75,7 +72,6 @@ class StorageAreaController {
     const id = req.params.id;
     const result = await StorageArea.findOne({
       siteId: id,
-      location: { $ne: STRINGS.STATUS.OUTSIDE },
     });
 
     if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
@@ -88,7 +84,6 @@ class StorageAreaController {
 
     const result = await StorageArea.find({
       siteId: id,
-      location: { $ne: STRINGS.STATUS.OUTSIDE },
     });
 
     if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
