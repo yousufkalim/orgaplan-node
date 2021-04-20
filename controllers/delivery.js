@@ -34,6 +34,37 @@ class DeliveryController {
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryRequested, result));
   }
+
+  async update(req, res) {
+    const validatedData = await Validations.delivery.update({
+      deliveryId: req.params.id,
+      ...req.body,
+    });
+
+    const result = await Delivery.findByIdAndUpdate(validatedData.deliveryId, {
+      $set: validatedData,
+    });
+
+    // if (body.sendDeliverySummary) {
+    //   await new EmailService().sendDeliverySummaryEmail(
+    //     body.userEmail,
+    //     body.html
+    //   );
+    // }
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.error, 400);
+
+    res.status(200).send(response(STRINGS.TEXTS.deliveryUpdated, result));
+  }
+
+  async delete(req, res) {
+    const id = req.params.id;
+
+    const result = await Delivery.findByIdAndDelete(id);
+
+    res.status(200).send(response(STRINGS.TEXTS.deliveryDeleted, result));
+  }
+
   async getSiteAlerts(req, res) {
     const id = req.params.id;
 
@@ -55,30 +86,11 @@ class DeliveryController {
     res.status(200).send(response(STRINGS.TEXTS.allDeliveries, resultData));
   }
 
-  async update(req, res) {
-    const id = req.params.id;
-
-    if (!result) throw new CustomError(STRINGS.ERRORS.notAuthorized, 404);
-
-    res.status(200).send(response(STRINGS.TEXTS.deliveryUpdated, result));
-  }
-
-  async delete(req, res) {
-    const id = req.params.id;
-
-    const result = await Delivery.findOne({
-      _id: id,
-    });
-    result.remove();
-
-    res.status(200).send(response(STRINGS.TEXTS.deliveryDeleted, result));
-  }
   async updateStatus(req, res) {
-    const id = req.params.id;  
-    console.log(id);
+    const id = req.params.id;
     const result = await Delivery.findByIdAndUpdate(
       { _id: id },
-      { $set: {status: "VALIDATED" } },
+      { $set: { status: "VALIDATED" } },
       { new: true }
     );
 
