@@ -8,6 +8,10 @@ const DeliveryArea = require("../models/deliveryArea");
 const StorageArea = require("../models/storageArea");
 const Building = require("../models/building");
 const Mean = require("../models/mean");
+const {
+  isDateEqualToDate,
+  isDateBetweenEndDateAndDateNumber,
+} = require("../utils/helpers");
 class MeanBookingController {
   async create(req, res) {
     const result = await new Booking(req.body).save();
@@ -56,10 +60,106 @@ class MeanBookingController {
     const status = body.status;
     const typeOfPlace = body.typeOfPlace;
     const placeId = body.placeId;
-    let Deliveries = {};
+    const alert = body.alert;
+    let Deliveries = [];
     let Means = {};
     let result = {};
     if (typeOfPlaning === "Deliveries") {
+      if (status === "ALERT") {
+        const deliveriesResult = await Delivery.find({
+          siteId: siteId,
+          $and: [
+            companyId ? { companyId: { $eq: companyId } } : {},
+            placeId ? { deliveryArea: { $eq: placeId } } : {},
+          ],
+        })
+          .populate("companyId")
+          .populate("building")
+          .populate("deliveryArea")
+          .populate("storageArea")
+          .populate("liftingMeans")
+          .populate("routingMeans");
+        let resultData = [];
+        deliveriesResult.forEach((element, index) => {
+          let data = JSON.parse(JSON.stringify(element));
+          data["alert"] = false;
+          if (element.deliveryArea?.availability.end) {
+            if (
+              isDateBetweenEndDateAndDateNumber(
+                element.deliveryArea?.availability.end,
+                element.deliveryArea?.notificationPriorToDays
+              )
+            ) {
+              data.deliveryArea["alert"] = {
+                reason: "Near to end date",
+              };
+              data["alert"] = true;
+            }
+          }
+          if (element.storageArea) {
+            if (element.storageArea?.availability.end) {
+              if (
+                isDateBetweenEndDateAndDateNumber(
+                  element.storageArea?.availability.end,
+                  element.storageArea?.notificationPriorToDays
+                )
+              ) {
+                data.storageArea["alert"] = [
+                  {
+                    alert: true,
+                    reason: "Near to end date",
+                  },
+                ];
+
+                data["alert"] = true;
+              }
+            }
+            if (element.storageArea?.isFull) {
+              data["alert"] = true;
+
+              if (data.storageArea.alert) {
+                data.storageArea["alert"].push({
+                  reason: "Storage Area is Full",
+                });
+              } else {
+                data.storageArea["alert"] = [
+                  {
+                    reason: "Storage Area is Full",
+                  },
+                ];
+              }
+            }
+          }
+          if (element.liftingMeans) {
+            element.liftingMeans.map((item, index) => {
+              if (isDateEqualToDate(item.availability.end)) {
+                data.liftingMeans[index]["alerts"] = {
+                  reason: "Near to End",
+                };
+
+                data["alert"] = true;
+              }
+            });
+          }
+          if (element.routingMeans) {
+            element.routingMeans.map((item, index) => {
+              if (isDateEqualToDate(item.availability.end)) {
+                data.routingMeans[index]["alerts"] = {
+                  reason: "Near to End",
+                };
+
+                data["alert"] = true;
+              }
+            });
+          }
+          resultData.push(data);
+        });
+        Deliveries = resultData;
+        result = { Deliveries, Means };
+
+        res.status(200).send(response(STRINGS.TEXTS.allDeliveries, result));
+        return;
+      }
       if (typeOfPlace === "deliveryArea") {
         Deliveries = await Delivery.find({
           siteId: siteId,
@@ -89,7 +189,7 @@ class MeanBookingController {
           .populate("routingMeans")
           .populate("deliveryArea")
           .populate("storageArea")
-          .populate("building"); 
+          .populate("building");
       } else if (typeOfPlace === "building") {
         Deliveries = await Delivery.find({
           siteId: siteId,
@@ -241,10 +341,10 @@ class MeanBookingController {
     res.status(200).send(response(STRINGS.TEXTS.bookingOfSite, result));
   }
   async updateStatus(req, res) {
-    const id = req.params.id;  
+    const id = req.params.id;
     const result = await Booking.findByIdAndUpdate(
       { _id: id },
-      { $set: {status: "VALIDATED" } },
+      { $set: { status: "VALIDATED" } },
       { new: true }
     );
 
