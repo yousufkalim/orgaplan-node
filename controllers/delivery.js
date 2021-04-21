@@ -1,9 +1,11 @@
+"use strict";
 const STRINGS = require("../utils/texts");
 const Validations = require("../validators");
 const response = require("../utils/response");
 const Delivery = require("../models/delivery");
 const CustomError = require("../utils/customError");
 const EmailService = require("../services/mail.service");
+const moment = require("moment");
 const {
   isDateEqualToDate,
   isDateBetweenEndDateAndDateNumber,
@@ -156,19 +158,34 @@ class DeliveryController {
   }
   async enterpriseDeliveries(req, res) {
     const { siteId, companyId, date } = req.body;
+    const secondDate = moment(date).add(1, "days");
     const result = await Delivery.find({
       siteId: siteId,
       companyId: companyId,
-    });
+      $and: [
+        date ? { date: { $gte: new Date(date) } } : {},
+        date ? { date: { $lte: new Date(secondDate) } } : {},
+      ],
+    })
+      .populate("companyId")
+      .populate("deliveryArea")
+      .populate("storageArea");
     res.status(200).send(response(STRINGS.TEXTS.allDeliveries, result));
   }
   async trafficAgentDeliveries(req, res) {
-    const { siteId, companyId, status, date } = req.body;
+    const { siteId, status, date } = req.body;
+    const secondDate = moment(date).add(1, "days");
     const result = await Delivery.find({
       siteId: siteId,
-      companyId: companyId,
-      $and: [status ? { status: { $eq: status } } : {}],
-    });
+      $and: [
+        date ? { date: { $gte: new Date(date) } } : {},
+        date ? { date: { $lte: new Date(secondDate) } } : {},
+        status ? { status: { $eq: status } } : {},
+      ],
+    })
+      .populate("companyId")
+      .populate("deliveryArea")
+      .populate("storageArea");
     res.status(200).send(response(STRINGS.TEXTS.allDeliveries, result));
   }
 
