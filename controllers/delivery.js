@@ -83,11 +83,11 @@ class DeliveryController {
     result.forEach((element, index) => {
       let data = JSON.parse(JSON.stringify(element));
       data["alert"] = false;
-      if (element.deliveryArea?.availability.end) {
+      if (element.deliveryArea.availability.end) {
         if (
           isDateBetweenEndDateAndDateNumber(
-            element.deliveryArea?.availability.end,
-            element.deliveryArea?.notificationPriorToDays
+            element.deliveryArea.availability.end,
+            element.deliveryArea.notificationPriorToDays
           )
         ) {
           data.deliveryArea["alert"] = {
@@ -97,11 +97,11 @@ class DeliveryController {
         }
       }
       if (element.storageArea) {
-        if (element.storageArea?.availability.end) {
+        if (element.storageArea.availability.end) {
           if (
             isDateBetweenEndDateAndDateNumber(
-              element.storageArea?.availability.end,
-              element.storageArea?.notificationPriorToDays
+              element.storageArea.availability.end,
+              element.storageArea.notificationPriorToDays
             )
           ) {
             data.storageArea["alert"] = [
@@ -114,7 +114,7 @@ class DeliveryController {
             data["alert"] = true;
           }
         }
-        if (element.storageArea?.isFull) {
+        if (element.storageArea.isFull) {
           data["alert"] = true;
 
           if (data.storageArea.alert) {
