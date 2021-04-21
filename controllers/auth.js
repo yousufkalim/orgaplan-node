@@ -129,7 +129,7 @@ class AuthContoller {
 
     let verifyToken = crypto.randomBytes(32).toString("hex");
     const hash = await bcrypt.hash(verifyToken, +ENV.BCRYPT_SALT);
-    const verifyLink = `${ENV.CLIENT_URL}/login?request=profile?uid=${user._id}&verifyToken=${verifyToken}`;
+    const verifyLink = `${ENV.CLIENT_URL}/login?request=profile&uid=${user._id}&verifyToken=${verifyToken}`;
 
     await new Token({
       userId: user._id,
@@ -152,10 +152,13 @@ class AuthContoller {
     const { userId, verifyToken } = req.body;
 
     const user = await User.findById(userId);
+    console.log("user", user);
     if (!user) throw new CustomError(STRINGS.ERRORS.userNotFound);
     if (user.isVerified) throw new CustomError(STRINGS.ERRORS.alreadyVerified);
 
     let VToken = await Token.findOne({ userId });
+    console.log("VToken", VToken);
+
     if (!VToken) throw new CustomError(STRINGS.ERRORS.invalidToken);
 
     const isValid = await bcrypt.compare(verifyToken, VToken.token);
@@ -264,9 +267,13 @@ class AuthContoller {
   async getUserProfile(req, res) {
     const id = req.params.id;
     const user = await User.findById(id, { password: 0, __v: 0 });
+    console.log("user", user);
+
     if (!user) throw new CustomError(STRINGS.ERRORS.userNotFound, 404);
 
     const userSite = await UserSites.findOne({ userId: id });
+    console.log("userSite", userSite); ///checked failed
+
     if (!userSite) throw new CustomError(STRINGS.ERRORS.siteNotFound, 404);
 
     if (userSite.sites[0]) {

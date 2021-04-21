@@ -159,35 +159,17 @@ class UserContoller {
       image,
     } = validatedData;
 
-    // const roleCheck = await siteCompaniesSchema.findOne({
-    //   siteId: siteId,
-    // });
-    // console.log("roleCheck", roleCheck.users);
-
-    // const filterData = roleCheck.users.filter((x) => x.companyId == companyId && x.userId ==  userId);
-    // if (filterData.length) {
-    // throw new CustomError(STRINGS.ERRORS.roleOfCompanyAlreadyExist, 404);
-    // } else {
     const companyCheck = await Company.findById(companyId);
     if (!companyCheck)
       throw new CustomError(STRINGS.ERRORS.companyNotFound, 404);
     const userCheck = await User.findOne({ email: email });
     if (userCheck) {
-      const roleCheck = await siteCompaniesSchema.findOne({
+      const siteObjtect = await siteCompaniesSchema.findOne({
         siteId: siteId,
+        "users.userId": userCheck._id,
       });
-      console.log("roleCheck", roleCheck.users);
-      console.log("companyId", companyId);
-      console.log("userCheck", userCheck);
-
-      const filterData = roleCheck.users.filter(
-        (x) => x.companyId == companyId && x.userId == userCheck._id
-      );
-      console.log("filterData", filterData);
-      console.log("filterData", filterData.length);
-      return;
-      if (filterData.length)
-        throw new CustomError(STRINGS.ERRORS.roleOfCompanyAlreadyExist, 404);
+      if (siteObjtect)
+        throw new CustomError(STRINGS.ERRORS.userAlreadyExists, 404);
 
       const siteObj = [
         {
@@ -218,11 +200,7 @@ class UserContoller {
         }
       );
 
-      const obj = {
-        userSite: createdUserSite,
-        siteCompany: createdSiteCompany,
-      };
-      await res.status(200).send(response(STRINGS.TEXTS.userCreated, obj));
+      await res.status(200).send(response(STRINGS.TEXTS.userCreated));
     } else {
       const userData = {
         //working
@@ -242,14 +220,18 @@ class UserContoller {
           role: role,
         },
       ];
-      const createdUserSite = await UserSites.findOneAndUpdate(
-        {
-          userId: user._id,
-        },
-        {
+
+      const userSiteCheck = await UserSites.findOne({ userId: user._id });
+      if (userSiteCheck) {
+        await userSiteCheck.Update({
           $addToSet: { sites: siteObj },
-        }
-      );
+        });
+      } else {
+        await UserSites.create({
+          userId: user._id,
+          sites: siteObj,
+        });
+      }
 
       const siteCompany = [
         {
@@ -258,6 +240,18 @@ class UserContoller {
           role: role,
         },
       ];
+
+      const siteCompanyCheck = await siteCompaniesSchema.findOne({
+        siteId: siteId,
+      });
+
+      const filterCompanySite = siteCompanyCheck.users.filter(
+        (x) => x.companyId == companyId && x.userId == user._id
+      );
+
+      //working
+      if (filterCompanySite.length)
+        throw new CustomError(STRINGS.ERRORS.roleOfCompanyAlreadyExist, 404);
       const createdSiteCompany = await siteCompaniesSchema.findOneAndUpdate(
         {
           siteId: siteId,
@@ -269,48 +263,9 @@ class UserContoller {
 
       const obj = {
         user: user,
-        userId: createdUserSite,
-        siteCompany: createdSiteCompany,
       };
       await res.status(200).send(response(STRINGS.TEXTS.userCreated, obj));
     }
-    const siteObj = [
-      {
-        siteId: siteId,
-        role: role,
-      },
-    ];
-    const createdUserSite = await UserSites.findOneAndUpdate(
-      {
-        userId: user._id,
-      },
-      {
-        $addToSet: { sites: siteObj },
-      }
-    );
-
-    const siteCompany = [
-      {
-        userId: user._id,
-        companyId: companyId,
-        role: role,
-      },
-    ];
-    const createdSiteCompany = await siteCompaniesSchema.findOneAndUpdate(
-      {
-        siteId: siteId,
-      },
-      {
-        $addToSet: { users: siteCompany },
-      }
-    );
-
-    const obj = {
-      userId: createdUserSite,
-      siteCompany: createdSiteCompany,
-    };
-    await res.status(200).send(response(STRINGS.TEXTS.userCreated, obj));
-    // }
   }
 
   async updateCompanyUser(req, res) {
