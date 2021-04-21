@@ -110,7 +110,7 @@ class AuthContoller {
     const isCorrect = await bcrypt.compare(data.oldPassword, user.password);
     if (!isCorrect) throw new CustomError(STRINGS.ERRORS.passwordInvalid);
 
-    const hash = await bcrypt.hash(data.password, +ENV.BCRYPT_SALT);
+    const hash = await bcrypt.hash(data.newPassword, +ENV.BCRYPT_SALT);
 
     await user.update({ $set: { password: hash } });
 
