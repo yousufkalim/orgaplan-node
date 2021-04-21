@@ -424,7 +424,7 @@ class UserContoller {
 
     if (!result) throw new CustomError(STRINGS.ERRORS.userNotFound, 404);
 
-    res.status(200).send(response(STRINGS.TEXTS.userUpdated, result));
+    res.status(201).send(response(STRINGS.TEXTS.userUpdated, result));
   }
 
   async delete(req, res) {
