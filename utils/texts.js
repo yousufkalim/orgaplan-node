@@ -117,6 +117,7 @@ module.exports = {
     locationAddressRequired: "Location Address Reuired For Exterior Location",
     locationBuildingRequired: "Location Building Reuired For Interior Location",
     roleOfCompanyAlreadyExist: "Role of company already exist",
+    userAlreadyExistWithAdminRole: "User Already Exist with Admin Role",
   },
   TEXTS: {
     allUsers: "All users",
