@@ -1,5 +1,6 @@
 const Joi = require("joi");
 const CustomError = require("../../utils/customError");
+const STRINGS = require("../../utils/texts");
 
 const schemas = {
   createCompanyUser: (data) => {
@@ -12,7 +13,13 @@ const schemas = {
         .email({ tlds: { allow: false } })
         .allow(""),
       companyId: Joi.string().required(),
-      role: Joi.string().required(),
+      role: Joi.string()
+        .required()
+        .valid(
+          STRINGS.ROLES.ENTERPRISE,
+          STRINGS.ROLES.TRAFFIC,
+          STRINGS.ROLES.BUFFER
+        ),
       siteId: Joi.string().required(),
     });
     const { error, value } = Validation.validate(data);
