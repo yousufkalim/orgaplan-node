@@ -12,7 +12,6 @@ router.get("/add_user/:siteId/:adminId", userController.getAddUser);
 router.get("/get_user_company/:siteId/:userId", userController.getUserCompany);
 router.get("/get_user_company/:siteId/:userId", userController.getUserCompany);
 
-//getUserCompany
 //POSTS
 router.post("/filter", userController.userFilter);
 
@@ -29,27 +28,13 @@ router.post(
   userController.createCompanyUser
 );
 
+//PUTS
 router.put(
   "/update_company_user",
   multer("user", "image", "single"),
-
   userController.updateCompanyUser
 );
-
-//PUTS
-router.put(
-  "/:userId",
-  auth("admin"),
-  upload("user", "image"),
-  userController.update
-);
-//PUTS
-router.put(
-  "/:userId",
-  auth("admin"),
-  upload("user", "image"),
-  userController.update
-);
+router.put("/update/:userId", upload("user", "image"), userController.update);
 
 // DELETES
 router.delete("/:userId", auth("admin"), userController.delete);
