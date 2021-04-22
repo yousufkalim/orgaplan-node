@@ -21,13 +21,13 @@ const storageArea = new Schema(
       start: Date,
       end: Date,
     },
-    unavailabilityDates: [
+    unavailability: [
       {
         date: Date,
+        reason: String,
         startHour: Number,
         endHour: Number,
         dayOff: { type: Boolean, default: false },
-        reason: String,
       },
     ],
     materials: [{ type: String }],
