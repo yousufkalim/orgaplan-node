@@ -21,6 +21,7 @@ router.get(
 
   siteCompanyController.getGeneralContractor
 );
+router.get("/user/:siteId/:userId", siteCompanyController.getUsersCompany);
 
 // POSTS
 router.post("/", siteCompanyController.create);
