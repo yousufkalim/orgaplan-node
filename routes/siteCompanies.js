@@ -20,6 +20,7 @@ router.get(
   "/general-contractor/:siteId/:companyId",
   siteCompanyController.getGeneralContractor
 );
+router.get("/user/:siteId/:userId", siteCompanyController.getUsersCompany);
 
 // POSTS
 router.post("/", siteCompanyController.create);
