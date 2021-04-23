@@ -1,5 +1,8 @@
 const SiteCompaniesModel = require("../models/SiteCompanies");
 const Site = require("../models/site");
+const User = require("../models/user");
+
+const ObjectId = require("mongodb").ObjectID;
 
 const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
@@ -109,6 +112,28 @@ class SiteCompanies {
     if (!result) throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
+  }
+  async getUsersCompany(req, res) {
+    const siteId = req.params.siteId;
+    const userId = req.params.userId;
+
+    const user = await User.findOne({ _id: ObjectId(userId) });
+    if (!user) throw new CustomError(STRINGS.ERRORS.userNotFound, 404);
+
+    const site = await Site.findOne({ _id: ObjectId(siteId) });
+    if (!site) throw new CustomError(STRINGS.ERRORS.siteNotFound, 404);
+
+    const result = await SiteCompaniesModel.findOne({
+      siteId: siteId,
+    }).populate("users.companyId");
+    const filterData = result.users.filter((x) => {
+      return String(x.userId) === userId;
+    });
+    if (!filterData) throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound);
+
+    res
+      .status(200)
+      .send(response(STRINGS.TEXTS.siteCompanyRequested, filterData));
   }
 
   async update(req, res) {
