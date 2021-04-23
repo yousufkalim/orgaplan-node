@@ -147,7 +147,6 @@ class MeanBookingController {
                 data.routingMeans[index]["alerts"] = {
                   reason: "Near to End",
                 };
-
                 data["alert"] = true;
               }
             });
