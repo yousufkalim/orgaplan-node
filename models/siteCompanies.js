@@ -32,6 +32,7 @@ const siteCompaniesSchema = new Schema(
     ],
     companies: [
       {
+        _id: false,
         companyId: {
           type: Schema.Types.ObjectId,
           ref: STRINGS.MODALS.COMPANY,

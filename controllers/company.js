@@ -1,54 +1,51 @@
-const ObjectId = require("mongodb").ObjectID;
-const Company = require("../models/company");
-const STRINGS = require("../utils/texts");
-const response = require("../utils/response");
-const CustomError = require("../utils/customError");
-const Auth = require("../controllers/auth");
-const User = require("../models/user");
-const UserSites = require("../models/userSites");
 const Site = require("../models/site");
+const STRINGS = require("../utils/texts");
+const Auth = require("../controllers/auth");
+const Company = require("../models/company");
+const ObjectId = require("mongodb").ObjectID;
+const response = require("../utils/response");
+const UserSites = require("../models/userSites");
+const CustomError = require("../utils/customError");
 const SiteCompaniesModel = require("../models/SiteCompanies");
 
 class CompanyController {
   async create(req, res) {
-    const body = req.body;
-    if (req.file) body.logo = req.file.path;
-    // Check if company name exists
-    if (!body.trades) body.trades = [];
-    else body.trades = JSON.parse(body.trades);
-    if (body.incharge) body.incharge = JSON.parse(body.incharge);
-    const companyName = await Company.findOne({ name: body.name });
-    if (companyName) {
-      if (body.parentCompanyId) {
+    const validatedData = req.body;
+    validatedData.image && (validatedData.logo = validatedData.image);
+    validatedData.trades = JSON.parse(validatedData.trades);
+    validatedData.incharge = JSON.parse(validatedData.incharge);
+
+    if (validatedData.companyId) {
+      if (validatedData.generalContractorId) {
         // Remove pervious general contractor if any exists
         await SiteCompaniesModel.findOneAndUpdate(
           {
-            siteId: body.siteId,
-            "companies.subContractors": companyName._id,
+            siteId: validatedData.siteId,
+            "companies.subContractors": validatedData.companyId,
           },
           {
             $pull: {
-              "companies.$.subContractors": companyName._id,
+              "companies.$.subContractors": validatedData.companyId,
             },
           }
         );
         // Create New General Contrctor
         await SiteCompaniesModel.findOneAndUpdate(
           {
-            siteId: body.siteId,
-            "companies.companyId": body.parentCompanyId,
+            siteId: validatedData.siteId,
+            "companies.companyId": validatedData.generalContractorId,
           },
           {
             $addToSet: {
-              "companies.$.subContractors": companyName._id,
+              "companies.$.subContractors": validatedData.companyId,
             },
           }
         );
         // Update The Company
         const result = await Company.findByIdAndUpdate(
-          { _id: companyName._id },
+          { _id: validatedData.companyId },
           {
-            $set: req.body,
+            $set: validatedData,
           }
         );
         res.status(200).send(response(STRINGS.TEXTS.companyUpdated, result));
@@ -56,42 +53,42 @@ class CompanyController {
         // Remove pervious general contractor if any exists
         await SiteCompaniesModel.findOneAndUpdate(
           {
-            siteId: body.siteId,
-            "companies.subContractors": companyName._id,
+            siteId: validatedData.siteId,
+            "companies.subContractors": validatedData.companyId,
           },
           {
             $pull: {
-              "companies.$.subContractors": companyName._id,
+              "companies.$.subContractors": validatedData.companyId,
             },
           }
         );
         // Update The Company
         const result = await Company.findByIdAndUpdate(
-          { _id: companyName._id },
+          { _id: validatedData.companyId },
           {
-            $set: req.body,
+            $set: validatedData,
           }
         );
         res.status(200).send(response(STRINGS.TEXTS.companyUpdated, result));
       }
     } else {
-      const result = await new Company(req.body).save();
+      const result = await new Company(validatedData).save();
 
-      const siteCompanies = await SiteCompaniesModel.findOneAndUpdate(
+      await SiteCompaniesModel.findOneAndUpdate(
         {
-          siteId: body.siteId,
+          siteId: validatedData.siteId,
         },
         {
           $addToSet: {
-            companies: { companyId: result._id, trades: body.trades },
+            companies: { companyId: result._id, trades: validatedData.trades },
           },
         }
       );
-      if (body.parentCompanyId) {
-        const parentCompany = await SiteCompaniesModel.findOneAndUpdate(
+      if (validatedData.generalContractorId) {
+        await SiteCompaniesModel.findOneAndUpdate(
           {
-            siteId: body.siteId,
-            "companies.companyId": body.parentCompanyId,
+            siteId: validatedData.siteId,
+            "companies.companyId": validatedData.generalContractorId,
           },
           {
             $addToSet: {
@@ -101,50 +98,6 @@ class CompanyController {
         );
       }
       res.status(200).send(response(STRINGS.TEXTS.companyCreated, result));
-    }
-  }
-
-  async addUser(req, res) {
-    const body = req.body;
-
-    body["company"] = [body.companyId];
-    if (req.file) body["image"] = req.file.path;
-    const user = await Auth.signup(body);
-    const userId = user.user._id;
-    await user.user.update({ $addToSet: { company: body.companyId } });
-
-    body.sites = JSON.parse(body.sites);
-    const sitesObj = [];
-    body.sites.map((item, index) => {
-      const obj = { siteId: item, role: body.userRole };
-      sitesObj.push(obj);
-    });
-
-    if (user.exists) {
-      // Add user to the sites
-      // const userSites = await UserSites.findOne({ userId: userId });
-      // const sitesClone = [...userSites.sites];
-      // sitesClone.concat(sitesObj);
-
-      await UserSites.findOneAndUpdate({
-        userId: userId,
-        $addToSet: { sites: sitesObj },
-        upsert: true,
-      });
-      await Company.findByIdAndUpdate(
-        {
-          _id: body.companyId,
-        },
-        { $addToSet: { users: { userId: userId, role: body.userRole } } },
-        { upsert: true }
-      );
-      res.status(200).send(response(STRINGS.TEXTS.userAdded, user));
-    } else {
-      await new UserSites({
-        userId: userId,
-        sites: sitesObj,
-      }).save();
-      res.status(200).send(response(STRINGS.TEXTS.userAdded, user));
     }
   }
 
@@ -160,44 +113,6 @@ class CompanyController {
 
     const result = await Company.findOne({ _id: id }, { password: 0, __v: 0 });
     if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound);
-
-    res.status(200).send(response(STRINGS.TEXTS.companyRequested, result));
-  }
-
-  async getAddCompany(req, res) {
-    const siteId = req.params.siteId;
-    const result = await Site.findById({ _id: siteId }).populate("trades");
-
-    //   const result = await Company.findOne({ _id: id }, { password: 0, __v: 0 });
-    if (!result) throw new CustomError(STRINGS.ERRORS.siteNotFound);
-
-    res.status(200).send(response(STRINGS.TEXTS.siteRequested, result));
-  }
-
-  async getUserCompany(req, res) {
-    const id = req.params.id;
-
-    const result = await Company.findOne({ "users.userId": id }).populate(
-      "connection.parentCompanyId"
-    );
-    if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound);
-
-    res.status(200).send(response(STRINGS.TEXTS.companyRequested, result));
-  }
-
-  async getCompanyUsersPerSite(req, res) {
-    const siteId = req.params.siteId;
-    const companyId = req.params.companyId;
-    console.log(siteId);
-    console.log(companyId);
-    const result = await SiteCompaniesModel.findOne({
-      siteId: siteId,
-      users: { $elemMatch: { companyId: ObjectId(companyId) } },
-    })
-      .populate("users.userId")
-      .populate("users.companyId");
-
-    if (!result) throw new CustomError(STRINGS.ERRORS.userNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.companyRequested, result));
   }
@@ -273,6 +188,74 @@ class CompanyController {
     result.remove();
 
     res.status(200).send(response(STRINGS.TEXTS.compantDeleted, result));
+  }
+
+  async getBySite(req, res) {
+    const siteId = req.params.siteId;
+    const result = await Site.findById({ _id: siteId }).populate("trades");
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.siteNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.siteRequested, result));
+  }
+
+  async addUser(req, res) {
+    const body = req.body;
+
+    body["company"] = [body.companyId];
+    if (req.file) body["image"] = req.file.path;
+    const user = await Auth.signup(body);
+    const userId = user.user._id;
+    await user.user.update({ $addToSet: { company: body.companyId } });
+
+    body.sites = JSON.parse(body.sites);
+    const sitesObj = [];
+    body.sites.map((item, index) => {
+      const obj = { siteId: item, role: body.userRole };
+      sitesObj.push(obj);
+    });
+
+    if (user.exists) {
+      // Add user to the sites
+      // const userSites = await UserSites.findOne({ userId: userId });
+      // const sitesClone = [...userSites.sites];
+      // sitesClone.concat(sitesObj);
+
+      await UserSites.findOneAndUpdate({
+        userId: userId,
+        $addToSet: { sites: sitesObj },
+        upsert: true,
+      });
+      await Company.findByIdAndUpdate(
+        {
+          _id: body.companyId,
+        },
+        { $addToSet: { users: { userId: userId, role: body.userRole } } },
+        { upsert: true }
+      );
+      res.status(200).send(response(STRINGS.TEXTS.userAdded, user));
+    } else {
+      await new UserSites({
+        userId: userId,
+        sites: sitesObj,
+      }).save();
+      res.status(200).send(response(STRINGS.TEXTS.userAdded, user));
+    }
+  }
+
+  async getCompanyUsersPerSite(req, res) {
+    const siteId = req.params.siteId;
+    const companyId = req.params.companyId;
+    const result = await SiteCompaniesModel.findOne({
+      siteId: siteId,
+      users: { $elemMatch: { companyId: ObjectId(companyId) } },
+    })
+      .populate("users.userId")
+      .populate("users.companyId");
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.userNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.companyRequested, result));
   }
 }
 

@@ -5,8 +5,8 @@ const siteCompanyController = require("../controllers/siteCompanies");
 // GETS
 router.get("/", auth(), siteCompanyController.getAll);
 router.get("/:siteId", auth(), siteCompanyController.getOne);
+router.get("/site/:siteId", siteCompanyController.getSiteCompanies);
 
-router.get("/add_company/:siteId", siteCompanyController.getAddCompany);
 router.get(
   "/autofill/:siteId/:companyId",
   siteCompanyController.getCompanyAutofill
@@ -18,7 +18,6 @@ router.get(
 
 router.get(
   "/general-contractor/:siteId/:companyId",
-
   siteCompanyController.getGeneralContractor
 );
 

@@ -11,6 +11,53 @@ class SiteCompanies {
     const result = await SiteCompaniesModel.create(data);
     res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
   }
+
+  async getAll(req, res) {
+    const result = await SiteCompaniesModel.find({}, { password: 0, __v: 0 });
+    res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
+  }
+
+  async getOne(req, res) {
+    const siteId = req.params.siteId;
+
+    const result = await SiteCompaniesModel.findOne({
+      siteId: siteId,
+    })
+      .populate("companies.subContractors")
+      .populate("companies.companyId")
+      .populate("users.userId");
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
+  }
+
+  async update(req, res) {
+    const id = req.params.id;
+    const data = req.body;
+    if (data.incharge) data.incharge = JSON.parse(data.incharge);
+    const result = await SiteCompaniesModel.findByIdAndUpdate(
+      { _id: id },
+      { $set: data },
+      { new: true }
+    );
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound, 404);
+
+    res.status(200).send(response(STRINGS.TEXTS.siteCompanyUpdated, result));
+  }
+
+  async delete(req, res) {
+    const id = req.params.id;
+
+    const result = await SiteCompaniesModel.findOne({
+      _id: id,
+    });
+    result.remove();
+
+    res.status(200).send(response(STRINGS.TEXTS.compantDeleted, result));
+  }
+
   // Ony for use in postman
   async addCompanies(req, res) {
     const data = req.body;
@@ -21,11 +68,6 @@ class SiteCompanies {
 
       { new: true }
     );
-    res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
-  }
-
-  async getAll(req, res) {
-    const result = await SiteCompaniesModel.find({}, { password: 0, __v: 0 });
     res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
   }
 
@@ -47,33 +89,13 @@ class SiteCompanies {
     res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
   }
 
-  async getAddCompany(req, res) {
+  async getSiteCompanies(req, res) {
     const siteId = req.params.siteId;
     const site = await SiteCompaniesModel.findOne({
       siteId: siteId,
     }).populate("companies.companyId");
 
-    const siteTrades = await Site.findById(siteId);
-
-    const result = {
-      site_companies: site ? site.companies : [],
-      site_trades: siteTrades.trades,
-    };
-
-    res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
-  }
-
-  async getOne(req, res) {
-    const siteId = req.params.siteId;
-
-    const result = await SiteCompaniesModel.findOne({
-      siteId: siteId,
-    })
-      .populate("companies.subContractors")
-      .populate("companies.companyId")
-      .populate("users.userId");
-
-    if (!result) throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound);
+    const result = site ? site.companies : [];
 
     res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
   }
@@ -87,43 +109,9 @@ class SiteCompanies {
       },
       { companies: { $elemMatch: { subContractors: companyId } } }
     ).populate("companies.companyId");
-    // .populate("companies.subContractors")
-    // .populate("companies.companyId")
-    // .populate("users.userId");
-
-    // .populate({
-    //   path: "companies",
-    //   model: STRINGS.MODALS.COMPANY,
-    //   populate: {
-    //     path: "connection",
-    //     model: STRINGS.MODALS.COMPANY,
-    //     populate: {
-    //       path: "childCompanyId",
-    //       model: STRINGS.MODALS.COMPANY,
-    //     },
-    //     match: {
-    //       siteId: { $eq: siteId },
-    //     },
-    //   },
-    // });
     if (!result) throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.siteCompanyRequested, result));
-  }
-
-  async update(req, res) {
-    const id = req.params.id;
-    const data = req.body;
-    if (data.incharge) data.incharge = JSON.parse(data.incharge);
-    const result = await SiteCompaniesModel.findByIdAndUpdate(
-      { _id: id },
-      { $set: data },
-      { new: true }
-    );
-
-    if (!result) throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound, 404);
-
-    res.status(200).send(response(STRINGS.TEXTS.siteCompanyUpdated, result));
   }
 
   async filterCompanies(req, res) {
@@ -153,18 +141,6 @@ class SiteCompanies {
         },
       })
       .populate("users.userId");
-
-    //     $and: [
-    //       companyName ? { name: { $regex: companyNameRegex } } : {},
-    //       responsibleName
-    //         ? {
-    //             $or: [
-    //               { "incharge.firstName": { $regex: responsibleNameRegex } },
-    //               { "incharge.lastName": { $regex: responsibleNameRegex } },
-    //             ],
-    //           }
-    //         : {},
-    //     ],
 
     if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound);
 
@@ -203,17 +179,6 @@ class SiteCompanies {
       );
       res.status(200).send(response(STRINGS.TEXTS.compantDeleted, result));
     } else throw new CustomError(STRINGS.ERRORS.companyNotFound, 404);
-  }
-
-  async delete(req, res) {
-    const id = req.params.id;
-
-    const result = await SiteCompaniesModel.findOne({
-      _id: id,
-    });
-    result.remove();
-
-    res.status(200).send(response(STRINGS.TEXTS.compantDeleted, result));
   }
 
   async enterpriseDelivery(req, res) {
