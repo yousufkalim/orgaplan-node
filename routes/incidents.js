@@ -20,32 +20,13 @@ router.get(
 router.post(
   "/",
   multer("incidents", "photos", "single"),
-
-  // upload(
-  //   "incidents",
-
-  //   [
-  //     { name: "photos", maxCount: 3 },
-  //     { name: "document", maxCount: 1 },
-  //   ],
-  //   "fields"
-  // ),
-  //  upload("incidents", "document"),
   incidentsController.create
 );
 
 // PUTS
 router.put(
   "/:id",
-  upload(
-    "incidents",
-
-    [
-      { name: "photos", maxCount: 3 },
-      { name: "document", maxCount: 1 },
-    ],
-    "fields"
-  ),
+  multer("incidents", "photos", "single"),
   incidentsController.update
 );
 // DELETES
