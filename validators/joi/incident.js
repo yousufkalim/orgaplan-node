@@ -46,10 +46,10 @@ const schemas = {
       status: Joi.string().optional().allow(""),
       price: Joi.number().optional().allow(""),
     });
-    if (data.image) {
-      data.photos = data.image;
-      delete data.image;
-    }
+    // if (data.image) {
+    //   data.photos = data.image;
+    //   delete data.image;
+    // }
     const { error, value } = Validation.validate(data);
     if (error) {
       const { details } = error;
