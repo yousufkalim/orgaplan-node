@@ -20,7 +20,6 @@ router.use("/v1/mean_booking", require("./meanBooking"));
 router.use("/v1/storage-area", require("./storageArea"));
 router.use("/v1/organigramme", require("./organigramme"));
 router.use("/v1/delivery-area", require("./deliveryArea"));
-router.use("/v1/company-sites", require("./siteCompanies"));
 router.use("/v1/storage-area-request", require("./storageAreaRequest"));
 router.use("/v1/alert", require("./alert"));
 

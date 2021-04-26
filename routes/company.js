@@ -21,6 +21,7 @@ router.post(
   upload("user", "image"),
   companyController.addUser
 );
+router.post("/filter", companyController.filterCompanies);
 
 // PUTS
 router.put("/:id", auth(), companyController.update);

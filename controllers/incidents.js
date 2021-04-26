@@ -1,15 +1,13 @@
-const ObjectId = require("mongodb").ObjectID;
-const STRINGS = require("../utils/texts");
-const response = require("../utils/response");
-const CustomError = require("../utils/customError");
-const Incidents = require("../models/incidents");
-const SiteCompanies = require("../models/SiteCompanies");
-const Building = require("../models/building");
-const DeliveryArea = require("../models/deliveryArea");
-const StorageArea = require("../models/storageArea");
 const Site = require("../models/site");
-
+const STRINGS = require("../utils/texts");
 const Validations = require("../validators");
+const response = require("../utils/response");
+const Building = require("../models/building");
+const Incidents = require("../models/incidents");
+const CustomError = require("../utils/customError");
+const StorageArea = require("../models/storageArea");
+const DeliveryArea = require("../models/deliveryArea");
+const SiteCompanies = require("../models/SiteCompanies");
 const { isDateBefore, isDateAfter } = require("../utils/helpers");
 
 class IncidentsController {
@@ -52,6 +50,35 @@ class IncidentsController {
     res.status(200).send(response(STRINGS.TEXTS.incidentRequested, result));
   }
 
+  async update(req, res) {
+    const id = req.params.id;
+    const validatedData = await Validations.incident.update(req.body);
+    if (req.body["image"]) {
+      validatedData.photos = req.body["image"];
+      delete validatedData.image;
+    }
+    const body = validatedData;
+    if (body.location) body.location = JSON.parse(body.location);
+    const result = await Incidents.findByIdAndUpdate(
+      { _id: id },
+      { $set: body },
+      { new: true }
+    );
+    if (!result) throw new CustomError(STRINGS.ERRORS.indcidentNotFound, 404);
+    res.status(200).send(response(STRINGS.TEXTS.incidentUpdated, result));
+  }
+
+  async delete(req, res) {
+    const id = req.params.id;
+
+    const result = await Incidents.findOne({
+      _id: id,
+    });
+    result.remove();
+
+    res.status(200).send(response(STRINGS.TEXTS.incidentDeleted, result));
+  }
+
   async getIncidentList(req, res) {
     const id = req.params.id;
     const incidents = await Incidents.find({
@@ -62,7 +89,9 @@ class IncidentsController {
       .populate("companyId");
     const siteCompanies = await SiteCompanies.findOne({
       siteId: id,
-    }).populate("companies.companyId");
+    })
+      .populate("companies.companyId")
+      .populate("companies.parentCompanyId");
 
     const siteBuildings = await Building.find({
       siteId: id,
@@ -94,10 +123,6 @@ class IncidentsController {
       status: [STRINGS.INCIDENTSTATUS.OPEN, STRINGS.INCIDENTSTATUS.CLOSED],
       type: [STRINGS.INCIDENTTYPE.DELAY, STRINGS.INCIDENTTYPE.LETIGATON],
     };
-    // const result = await Incidents.findOne(
-    //   { _id: id },
-    //   { password: 0, __v: 0 }
-    // );
 
     if (!result) throw new CustomError(STRINGS.ERRORS.indcidentNotFound);
 
@@ -111,7 +136,7 @@ class IncidentsController {
       siteId: id,
     })
       .populate("companies.companyId")
-      .populate("companies.subContractors");
+      .populate("companies.parentCompanyId");
 
     const result = {
       site_companies: siteCompanies.companies,
@@ -120,53 +145,10 @@ class IncidentsController {
         STRINGS.MEANLOCATIONTYPE.DELIVERYAREA,
       ],
     };
-    // const result = await Incidents.findOne(
-    //   { _id: id },
-    //   { password: 0, __v: 0 }
-    // );
 
     if (!result) throw new CustomError(STRINGS.ERRORS.indcidentNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.incidentRequested, result));
-  }
-
-  async update(req, res) {
-    const id = req.params.id;
-    const validatedData = await Validations.incident.update(req.body);
-    if (req.body["image"]) {
-      validatedData.photos = req.body["image"];
-      delete validatedData.image;
-    }
-    const body = validatedData;
-    // if (req.files) {
-    //   let photos = [];
-    //   if (req.files["photos"]) {
-    //     req.files["photos"].map((file) => photos.push(file.path));
-    //     body.photos = photos;
-    //   }
-    //   if (req.files["document"]) {
-    //     body.document = req.files["document"][0].path;
-    //   }
-    // }
-    if (body.location) body.location = JSON.parse(body.location);
-    const result = await Incidents.findByIdAndUpdate(
-      { _id: id },
-      { $set: body },
-      { new: true }
-    );
-    if (!result) throw new CustomError(STRINGS.ERRORS.indcidentNotFound, 404);
-    res.status(200).send(response(STRINGS.TEXTS.incidentUpdated, result));
-  }
-
-  async delete(req, res) {
-    const id = req.params.id;
-
-    const result = await Incidents.findOne({
-      _id: id,
-    });
-    result.remove();
-
-    res.status(200).send(response(STRINGS.TEXTS.incidentDeleted, result));
   }
 
   async filterIncidents(req, res) {

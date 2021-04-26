@@ -1,4 +1,3 @@
-const Site = require("../models/site");
 const STRINGS = require("../utils/texts");
 const Auth = require("../controllers/auth");
 const Company = require("../models/company");
@@ -62,37 +61,30 @@ class CompanyController {
 
   async update(req, res) {
     const companyId = req.params.id;
-
     const validatedData = req.body;
-    validatedData.trades = JSON.parse(validatedData.trades);
-    validatedData.incharge = JSON.parse(validatedData.incharge);
-    validatedData.image && (validatedData.logo = validatedData.image);
-
-    const siteComObj = {
-      companyId: companyId,
-      color: validatedData.color,
-      trades: validatedData.trades,
-      parentCompanyId: validatedData.parentCompanyId,
-    };
 
     let company = await Company.findByIdAndUpdate(
       companyId,
       {
-        $set: validatedData,
+        $set: {
+          "incharge.email": validatedData.email,
+          description: validatedData.description,
+        },
       },
       { new: true }
     );
     await SiteCompanies.findOneAndUpdate(
       {
         siteId: validatedData.siteId,
-        "companies.companyId": validatedData.companyId,
+        "companies.companyId": companyId,
       },
       {
         $set: {
-          "companies.$": siteComObj,
+          "companies.$.parentCompanyId": validatedData.parentCompanyId,
         },
       }
     );
+
     res.status(200).send(response(STRINGS.TEXTS.companyUpdated, company));
   }
 
@@ -111,9 +103,9 @@ class CompanyController {
       .populate("companies.companyId")
       .populate("companies.parentCompanyId");
 
-    result = result.companies || [];
-
-    res.status(200).send(response(STRINGS.TEXTS.siteRequested, result));
+    res
+      .status(200)
+      .send(response(STRINGS.TEXTS.siteRequested, result?.companies));
   }
 
   async getNonSite(req, res) {
@@ -184,6 +176,39 @@ class CompanyController {
       .populate("users.companyId");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.userNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.companyRequested, result));
+  }
+
+  async filterCompanies(req, res) {
+    const body = req.body;
+    const siteId = body.siteId;
+    const companyName = body.companyName;
+    const responsibleName = body.responsibleName;
+    let companyNameRegex = "";
+    let responsibleNameRegex = "";
+
+    if (companyName) companyNameRegex = new RegExp(`^${companyName}`, "i");
+    if (responsibleName)
+      responsibleNameRegex = new RegExp(`^${responsibleName}`, "i");
+    const result = await SiteCompanies.findOne({
+      siteId: siteId,
+    })
+      .populate("companies.parentCompanyId")
+      .populate({
+        path: "companies.companyId",
+        match: {
+          $and: [
+            companyName ? { name: { $regex: companyNameRegex } } : {},
+            responsibleName
+              ? { "incharge.firstName": { $regex: responsibleNameRegex } }
+              : {},
+          ],
+        },
+      })
+      .populate("users.userId");
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.companyRequested, result));
   }
