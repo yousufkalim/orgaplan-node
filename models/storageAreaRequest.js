@@ -4,8 +4,6 @@ const STRINGS = require("../utils/texts");
 
 const storageAreaRequestSchema = new Schema(
   {
-    startDate: Date,
-    endDate: Date,
     requestDate: Date,
     userId: {
       type: Schema.Types.ObjectId,
