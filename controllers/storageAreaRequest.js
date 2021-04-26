@@ -3,17 +3,30 @@ const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const StorageAreaRequest = require("../models/storageAreaRequest");
 const StorageArea = require("../models/storageArea");
+const moment = require("moment");
 
 class StorageAreaRequestController {
   async create(req, res) {
-    const {
-      siteId,
-      companyId,
-      userId,
-      requestDate,
-      startDate,
-      endDate,
-    } = req.body;
+    const { siteId, companyId, userId, storageAreaId } = req.body;
+
+    const storageArea = await StorageArea.findOne({
+      _id: storageAreaId,
+    });
+
+    if (!storageArea) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
+    const today = moment();
+    if (
+      !moment(today).isBetween(
+        storageArea.availability.start,
+        storageArea.availability.end
+      )
+    ) {
+      throw new CustomError(
+        STRINGS.ERRORS.requestedDateIsNotBetweenStorageAreaDate
+      );
+    }
+    req.body["requestDate"] = today;
+
     const result = await StorageAreaRequest.create(req.body);
     res
       .status(200)
@@ -57,6 +70,23 @@ class StorageAreaRequestController {
       _id: storageRequest.storageAreaId,
     });
     if (!storageArea) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
+    if (
+      !moment(storageRequest.requestDate).isBetween(
+        storageArea.availability.start,
+        storageArea.availability.end
+      )
+    ) {
+      throw new CustomError(
+        STRINGS.ERRORS.requestedDateIsNotBetweenStorageAreaDate
+      );
+    }
+    const companyInStorageArea = await StorageArea.findOne({
+      _id: storageRequest.storageAreaId,
+      companies: storageRequest.companyId,
+    });
+    if (companyInStorageArea)
+      throw new CustomError(STRINGS.ERRORS.storageAreaAlreadyAssign);
+
     await storageArea.update({
       $addToSet: { companies: storageRequest.companyId },
     });

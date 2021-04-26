@@ -81,6 +81,7 @@ module.exports = {
     subscriptionExpired: "Subscription Expired",
     sitePenaltyNotFound: "No Site Panelty Found",
     storageAreaNotFount: "No Storage Area Found",
+    storageAreaAlreadyAssign: "Storage Area is already assign",
     oldPasswordInvalid: "Old Password is incorrect!",
     storageAreaRequestNotFound: "No Storage Area Request Found",
 
@@ -118,6 +119,8 @@ module.exports = {
     locationBuildingRequired: "Location Building Reuired For Interior Location",
     roleOfCompanyAlreadyExist: "Role of company already exist",
     userAlreadyExistWithAdminRole: "User Already Exist with Admin Role",
+    requestedDateIsNotBetweenStorageAreaDate:
+      "Requested date is not between storage area date",
   },
   TEXTS: {
     allUsers: "All users",
