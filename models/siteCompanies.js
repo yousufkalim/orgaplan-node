@@ -10,6 +10,7 @@ const siteCompaniesSchema = new Schema(
     },
     users: [
       {
+        _id: false,
         userId: {
           type: Schema.Types.ObjectId,
           ref: STRINGS.MODALS.USER,
@@ -33,16 +34,15 @@ const siteCompaniesSchema = new Schema(
     companies: [
       {
         _id: false,
+        color: String,
         companyId: {
           type: Schema.Types.ObjectId,
           ref: STRINGS.MODALS.COMPANY,
         },
-        subContractors: [
-          {
-            type: Schema.Types.ObjectId,
-            ref: STRINGS.MODALS.COMPANY,
-          },
-        ],
+        parentCompanyId: {
+          type: Schema.Types.ObjectId,
+          ref: STRINGS.MODALS.COMPANY,
+        },
         trades: [String],
       },
     ],

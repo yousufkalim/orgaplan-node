@@ -6,195 +6,130 @@ const ObjectId = require("mongodb").ObjectID;
 const response = require("../utils/response");
 const UserSites = require("../models/userSites");
 const CustomError = require("../utils/customError");
-const SiteCompaniesModel = require("../models/SiteCompanies");
+const SiteCompanies = require("../models/SiteCompanies");
 
 class CompanyController {
   async create(req, res) {
     const validatedData = req.body;
-    validatedData.image && (validatedData.logo = validatedData.image);
     validatedData.trades = JSON.parse(validatedData.trades);
     validatedData.incharge = JSON.parse(validatedData.incharge);
+    validatedData.image && (validatedData.logo = validatedData.image);
 
+    let company;
     if (validatedData.companyId) {
-      if (validatedData.generalContractorId) {
-        // Remove pervious general contractor if any exists
-        await SiteCompaniesModel.findOneAndUpdate(
-          {
-            siteId: validatedData.siteId,
-            "companies.subContractors": validatedData.companyId,
-          },
-          {
-            $pull: {
-              "companies.$.subContractors": validatedData.companyId,
-            },
-          }
-        );
-        // Create New General Contrctor
-        await SiteCompaniesModel.findOneAndUpdate(
-          {
-            siteId: validatedData.siteId,
-            "companies.companyId": validatedData.generalContractorId,
-          },
-          {
-            $addToSet: {
-              "companies.$.subContractors": validatedData.companyId,
-            },
-          }
-        );
-        // Update The Company
-        const result = await Company.findByIdAndUpdate(
-          { _id: validatedData.companyId },
-          {
-            $set: validatedData,
-          }
-        );
-        res.status(200).send(response(STRINGS.TEXTS.companyUpdated, result));
-      } else {
-        // Remove pervious general contractor if any exists
-        await SiteCompaniesModel.findOneAndUpdate(
-          {
-            siteId: validatedData.siteId,
-            "companies.subContractors": validatedData.companyId,
-          },
-          {
-            $pull: {
-              "companies.$.subContractors": validatedData.companyId,
-            },
-          }
-        );
-        // Update The Company
-        const result = await Company.findByIdAndUpdate(
-          { _id: validatedData.companyId },
-          {
-            $set: validatedData,
-          }
-        );
-        res.status(200).send(response(STRINGS.TEXTS.companyUpdated, result));
-      }
-    } else {
-      const result = await new Company(validatedData).save();
-
-      await SiteCompaniesModel.findOneAndUpdate(
+      company = await Company.findByIdAndUpdate(
+        validatedData.companyId,
         {
-          siteId: validatedData.siteId,
+          $set: validatedData,
         },
-        {
-          $addToSet: {
-            companies: { companyId: result._id, trades: validatedData.trades },
-          },
-        }
+        { new: true }
       );
-      if (validatedData.generalContractorId) {
-        await SiteCompaniesModel.findOneAndUpdate(
-          {
-            siteId: validatedData.siteId,
-            "companies.companyId": validatedData.generalContractorId,
-          },
-          {
-            $addToSet: {
-              "companies.$.subContractors": result._id,
-            },
-          }
-        );
-      }
-      res.status(200).send(response(STRINGS.TEXTS.companyCreated, result));
+    } else {
+      company = await Company.create(validatedData);
     }
+    const siteComObj = {
+      color: validatedData.color,
+      trades: validatedData.trades,
+      companyId: company._id,
+      parentCompanyId: validatedData.parentCompanyId,
+    };
+    await SiteCompanies.findOneAndUpdate(
+      {
+        siteId: validatedData.siteId,
+      },
+      {
+        $addToSet: {
+          companies: siteComObj,
+        },
+      }
+    );
+    res.status(200).send(response(STRINGS.TEXTS.companyAdded, company));
   }
 
   async getAll(req, res) {
     const result = await Company.find({}, { password: 0, __v: 0 });
-    res
-      .status(200)
-      .send(response(STRINGS.TEXTS.allRequestedSubscriptions, result));
+    res.status(200).send(response(STRINGS.TEXTS.companyRequested, result));
   }
 
   async getOne(req, res) {
     const id = req.params.id;
 
-    const result = await Company.findOne({ _id: id }, { password: 0, __v: 0 });
+    const result = await Company.findById(id, { __v: 0 });
     if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.companyRequested, result));
   }
 
   async update(req, res) {
-    const id = req.params.id;
-    const data = req.body;
+    const companyId = req.params.id;
 
-    if (!data.isSubcontractor) {
-      const connection = [
-        { parentCompanyId: null, isSubContractor: false, siteId: data.siteId },
-      ];
-      const company = await Company.findOneAndUpdate(
-        {
-          _id: id,
-          "connection.siteId": data.siteId,
+    const validatedData = req.body;
+    validatedData.trades = JSON.parse(validatedData.trades);
+    validatedData.incharge = JSON.parse(validatedData.incharge);
+    validatedData.image && (validatedData.logo = validatedData.image);
+
+    const siteComObj = {
+      companyId: companyId,
+      color: validatedData.color,
+      trades: validatedData.trades,
+      parentCompanyId: validatedData.parentCompanyId,
+    };
+
+    let company = await Company.findByIdAndUpdate(
+      companyId,
+      {
+        $set: validatedData,
+      },
+      { new: true }
+    );
+    await SiteCompanies.findOneAndUpdate(
+      {
+        siteId: validatedData.siteId,
+        "companies.companyId": validatedData.companyId,
+      },
+      {
+        $set: {
+          "companies.$": siteComObj,
         },
-        { $set: { connection: [...connection] } },
-        { new: true }
-      );
-      res.status(200).send(response(STRINGS.TEXTS.companyUpdated, company));
-    }
-    if (data.isSubcontractor) {
-      if (data.parentCompanyId == undefined)
-        throw new CustomError(STRINGS.ERRORS.parentCompanyNotFound, 404);
-
-      const connection = [
-        {
-          isSubContractor: true,
-          childCompanyId: [],
-          siteId: data.siteId,
-          parentCompanyId: data.parentCompanyId,
-        },
-      ];
-      const childCompany = await Company.findOneAndUpdate(
-        {
-          _id: id,
-          "connection.siteId": data.siteId,
-        },
-        { $set: { connection: connection } },
-        { new: true }
-      );
-
-      const parentCompany = await Company.findOneAndUpdate(
-        {
-          _id: data.parentCompanyId,
-          "connection.siteId": data.siteId,
-        },
-        { $addToSet: { "connection.$.childCompanyId": childCompany.id } }
-      ); //Get parent company id and add child to that company
-      res
-        .status(200)
-        .send(response(STRINGS.TEXTS.companyUpdated, parentCompany));
-    }
-
-    // const result = await Company.findByIdAndUpdate(
-    //   { _id: id },
-    //   { $set: data },
-    //   { new: true }
-    // );
-
-    // if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound, 404);
-
-    // res.status(200).send(response(STRINGS.TEXTS.companyUpdated, result));
+      }
+    );
+    res.status(200).send(response(STRINGS.TEXTS.companyUpdated, company));
   }
 
   async delete(req, res) {
     const id = req.params.id;
 
-    const result = await Company.findOne({
-      _id: id,
-    });
-    result.remove();
+    // const result = await Company.findByIdAndDelete(id);
 
     res.status(200).send(response(STRINGS.TEXTS.compantDeleted, result));
   }
 
   async getBySite(req, res) {
     const siteId = req.params.siteId;
-    const result = await Site.findById({ _id: siteId }).populate("trades");
 
-    if (!result) throw new CustomError(STRINGS.ERRORS.siteNotFound);
+    let result = await SiteCompanies.findOne({ siteId: siteId })
+      .populate("companies.companyId")
+      .populate("companies.parentCompanyId");
+
+    result = result.companies || [];
+
+    res.status(200).send(response(STRINGS.TEXTS.siteRequested, result));
+  }
+
+  async getNonSite(req, res) {
+    const siteId = req.params.siteId;
+
+    let siteCompaniesIds = [];
+    const siteCompaniesForIds = await SiteCompanies.findOne({ siteId: siteId });
+    if (siteCompaniesForIds) {
+      siteCompaniesIds = siteCompaniesForIds.companies.map(
+        (item) => item.companyId
+      );
+    }
+
+    let result = await Company.find({
+      _id: { $nin: siteCompaniesIds },
+    });
 
     res.status(200).send(response(STRINGS.TEXTS.siteRequested, result));
   }
@@ -216,11 +151,6 @@ class CompanyController {
     });
 
     if (user.exists) {
-      // Add user to the sites
-      // const userSites = await UserSites.findOne({ userId: userId });
-      // const sitesClone = [...userSites.sites];
-      // sitesClone.concat(sitesObj);
-
       await UserSites.findOneAndUpdate({
         userId: userId,
         $addToSet: { sites: sitesObj },
@@ -246,7 +176,7 @@ class CompanyController {
   async getCompanyUsersPerSite(req, res) {
     const siteId = req.params.siteId;
     const companyId = req.params.companyId;
-    const result = await SiteCompaniesModel.findOne({
+    const result = await SiteCompanies.findOne({
       siteId: siteId,
       users: { $elemMatch: { companyId: ObjectId(companyId) } },
     })

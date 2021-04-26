@@ -156,6 +156,7 @@ module.exports = {
     adminExistsAlready: "Admin exists already",
 
     companyData: "Company data",
+    companyAdded: "Company Added",
     companyCreated: "Company created",
     companyUpdated: "Company updated",
     companyDeleted: "Company deleted",

@@ -6,7 +6,8 @@ const companyController = require("../controllers/company");
 // GETS
 router.get("/", auth(), companyController.getAll);
 router.get("/:id", auth(), companyController.getOne);
-router.get("/site/:siteId/", companyController.getBySite);
+router.get("/site/:siteId", companyController.getBySite);
+router.get("/site-exclude/:siteId", companyController.getNonSite);
 router.get(
   "/users/:siteId/:companyId",
   companyController.getCompanyUsersPerSite

@@ -1,11 +1,9 @@
 const User = require("../models/user");
 const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
-const CustomError = require("../utils/customError");
 const UserSites = require("../models/userSites");
+const CustomError = require("../utils/customError");
 const SiteCompanies = require("../models/SiteCompanies");
-const siteCompaniesSchema = require("../models/SiteCompanies");
-const SiteCompaniesModel = require("../models/SiteCompanies");
 
 const Company = require("../models/company");
 const Auth = require("../controllers/auth");
@@ -163,7 +161,7 @@ class UserContoller {
     if (!companyCheck)
       throw new CustomError(STRINGS.ERRORS.companyNotFound, 404);
 
-    const checkCompanyInSite = await siteCompaniesSchema.findOne({
+    const checkCompanyInSite = await SiteCompanies.findOne({
       siteId: siteId,
       "users.companyId": companyId,
     });
@@ -173,7 +171,7 @@ class UserContoller {
     const userCheck = await User.findOne({ email: email });
     if (userCheck) {
       // //
-      // const checkAdminInSite = await siteCompaniesSchema.findOne({
+      // const checkAdminInSite = await SiteCompanies.findOne({
       //   siteId: siteId,
       //   "users.userId": userCheck._id,
       //   "users.role": STRINGS.ROLES.ADMIN,
@@ -186,7 +184,7 @@ class UserContoller {
       //     404
       //   );
       // //
-      const siteObjtect = await siteCompaniesSchema.findOne({
+      const siteObjtect = await SiteCompanies.findOne({
         siteId: siteId,
         "users.userId": userCheck._id,
       });
@@ -213,7 +211,7 @@ class UserContoller {
           role: role,
         },
       ];
-      await siteCompaniesSchema.findOneAndUpdate(
+      await SiteCompanies.findOneAndUpdate(
         {
           siteId: siteId,
         },
@@ -257,7 +255,7 @@ class UserContoller {
         },
       ];
 
-      await siteCompaniesSchema.findOneAndUpdate(
+      await SiteCompanies.findOneAndUpdate(
         {
           siteId: siteId,
         },
@@ -275,7 +273,7 @@ class UserContoller {
 
     const userCheck = await User.findOne({ email: email });
     if (userCheck) {
-      const checkCompanyInSite = await siteCompaniesSchema.findOne({
+      const checkCompanyInSite = await SiteCompanies.findOne({
         siteId: siteId,
         "users.companyId": companyId,
       });
@@ -300,7 +298,7 @@ class UserContoller {
           new: true,
         }
       );
-      await SiteCompaniesModel.findOneAndUpdate(
+      await SiteCompanies.findOneAndUpdate(
         {
           siteId: ObjectId(siteId),
         },
@@ -328,7 +326,7 @@ class UserContoller {
     let re = new RegExp(`^${name}`);
     let result;
     if (name) {
-      const response = await SiteCompaniesModel.findOne({
+      const response = await SiteCompanies.findOne({
         siteId: siteId,
         $and: [
           companyId
@@ -343,7 +341,7 @@ class UserContoller {
         .populate("users.companyId");
       result = response;
     } else {
-      const response = await SiteCompaniesModel.findOne({
+      const response = await SiteCompanies.findOne({
         siteId: siteId,
         $and: [
           companyId
