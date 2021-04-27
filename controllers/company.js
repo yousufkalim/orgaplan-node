@@ -103,9 +103,9 @@ class CompanyController {
       .populate("companies.companyId")
       .populate("companies.parentCompanyId");
 
-    res
-      .status(200)
-      .send(response(STRINGS.TEXTS.siteRequested, result?.companies));
+    result = result ? result.companies : [];
+
+    res.status(200).send(response(STRINGS.TEXTS.siteRequested, result));
   }
 
   async getNonSite(req, res) {
