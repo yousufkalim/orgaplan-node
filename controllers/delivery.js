@@ -212,7 +212,5 @@ class DeliveryController {
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryDeleted, result));
   }
-
-  async;
 }
 module.exports = new DeliveryController();

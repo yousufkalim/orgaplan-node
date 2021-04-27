@@ -19,8 +19,8 @@ const schemas = {
       building: Joi.string().allow(""),
       level: Joi.string().allow(""),
       date: Joi.date().required(),
-      startTime: Joi.number().integer().required(),
-      endTime: Joi.number().integer().required(),
+      startTime: Joi.string().required(),
+      endTime: Joi.string().required(),
       type: Joi.string().required(),
       status: Joi.string().required(),
     });
@@ -51,8 +51,8 @@ const schemas = {
       building: Joi.string().allow(""),
       level: Joi.string().allow(""),
       date: Joi.date().required(),
-      startTime: Joi.number().integer().required(),
-      endTime: Joi.number().integer().required(),
+      startTime: Joi.string().required(),
+      endTime: Joi.string().required(),
       type: Joi.string().required(),
       status: Joi.string().required(),
     });
