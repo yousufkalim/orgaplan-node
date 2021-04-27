@@ -1,4 +1,5 @@
 const Joi = require("joi");
+const STRINGS = require("../../utils/texts");
 const CustomError = require("../../utils/customError");
 
 const schemas = {
@@ -19,6 +20,13 @@ const schemas = {
       lastName: Joi.string().required(),
       image: Joi.string().required(),
       companyId: Joi.string().required(),
+      adminType: Joi.string()
+        .required()
+        .valid(
+          STRINGS.ROLES.NOADMIN,
+          STRINGS.ROLES.MASTERADMIN,
+          STRINGS.ROLES.ADMINPERSITE
+        ),
     });
 
     const { error, value } = Validation.validate(data);
@@ -44,6 +52,13 @@ const schemas = {
         .required(),
       image: Joi.string().optional(),
       companyId: Joi.string().required(),
+      adminType: Joi.string()
+        .required()
+        .valid(
+          STRINGS.ROLES.NOADMIN,
+          STRINGS.ROLES.MASTERADMIN,
+          STRINGS.ROLES.ADMINPERSITE
+        ),
     });
 
     if (!data.image) delete data.image;

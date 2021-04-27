@@ -212,6 +212,63 @@ class CompanyController {
 
     res.status(200).send(response(STRINGS.TEXTS.companyRequested, result));
   }
+
+  async getUserCompany(req, res) {
+    const siteId = req.params.siteId;
+    const userId = req.params.userId;
+
+    const result = await SiteCompanies.aggregate([
+      {
+        $match: {
+          siteId: ObjectId(siteId),
+        },
+      },
+      {
+        $project: {
+          users: {
+            $filter: {
+              input: "$users",
+              as: "user",
+              cond: { $eq: ["$$user.userId", ObjectId(userId)] },
+            },
+          },
+        },
+      },
+      { $unwind: "$users" },
+      {
+        $project: {
+          _id: 0,
+          role: "$users.role",
+          company: "$users.companyId",
+        },
+      },
+      {
+        $lookup: {
+          from: Company.collection.name,
+          foreignField: "_id",
+          localField: "company",
+          as: "company",
+        },
+      },
+      { $unwind: "$company" },
+    ]);
+
+    if (!result[0]) throw new CustomError(STRINGS.ERRORS.userCompany, 404);
+
+    res.status(200).send(response(STRINGS.TEXTS.userCompany, result[0]));
+  }
+
+  async getAdminCompany(req, res) {
+    const adminId = req.params.adminId;
+
+    const result = await Company.findOne({
+      adminIds: adminId,
+    });
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.userCompany, 404);
+
+    res.status(200).send(response(STRINGS.TEXTS.userCompany, result));
+  }
 }
 
 module.exports = new CompanyController();

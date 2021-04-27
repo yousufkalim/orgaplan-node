@@ -187,6 +187,7 @@ class SuperAdminAdminsController {
       firstName: validatedData.firstName,
       lastName: validatedData.lastName,
       company: validatedData.companyId,
+      adminType: validatedData.adminType,
     };
     validatedData.image && (userData.image = validatedData.image);
     //working

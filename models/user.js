@@ -26,6 +26,15 @@ const userSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.COMPANY,
     },
+    adminType: {
+      type: String,
+      enum: [
+        STRINGS.ROLES.MASTERADMIN,
+        STRINGS.ROLES.ADMINPERSITE,
+        STRINGS.ROLES.NOADMIN,
+      ],
+      default: STRINGS.ROLES.NOADMIN,
+    },
     role: {
       type: String,
       enum: [STRINGS.ROLES.USER, STRINGS.ROLES.SUPERADMIN],
