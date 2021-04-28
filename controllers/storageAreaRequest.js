@@ -13,6 +13,13 @@ class StorageAreaRequestController {
       _id: storageAreaId,
     });
 
+    const companyInStorageArea = await StorageArea.findOne({
+      _id: storageAreaId,
+      companies: companyId,
+    });
+    if (companyInStorageArea)
+      throw new CustomError(STRINGS.ERRORS.storageAreaAlreadyAssign);
+
     if (!storageArea) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
     const today = moment();
     if (

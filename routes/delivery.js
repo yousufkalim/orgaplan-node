@@ -5,7 +5,6 @@ const deliveryController = require("../controllers/delivery");
 // GETS
 router.get("/", auth(), deliveryController.getAll);
 router.get("/:id", auth(), deliveryController.getOne);
-router.get("/admin/alert/:id", deliveryController.getSiteAlerts);
 
 // POSTS
 router.post("/", auth(), deliveryController.create);
