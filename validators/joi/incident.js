@@ -38,6 +38,7 @@ const schemas = {
       document: Joi.string().optional().allow(""),
       isBillable: Joi.string().required(),
       isPaid: Joi.string().required(),
+      location: Joi.string().optional().allow(""),
       description: Joi.string().optional().allow(""),
       image: Joi.string().optional().allow(""),
       siteId: Joi.string().required(),
@@ -46,10 +47,7 @@ const schemas = {
       status: Joi.string().optional().allow(""),
       price: Joi.number().optional().allow(""),
     });
-    // if (data.image) {
-    //   data.photos = data.image;
-    //   delete data.image;
-    // }
+
     const { error, value } = Validation.validate(data);
     if (error) {
       const { details } = error;
