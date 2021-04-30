@@ -369,8 +369,7 @@ class DashboardController {
 
   async getCustomerRate(req, res) {
     const month = +moment().format("M");
-    console.log(moment().format("M"));
-    const client = await ClientInvoice.aggregate([
+    const clientPerSite = await ClientInvoice.aggregate([
       {
         $addFields: {
           month: { $month: "$createdAt" },
@@ -417,21 +416,100 @@ class DashboardController {
 
       {
         $addFields: {
-          clientId: "$clientId._id",
           comapanyName: "$clientId.companyId.name",
+          clientId: "$clientId._id",
+        },
+      },
+      {
+        $project: {
+          clientId: 1,
+          amount: 1,
+          comapanyName: 1,
           count: { $sum: 1 },
         },
       },
       {
         $group: {
           _id: "$clientId",
-
           comapanyName: { $first: "$comapanyName" },
           count: { $sum: "$count" },
+          amount: { $sum: "$amount" },
         },
       },
     ]);
-    res.status(200).send(response(STRINGS.TEXTS.success, client));
+    const masterClient = await ClientInvoice.aggregate([
+      {
+        $addFields: {
+          month: { $month: "$createdAt" },
+        },
+      },
+      {
+        $match: {
+          month: { $eq: month },
+        },
+      },
+      {
+        $lookup: {
+          from: Client.collection.name,
+          localField: "clientId",
+          foreignField: "_id",
+          as: "clientId",
+        },
+      },
+      { $unwind: "$clientId" },
+      {
+        $lookup: {
+          from: Company.collection.name,
+          localField: "clientId.companyId",
+          foreignField: "_id",
+          as: "clientId.companyId",
+        },
+      },
+      { $unwind: "$clientId.companyId" },
+      {
+        $lookup: {
+          from: Contract.collection.name,
+          localField: "clientId.contractIds",
+          foreignField: "_id",
+          as: "clientId.contractIds",
+        },
+      },
+      {
+        $match: {
+          "clientId.contractIds.contractType": {
+            $eq: STRINGS.CONTRACTTYPES.MASTERCLIENT,
+          },
+        },
+      },
+
+      {
+        $addFields: {
+          comapanyName: "$clientId.companyId.name",
+          clientId: "$clientId._id",
+        },
+      },
+      {
+        $project: {
+          clientId: 1,
+          amount: 1,
+          comapanyName: 1,
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $group: {
+          _id: "$clientId",
+          comapanyName: { $first: "$comapanyName" },
+          count: { $sum: "$count" },
+          amount: { $sum: "$amount" },
+        },
+      },
+    ]);
+    const result = {
+      clientPerSite,
+      masterClient,
+    };
+    res.status(200).send(response(STRINGS.TEXTS.success, result));
   }
 }
 module.exports = new DashboardController();
