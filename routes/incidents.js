@@ -8,15 +8,12 @@ const multer = require("../middlewares/multer");
 router.get("/", incidentsController.getAll);
 router.get("/:id", auth(), incidentsController.getOne);
 
-router.get("/admin/:id", incidentsController.getIncidentAdmin);
-router.get(
-  "/admin/incident_list/:id",
+router.get("/admin/:siteId", incidentsController.getIncidentAdmin);
+router.get("/admin/incident_list/:id", incidentsController.getIncidentList);
 
-  incidentsController.getIncidentList
-);
+router.get("/incidents_list/:siteId", incidentsController.getIncidentsList);
 
 // POSTS
-// router.post("/", auth(), upload("logo"), companyController.create);
 router.post(
   "/",
   multer("incidents", "photos", "single"),

@@ -128,16 +128,58 @@ class IncidentsController {
     res.status(200).send(response(STRINGS.TEXTS.incidentRequested, result));
   }
 
+  async getIncidentsList(req, res) {
+    const siteId = req.params.siteId;
+
+    const total_inciddents = await Incidents.find({
+      siteId: siteId,
+    }).countDocuments();
+    const locations = await Building.find({ siteId: siteId }).populate(
+      "levels"
+    );
+    const deliveryAreas = await DeliveryArea.find({
+      siteId: siteId,
+    });
+    const storageAreas = await StorageArea.find({
+      siteId: siteId,
+    });
+    const siteCompanies = await SiteCompanies.findOne({
+      siteId: siteId,
+    }).populate("companies.companyId");
+    if (!siteCompanies) throw new CustomError(STRINGS.ERRORS.companyNotFound);
+
+    const result = {
+      total_incidents: total_inciddents,
+      site_locations: locations,
+      site_storage_areas: storageAreas,
+      site_delivery_areas: deliveryAreas,
+      site_companies: siteCompanies.companies,
+      types: Object.values(STRINGS.INCIDENTTYPE),
+      statuses: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],
+    };
+
+    res.status(200).send(response(STRINGS.TEXTS.incidentRequested, result));
+  }
+
   async getIncidentAdmin(req, res) {
-    const id = req.params.id;
+    const siteId = req.params.siteId;
 
     const siteCompanies = await SiteCompanies.findOne({
-      siteId: id,
+      siteId: siteId,
     })
       .populate("companies.companyId")
       .populate("companies.parentCompanyId");
+    const deliveryAreas = await DeliveryArea.find({
+      siteId: siteId,
+    });
+    const storageAreas = await StorageArea.find({
+      siteId: siteId,
+      // location: { $ne: STRINGS.STATUS.OUTSIDE },
+    });
 
     const result = {
+      site_storage_areas: storageAreas,
+      site_delivery_areas: deliveryAreas,
       site_companies: siteCompanies.companies,
       locationTypes: [
         STRINGS.MEANLOCATIONTYPE.STORAGEAREA,
