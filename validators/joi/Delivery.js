@@ -65,6 +65,26 @@ const schemas = {
     }
     return value;
   },
+  complete: (data) => {
+    const Validation = Joi.object().keys({
+      deliveryId: Joi.string().required("Delivery ID is required"),
+      materialsDelivered: Joi.array().items(Joi.string()).min(1),
+      delay: Joi.bool().required(""),
+      status: Joi.string().required(""),
+      comments: Joi.string().optional().allow(""),
+      time: Joi.string().optional().allow(""),
+    });
+
+    data.materialsDelivered = JSON.parse(data.materialsDelivered);
+
+    const { error, value } = Validation.validate(data);
+    if (error) {
+      const { details } = error;
+      const message = details.map((i) => i.message).join(",");
+      throw new CustomError(message);
+    }
+    return value;
+  },
 };
 
 module.exports = schemas;

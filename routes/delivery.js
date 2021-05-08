@@ -1,19 +1,26 @@
 const router = require("express").Router();
+
 const auth = require("../middlewares/auth");
+const multer = require("../middlewares/multer");
 const deliveryController = require("../controllers/delivery");
 
 // GETS
 router.get("/", auth(), deliveryController.getAll);
-router.get("/:id", auth(), deliveryController.getOne);
+router.get("/get/:id", auth(), deliveryController.getOne);
+router.get("/traffic", deliveryController.trafficAgentDeliveries);
 
 // POSTS
 router.post("/", auth(), deliveryController.create);
 router.post("/enterprise", deliveryController.enterpriseDeliveries);
-router.post("/trafficAgent", deliveryController.trafficAgentDeliveries);
 
 // PUTS
 router.put("/:id", deliveryController.update);
 router.put("/updateStatus/:id", deliveryController.updateStatus);
+router.put(
+  "/complete/:id",
+  multer("incidents", "photos", "single"),
+  deliveryController.completeDelivery
+);
 
 // DELETES
 router.delete("/:id", deliveryController.delete);
