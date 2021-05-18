@@ -8,6 +8,7 @@ const deliveryController = require("../controllers/delivery");
 router.get("/", auth(), deliveryController.getAll);
 router.get("/get/:id", auth(), deliveryController.getOne);
 router.get("/traffic", deliveryController.trafficAgentDeliveries);
+router.get("/enterprise", deliveryController.enterpiseDeliveries);
 
 // POSTS
 router.post("/", auth(), deliveryController.create);

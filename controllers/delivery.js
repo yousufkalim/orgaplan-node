@@ -120,6 +120,41 @@ class DeliveryController {
     res.status(200).send(response(STRINGS.TEXTS.allDeliveries, result));
   }
 
+  async enterpiseDeliveries(req, res) {
+    const {
+      siteId,
+      date, // YYYY-MM-DD
+      companyId,
+      locationType,
+      location,
+      status,
+    } = req.query;
+
+    let query = {
+      siteId: siteId,
+    };
+    status && (query.status = status);
+    companyId && (query.companyId = companyId);
+    locationType && location && (query[locationType] = location);
+    date &&
+      (query.date = {
+        $gte: new Date(`${date}T00:00:00.000+00:00`),
+        $lte: new Date(
+          `${moment(date)
+            .add(1, "day")
+            .format("YYYY-MM-DD")}T00:00:00.000+00:00`
+        ),
+      });
+
+    const result = await Delivery.find(query)
+      .populate("companyId")
+      .populate("liftingMeans")
+      .populate("routingMeans")
+      .populate("deliveryArea")
+      .populate("storageArea");
+    res.status(200).send(response(STRINGS.TEXTS.allDeliveries, result));
+  }
+
   async updateStatus(req, res) {
     const id = req.params.id;
     const result = await Delivery.findByIdAndUpdate(
