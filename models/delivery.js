@@ -42,6 +42,10 @@ const deliverySchema = new Schema(
     date: Date,
     startTime: String,
     endTime: String,
+    bufferArea: Boolean,
+    arrivalTime: Date,
+    departureTIme: Date,
+    flatRegistration: String,
     status: {
       type: String,
       enum: [
