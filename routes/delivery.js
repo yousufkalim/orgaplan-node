@@ -7,6 +7,10 @@ const deliveryController = require("../controllers/delivery");
 // GETS
 router.get("/", auth(), deliveryController.getAll);
 router.get("/get/:id", auth(), deliveryController.getOne);
+router.get(
+  "/getDeliveryAllStroageArea/:siteId/:deliveryId",
+  deliveryController.getDeliveryAllStroageArea
+);
 router.get("/traffic", deliveryController.trafficAgentDeliveries);
 router.get("/enterprise", deliveryController.enterpiseDeliveries);
 
