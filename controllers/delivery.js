@@ -4,6 +4,7 @@ const STRINGS = require("../utils/texts");
 const Validations = require("../validators");
 const response = require("../utils/response");
 const Delivery = require("../models/delivery");
+const StroageArea = require("../models/storageArea");
 const Incidents = require("../models/incidents");
 const CustomError = require("../utils/customError");
 
@@ -238,6 +239,17 @@ class DeliveryController {
     if (!result) throw new CustomError(STRINGS.ERRORS.deliveryNotFound, 404);
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryUpdated, result));
+  }
+
+  async getDeliveryAllStroageArea(req, res) {
+    const siteId = req.params.siteId;
+    const deliveryId = req.params.deliveryId;
+    const result = await StroageArea.find({
+      $and: [{ deliveryArea: deliveryId }, { siteId: siteId }],
+    });
+    res
+      .status(200)
+      .send(response(STRINGS.TEXTS.getDeliveryAllStorageArea, result));
   }
 }
 
