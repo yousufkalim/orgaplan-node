@@ -161,9 +161,14 @@ class UserContoller {
     if (!companyCheck)
       throw new CustomError(STRINGS.ERRORS.companyNotFound, 404);
 
+    // const checkCompanyInSite = await SiteCompanies.findOne({
+    //   siteId: siteId,
+    //   "users.companyId": companyId,
+    // });
+
     const checkCompanyInSite = await SiteCompanies.findOne({
       siteId: siteId,
-      "users.companyId": companyId,
+      "companies.companyId": companyId,
     });
     if (!checkCompanyInSite)
       throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound, 404);
