@@ -260,7 +260,6 @@ class CompanyController {
 
   async getAdminCompany(req, res) {
     const adminId = req.params.adminId;
-
     const result = await Company.findOne({
       adminIds: adminId,
     });
