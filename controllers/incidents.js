@@ -34,7 +34,7 @@ class IncidentsController {
   }
 
   async getAll(req, res) {
-    const result = await Incidents.find({}, { password: 0, __v: 0 });
+   const result = await Incidents.find({}, { password: 0, __v: 0 });
     res.status(200).send(response(STRINGS.TEXTS.allIncidents, result));
   }
 
@@ -51,14 +51,18 @@ class IncidentsController {
   }
 
   async update(req, res) {
-    const id = req.params.id;
+    const id = req.params.id;   
     const validatedData = await Validations.incident.update(req.body);
     if (req.body["image"]) {
       validatedData.photos = req.body["image"];
       delete validatedData.image;
     }
+    if (validatedData.location) {
+      validatedData.location = JSON.parse(validatedData.location);
+    }
     const body = validatedData;
-    if (body.location) body.location = JSON.parse(body.location);
+    // if (body.location) body.location = JSON.parse(body.location);    
+
     const result = await Incidents.findByIdAndUpdate(
       { _id: id },
       { $set: body },
@@ -129,8 +133,8 @@ class IncidentsController {
   }
 
   async getIncidentsList(req, res) {
-    const siteId = req.params.siteId;
 
+    const siteId = req.params.siteId;
     const total_inciddents = await Incidents.find({
       siteId: siteId,
     }).countDocuments();
@@ -162,8 +166,8 @@ class IncidentsController {
   }
 
   async getIncidentAdmin(req, res) {
-    const siteId = req.params.siteId;
 
+    const siteId = req.params.siteId;
     const siteCompanies = await SiteCompanies.findOne({
       siteId: siteId,
     })
@@ -192,7 +196,7 @@ class IncidentsController {
     res.status(200).send(response(STRINGS.TEXTS.incidentRequested, result));
   }
 
-  async filterIncidents(req, res) {
+  async filterIncidents(req, res) {  
     const body = req.body;
     const siteId = body.siteId;
     const deliveryArea = body.deliveryArea;
