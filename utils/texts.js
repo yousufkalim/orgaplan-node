@@ -312,6 +312,8 @@ module.exports = {
     completeRegistration: "Registration completed",
     allRequestedSubscriptions: "All Subscriptions",
     requestEmailVerificationSubject: "Verify your email",
+    requestEmailClientSubject: "Client Email Notification",
+
     sendSubscriptionActivationConfirmationSubject:
       "Subscription activated successfully",
 
@@ -323,6 +325,7 @@ module.exports = {
     sendEmailConfirmationSubject: "Email verified successfully",
     requestSubscriptionActivationSubject: "Confirm your subscription",
     sendPasswordResetConfirmationSubject: "Password was reset successfully",
+    notification: "notification",
   },
   QUOTEREDIRECT: "http://localhost:5000/api/v1/client/",
   ROLES: {

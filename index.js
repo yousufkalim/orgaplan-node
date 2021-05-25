@@ -3,6 +3,8 @@ require("express-async-ERRORS");
 const dotenv = require("dotenv");
 const express = require("express");
 const mongoose = require("mongoose");
+const cron = require("node-cron");
+const request = require("request");
 
 // Load env vars
 dotenv.config({ path: ".env" });
@@ -41,3 +43,13 @@ mongoose
   .catch((err) => {
     console.log("[App.Mongoose]".red, err);
   });
+cron.schedule("0 0 * * *", () => {
+  request(
+    `${process.env.BASE_URL}/api/v1/notification/send`,
+    function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        console.log("Client Email Notification");
+      }
+    }
+  );
+});

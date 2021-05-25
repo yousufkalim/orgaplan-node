@@ -215,6 +215,37 @@ class MailService {
 
     return;
   }
+
+  async sendEmailNotification(emailArray) {
+    let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
+    if (!emailArray) throw new CustomError(STRINGS.ERRORS.recipientRequired);
+
+    // Email Starts
+    const filePath = path.join(
+      __dirname,
+      "../html_templates/requestNotificationOfExpire.html"
+    );
+    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const template = handlebars.compile(source);
+
+    emailArray.map(async (key, index) => {
+      key.email.map(async (email, emailIndex) => {
+        const replacements = {
+          name: key.firstName + " " + key.lastName,
+          email: email,
+        };
+        const htmlToSend = template(replacements);
+
+        await this.transporter.sendMail({
+          from,
+          to: email,
+          subject: STRINGS.TEXTS.requestEmailClientSubject,
+          html: htmlToSend,
+        });
+      });
+    });
+    return;
+  }
 }
 
 module.exports = MailService;
