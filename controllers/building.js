@@ -33,7 +33,6 @@ class BuildingController {
 
     const result = await Building.find({
       siteId: siteId,
-      buildingType: STRINGS.LOCATIONTYPE.INTERIOR,
     });
     if (!result) throw new CustomError(STRINGS.ERRORS.buildingNotFound);
 

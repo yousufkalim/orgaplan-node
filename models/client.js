@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const STRINGS = require("../utils/texts");
+const mongoosePaginate = require("mongoose-paginate-v2");
+const mongooseAggregatePaginate = require("mongoose-aggregate-paginate");
 
 const ClientSchema = new Schema(
   {
@@ -34,5 +36,8 @@ const ClientSchema = new Schema(
     timestamps: true,
   }
 );
+
+ClientSchema.plugin(mongoosePaginate);
+ClientSchema.plugin(mongooseAggregatePaginate);
 
 module.exports = mongoose.model(STRINGS.MODALS.CLIENT, ClientSchema);

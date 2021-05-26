@@ -11,6 +11,7 @@ const userSitesSchema = new Schema(
     },
     sites: [
       {
+        _id: false,
         siteId: {
           type: Schema.Types.ObjectId,
           ref: STRINGS.MODALS.SITE,

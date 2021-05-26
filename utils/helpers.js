@@ -31,4 +31,24 @@ module.exports = {
 
     return false;
   },
+  isDateEqualToDate: (endDate) => {
+    const today = moment();
+    if (moment(endDate).isSame(today, "date")) {
+      return true;
+    }
+    return false;
+  },
+
+  isDateBetweenEndDateAndDateNumber: (endDate, number) => {
+    const today = moment();
+    const startDate = moment(endDate).subtract(number, "days");
+    if (
+      moment(today).isBetween(startDate, endDate) ||
+      moment(endDate).isSame(today, "date") ||
+      moment(startDate).isSame(today, "date")
+    ) {
+      return true;
+    }
+    return false;
+  },
 };

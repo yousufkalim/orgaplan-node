@@ -2,6 +2,7 @@ module.exports = {
   ERRORS: {
     zacNotFound: "No Zac Found",
     verifiedAlready: "Verified already",
+    userCompany: "User company not found",
     resourceNotFound: "Resource not found!",
     meanBookingNotFound: "Mean Booking not found!",
     unverifiedEmail: "Kindly verify your email first!",
@@ -14,6 +15,12 @@ module.exports = {
     picNotFound: "Pic not found",
     siteNotFound: "No Site Found",
     clientNotActive: "Client not active",
+
+    incidentDateBeforeSiteStartDate:
+      "Incident Date Cannot Be Before Site's Start Date ",
+
+    incidentDateBeforeSiteEndtDate:
+      "Incident Date Cannot Be After Site's End Date ",
 
     meanStartDateBeforeSiteStartDate:
       "Mean Start Date Cannot Be Before Site's Start Date ",
@@ -30,7 +37,7 @@ module.exports = {
     organigrammeNotFound: "No Organigramme Found",
     adminNotFound: "No Admin Found",
 
-    levelNotFouned: "No Level Found",
+    levelNotFound: "No Level Found",
     levelExists: "Level Already Exists",
 
     userAlreadyExists: "User exists",
@@ -75,6 +82,10 @@ module.exports = {
     subscriptionExpired: "Subscription Expired",
     sitePenaltyNotFound: "No Site Panelty Found",
     storageAreaNotFount: "No Storage Area Found",
+    storageAreaAlreadyAssign: "Storage Area is already assign",
+    oldPasswordInvalid: "Old Password is incorrect!",
+    storageAreaRequestNotFound: "No Storage Area Request Found",
+
     siteCompanyNotFound: "No Site Company Found",
     startDateIsRequred: "Start Date Is Requried",
     userNameExists: "Username is not available!",
@@ -108,6 +119,9 @@ module.exports = {
     locationAddressRequired: "Location Address Reuired For Exterior Location",
     locationBuildingRequired: "Location Building Reuired For Interior Location",
     roleOfCompanyAlreadyExist: "Role of company already exist",
+    userAlreadyExistWithAdminRole: "User Already Exist with Admin Role",
+    requestedDateIsNotBetweenStorageAreaDate:
+      "Requested date is not between storage area date",
   },
   TEXTS: {
     allUsers: "All users",
@@ -117,6 +131,12 @@ module.exports = {
     userUpdated: "User updated",
     userDeleted: "User deleted",
     quoteCreated: "Quote Created",
+    userCompany: "User company requested",
+
+    picCreated: "Pic created",
+    picUpdated: "Pic updated",
+    picDeleted: "Pic deleted",
+    picRequested: "Pic Requested",
 
     picCreated: "Pic created",
     picUpdated: "Pic updated",
@@ -146,6 +166,7 @@ module.exports = {
     adminExistsAlready: "Admin exists already",
 
     companyData: "Company data",
+    companyAdded: "Company Added",
     companyCreated: "Company created",
     companyUpdated: "Company updated",
     companyDeleted: "Company deleted",
@@ -189,12 +210,18 @@ module.exports = {
     deliveryAreaDeleted: "Delivery Area Deleted",
     deliveryAreaUpdated: "Delivery Area Updated",
     deliveryAreaRequested: "Delivery Area Requested",
+    getDeliveryAllStorageArea: "get Delivery All StorageArea",
 
     allStorateAreas: "All Storage Areas",
     storateAreaCreated: "Storage Area Created",
     storateAreaDeleted: "Storage Area Deleted",
     storateAreaUpdated: "Storage Area Updated",
     storateAreaRequested: "Storage Area Requested",
+
+    storateAreaRequestCreated: "Storage Area Request Created",
+    storateAreaRequestDeleted: "Storage Area Request Deleted",
+    storateAreaRequestAccepted: "Storage Area Request Accepted",
+    storateAreaRequestRejected: "Storage Area Request Rejected",
 
     allSiteIncident: "All Incidents",
     siteIncidentsCreated: "Incidents Created",
@@ -278,6 +305,7 @@ module.exports = {
     clientRequest: "Client Request Sent",
     companyRequested: "Company Requested",
     loginSuccess: "User login successful",
+    enterpriseDelivery: "Enterprise Delivery",
     siteCompanyUpdated: "Site Company Updated",
     siteCompanyDeleted: "Site Company deleted",
     subscriptionDeleted: "Subscription deleted",
@@ -292,8 +320,8 @@ module.exports = {
     sendSubscriptionActivationConfirmationSubject:
       "Subscription activated successfully",
 
-    tokenIsValid: "Token is valid",
     success: "Success",
+    tokenIsValid: "Token is valid",
     clientUpdated: "Client Updated",
     emailVerificationSent: "Email verfication link sent",
     subscriptionStatusChanged: "Subscription Status Changed",
@@ -308,8 +336,11 @@ module.exports = {
     ADMIN: "ADMIN",
     BUFFER: "BUFFER",
     TRAFFIC: "TRAFFIC",
+    NOADMIN: "NOADMIN",
     SUPERADMIN: "SUPERADMIN",
     ENTERPRISE: "ENTERPRISE",
+    MASTERADMIN: "MASTERADMIN",
+    ADMINPERSITE: "ADMINPERSITE",
   },
   STATUS: {
     PAID: "PAID",
@@ -317,22 +348,24 @@ module.exports = {
     CLOSED: "CLOSED",
     UNPAID: "UNPAID",
     INSIDE: "INSIDE",
+    ALERTE: "ALERTE",
+    REFUSE: "REFUSE",
     DELETED: "DELETED",
     PENDING: "PENDING",
     OUTSIDE: "OUTSIDE",
     REJECTED: "REJECTED",
     ARCHIVED: "ARCHIVED",
     APPROVED: "APPROVED",
+    MODIFIED: "MODIFIED",
     INACTIVE: "INACTIVE",
     COMPLETED: "COMPLETED",
     SCHEDULED: "SCHEDULED",
     AVAILABLE: "AVAILABLE",
+    VALIDATED: "VALIDATED",
     UNAPPROVED: "UNAPPROVED",
     UNAVAILABLE: "UNAVAILABLE",
     UNSCHEDULED: "UNSCHEDULED",
-    VALIDATED: "Validated",
-    MODIFIED: "Modified",
-    ALERTE: "Alerte",
+    COMPLETEDWITHISSUE: "COMPLETEDWITHISSUE",
   },
   INVOICETYPES: {
     WAYS: "WAYS",
@@ -370,8 +403,8 @@ module.exports = {
     MEAN: "MEAN",
     DELAY: "DELAY",
     INCIDENT: "INCIDENT",
-    UNEXPRECTED: "UNEXPRECTED",
     LETIGATON: "LETIGATION",
+    UNEXPRECTED: "UNEXPRECTED",
   },
   INCIDENTSTATUS: {
     OPEN: "OPEN",
@@ -382,14 +415,19 @@ module.exports = {
     UNEXPRECTED: "UNEXPECTED",
   },
   MEANLOCATIONTYPE: {
-    STORAGEAREA: "STORAGEAREA",
-    DELIVERYAREA: "DELIVERYAREA",
     LEVEL: "LEVEL",
     EXTERIOR: "EXTERIOR",
+    STORAGEAREA: "STORAGEAREA",
+    DELIVERYAREA: "DELIVERYAREA",
   },
   ORGANIGRAMMETYPE: {
     SITE: "SITE",
     LOGISTICS: "LOGISTICS",
+  },
+  STORAGEAREAREQUESTSTATUS: {
+    PENDING: "PENDING",
+    ACCEPTED: "ACCEPTED",
+    REJECTED: "REJECTED",
   },
   MODALS: {
     ZAC: "Zac",
@@ -405,6 +443,7 @@ module.exports = {
     COMPANY: "Company",
     INVOICE: "Invoice",
     SITEPIC: "SITEPIC",
+    LEVELPIC: "LEVELPIC",
     INCIDENT: "Incident",
     LOCATION: "Location",
     CONTRACT: "Contract",
@@ -423,6 +462,7 @@ module.exports = {
     SITEPENALTIES: "SitePenalties",
     SITECOMPANIES: "SiteCompanies",
     SITEINCIDENTS: "SITEINCIDENTS",
+    STORAGEAREAREQUEST: "StorageAreaRequest",
   },
   FORMATS: {
     DATE: "DD-MM-YYYY hh:mm",

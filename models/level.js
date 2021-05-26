@@ -4,13 +4,9 @@ const STRINGS = require("../utils/texts");
 
 const levelSchema = new Schema(
   {
+    plan: String,
     name: String,
     number: Number,
-    image: String,
-    storage: {
-      type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.STORAGEAREA,
-    },
     building: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.BUILDING,

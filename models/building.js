@@ -8,11 +8,6 @@ const buildingSchema = new Schema(
     start: Date,
     end: Date,
     color: String,
-    buildingType: {
-      type: String,
-      enum: [STRINGS.LOCATIONTYPE.EXTERIOR, STRINGS.LOCATIONTYPE.INTERIOR],
-      default: STRINGS.LOCATIONTYPE.INTERIOR,
-    },
     siteId: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.SITE,
@@ -23,18 +18,11 @@ const buildingSchema = new Schema(
         ref: STRINGS.MODALS.LEVEL,
       },
     ],
-    mean: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: STRINGS.MODALS.MEAN,
-      },
-    ],
     status: {
       type: String,
       enum: [STRINGS.STATUS.ACTIVE, STRINGS.STATUS.INACTIVE],
       default: STRINGS.STATUS.ACTIVE,
     },
-    statusReason: String,
   },
   {
     timestamps: true,

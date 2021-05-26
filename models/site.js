@@ -6,6 +6,7 @@ const siteSchema = new Schema(
   {
     name: String,
     logo: String,
+    plan: String,
     zacId: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.ZAC,
@@ -54,18 +55,18 @@ const siteSchema = new Schema(
     additionalInfo: String,
     notificationPriorToDays: Number,
     notificationTo: [{ type: String }],
-    buildings: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: STRINGS.MODALS.BUILDING,
-      },
-    ],
-    means: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: STRINGS.MODALS.MEAN,
-      },
-    ],
+    // buildings: [
+    //   {
+    //     type: Schema.Types.ObjectId,
+    //     ref: STRINGS.MODALS.BUILDING,
+    //   },
+    // ],
+    // means: [
+    //   {
+    //     type: Schema.Types.ObjectId,
+    //     ref: STRINGS.MODALS.MEAN,
+    //   },
+    // ],
     status: {
       type: String,
       enum: [

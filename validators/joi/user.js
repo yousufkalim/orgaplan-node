@@ -1,24 +1,25 @@
 const Joi = require("joi");
 const CustomError = require("../../utils/customError");
+const STRINGS = require("../../utils/texts");
 
 const schemas = {
   createCompanyUser: (data) => {
     const Validation = Joi.object().keys({
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
-      phone: Joi.number()
-        .integer()
-        .custom((value, helper) => {
-          if (String(value).startsWith("0") || String(value).length !== 9)
-            return helper.message("phone is invalid");
-          return value;
-        })
-        .allow(""),
+      image: Joi.string().optional(),
+      phone: Joi.string().optional().allow(""),
       email: Joi.string()
         .email({ tlds: { allow: false } })
         .allow(""),
       companyId: Joi.string().required(),
-      role: Joi.string().required(),
+      role: Joi.string()
+        .required()
+        .valid(
+          STRINGS.ROLES.ENTERPRISE,
+          STRINGS.ROLES.TRAFFIC,
+          STRINGS.ROLES.BUFFER
+        ),
       siteId: Joi.string().required(),
     });
     const { error, value } = Validation.validate(data);

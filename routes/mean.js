@@ -10,7 +10,6 @@ router.get("/get_site_means/:siteId", meanController.getAllBySite);
 router.get("/get_list_of_means/:siteId", meanController.getListOfMeans);
 
 router.get("/get_add_mean/:siteId", meanController.getAddMean);
-router.get("/get_exterior_means/:siteId", meanController.getExternalMeans);
 
 // POSTS
 router.post(

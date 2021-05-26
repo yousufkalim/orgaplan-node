@@ -10,6 +10,11 @@ const schemas = {
       meanType: Joi.string().required("Mean type is required"),
       color: Joi.string().required("Color is required"),
       image: Joi.string().optional().allow(""),
+      isInside: Joi.bool().required().messages({
+        "boolean.base": "Mean location (isInside) must be a boolean type",
+        "any.required": "Mean location (isInside) is required",
+      }),
+      level: Joi.string().optional().allow(""),
       location: Joi.array()
         .items(
           Joi.object().keys({
@@ -76,6 +81,11 @@ const schemas = {
       meanType: Joi.string().required("Mean type is required"),
       color: Joi.string().required("Color is required"),
       image: Joi.string().optional().allow(""),
+      isInside: Joi.bool().required().messages({
+        "boolean.base": "Mean location (isInside) must be a boolean type",
+        "any.required": "Mean location (isInside) is required",
+      }),
+      level: Joi.string().optional().allow(""),
       location: Joi.array()
         .items(
           Joi.object().keys({
@@ -110,11 +120,6 @@ const schemas = {
     data.location = JSON.parse(data.location);
     data.availability = JSON.parse(data.availability);
     data.unavailability = JSON.parse(data.unavailability);
-
-    Helpers.isDateOccuranceChronological(
-      data.availability.start,
-      data.availability.end
-    );
 
     if (data.images) {
       if (data.images["sheet"]) {

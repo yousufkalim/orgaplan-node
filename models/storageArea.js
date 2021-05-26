@@ -5,38 +5,43 @@ const STRINGS = require("../utils/texts");
 const storageArea = new Schema(
   {
     name: String,
-    isFull: {
+    isInside: {
       type: Boolean,
       default: false,
-    },
-    location: {
-      type: String,
-      enum: [STRINGS.STATUS.INSIDE, STRINGS.STATUS.OUTSIDE],
-      default: STRINGS.STATUS.INSIDE,
-    },
-    availability: {
-      start: Date,
-      end: Date,
-    },
-    unavailabilityDates: [
-      {
-        date: Date,
-        startHour: Number,
-        endHour: Number,
-        dayOff: { type: Boolean, default: false },
-        reason: String,
-      },
-    ],
-    siteId: {
-      type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.SITE,
     },
     level: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.LEVEL,
     },
+    isFull: {
+      type: Boolean,
+      default: false,
+    },
+    availability: {
+      start: Date,
+      end: Date,
+    },
+    unavailability: [
+      {
+        date: Date,
+        reason: String,
+        startHour: Number,
+        endHour: Number,
+        dayOff: { type: Boolean, default: false },
+      },
+    ],
+    materials: [{ type: String }],
+    notificationPriorToDays: Number,
+    notificationTo: [{ type: String }],
+    siteId: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.SITE,
+    },
     deliveryArea: [
-      { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.DELIVERYAREA },
+      {
+        type: Schema.Types.ObjectId,
+        ref: STRINGS.MODALS.DELIVERYAREA,
+      },
     ],
     companies: [
       {
@@ -44,12 +49,10 @@ const storageArea = new Schema(
         ref: STRINGS.MODALS.COMPANY,
       },
     ],
-    materials: [{ type: String }],
-    notificationPriorToDays: Number,
-    notificationTo: [{ type: String }],
     status: {
       type: String,
       enum: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],
+      default: STRINGS.STATUS.AVAILABLE,
     },
   },
   {

@@ -1,50 +1,21 @@
 const router = require("express").Router();
 const auth = require("../middlewares/auth");
-const storageAreaController = require("../controllers/storageArea");
-// GETS
-router.get("/", auth(), storageAreaController.getAll);
-router.get("/:id", auth(), storageAreaController.getOne);
-router.get(
-  "/get_by_level_id_copany_id/enterprise/:level_id/:company_id",
-  auth(),
-  storageAreaController.getByLevelIdAndCompany
-);
-router.get(
-  "/get_by_level_id/enterprise/:level_id/",
-  auth(),
-  storageAreaController.getByLevelId
-);
-router.get(
-  "/get_by_company_id/enterprise/:company_id",
-  auth(),
-  storageAreaController.getByCompanyId
-);
-router.get(
-  "/get_storage_means/enterprise/:id",
-  auth(),
-  storageAreaController.getStorageMeans
-);
-router.get(
-  "/get_storage_site/enterprise/:id",
-  auth(),
-  storageAreaController.getStorageAreaBySiteId
-);
-router.get(
-  "/get_all_storage_site/enterprise/:id",
-  auth(),
-  storageAreaController.getAllStorageAreaBySiteId
-);
+const STC = require("../controllers/storageArea");
 
-router.get(
-  "/get_exterior_means/enterprise/:siteId",
-  auth(),
-  storageAreaController.getExteriorMeans
-);
+// GETS
+router.get("/", auth(), STC.getAll);
+router.get("/:id", auth(), STC.getOne);
+router.get("/means/:id", STC.getStorageMeans);
+router.get("/site/:id", STC.getStorageAreasBySite);
+router.get("/get_storage_site/:id", STC.getStorageAreaBySiteId);
 
 // POSTS
-router.post("/", auth(), storageAreaController.create);
+router.post("/", auth(), STC.create);
+
 // PUTS
-router.put("/:id", storageAreaController.update);
+router.put("/:id", STC.update);
+
 // DELETES
-router.delete("/:id", storageAreaController.delete);
+router.delete("/:id", STC.delete);
+
 module.exports = router;

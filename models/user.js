@@ -8,7 +8,7 @@ const userSchema = new Schema(
     lastName: String,
     password: String,
     image: String,
-    phone: Number,
+    phone: String,
     email: {
       type: String,
       trim: true,
@@ -25,6 +25,15 @@ const userSchema = new Schema(
     company: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.COMPANY,
+    },
+    adminType: {
+      type: String,
+      enum: [
+        STRINGS.ROLES.MASTERADMIN,
+        STRINGS.ROLES.ADMINPERSITE,
+        STRINGS.ROLES.NOADMIN,
+      ],
+      default: STRINGS.ROLES.NOADMIN,
     },
     role: {
       type: String,

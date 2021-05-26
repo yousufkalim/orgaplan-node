@@ -6,16 +6,16 @@ const companyController = require("../controllers/company");
 // GETS
 router.get("/", auth(), companyController.getAll);
 router.get("/:id", auth(), companyController.getOne);
-router.get("/user_company/:id", auth(), companyController.getUserCompany);
+router.get("/site/:siteId", companyController.getBySite);
+router.get("/site-exclude/:siteId", companyController.getNonSite);
+router.get("/user/:siteId/:userId", companyController.getUserCompany);
+router.get("/admin/:adminId", companyController.getAdminCompany);
 router.get(
-  "/company_user/:siteId/:companyId",
+  "/users/:siteId/:companyId",
   companyController.getCompanyUsersPerSite
 );
 
-router.get("/add_company/:siteId/", companyController.getAddCompany);
-
 // POSTS
-// router.post("/", auth(), upload("logo"), companyController.create);
 router.post("/", upload("company", "logo"), companyController.create);
 router.post(
   "/add_user",
@@ -23,9 +23,11 @@ router.post(
   upload("user", "image"),
   companyController.addUser
 );
+router.post("/filter", companyController.filterCompanies);
 
 // PUTS
 router.put("/:id", auth(), companyController.update);
+
 // DELETES
 router.delete("/:id", auth(), companyController.delete);
 

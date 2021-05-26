@@ -5,9 +5,13 @@ const JWT = require("jsonwebtoken");
 const User = require("../models/user");
 const Token = require("../models/token");
 const STRINGS = require("../utils/texts");
+const Company = require("../models/company");
 const response = require("../utils/response");
+const UserSites = require("../models/userSites");
 const CustomError = require("../utils/customError");
 const MailService = require("../services/mail.service");
+const SiteCompanies = require("../models/SiteCompanies");
+
 const ENV = process.env;
 
 class AuthContoller {
@@ -106,7 +110,7 @@ class AuthContoller {
     const isCorrect = await bcrypt.compare(data.oldPassword, user.password);
     if (!isCorrect) throw new CustomError(STRINGS.ERRORS.passwordInvalid);
 
-    const hash = await bcrypt.hash(data.password, +ENV.BCRYPT_SALT);
+    const hash = await bcrypt.hash(data.newPassword, +ENV.BCRYPT_SALT);
 
     await user.update({ $set: { password: hash } });
 
@@ -125,7 +129,7 @@ class AuthContoller {
 
     let verifyToken = crypto.randomBytes(32).toString("hex");
     const hash = await bcrypt.hash(verifyToken, +ENV.BCRYPT_SALT);
-    const verifyLink = `${ENV.CLIENT_URL}/login?request=profile?uid=${user._id}&verifyToken=${verifyToken}`;
+    const verifyLink = `${ENV.CLIENT_URL}/login?request=profile&uid=${user._id}&verifyToken=${verifyToken}`;
 
     await new Token({
       userId: user._id,
@@ -148,10 +152,13 @@ class AuthContoller {
     const { userId, verifyToken } = req.body;
 
     const user = await User.findById(userId);
+    console.log("user", user);
     if (!user) throw new CustomError(STRINGS.ERRORS.userNotFound);
     if (user.isVerified) throw new CustomError(STRINGS.ERRORS.alreadyVerified);
 
     let VToken = await Token.findOne({ userId });
+    console.log("VToken", VToken);
+
     if (!VToken) throw new CustomError(STRINGS.ERRORS.invalidToken);
 
     const isValid = await bcrypt.compare(verifyToken, VToken.token);
@@ -246,18 +253,45 @@ class AuthContoller {
   async validateToken(req, res) {
     const userId = req.params.userId;
     const verifyToken = req.params.token;
-
     let VToken = await Token.findOne({ userId });
     if (!VToken) throw new CustomError(STRINGS.ERRORS.invalidToken);
-
     const isValid = await bcrypt.compare(verifyToken, VToken.token);
     if (!isValid) throw new CustomError(STRINGS.ERRORS.invalidToken);
-
     const result = {
       userId: VToken.userId,
     };
 
     res.status(200).send(response(STRINGS.TEXTS.tokenIsValid, result));
+  }
+
+  async getUserProfile(req, res) {
+    const id = req.params.id;
+    const user = await User.findById(id, { password: 0, __v: 0 });
+    console.log("user", user);
+
+    if (!user) throw new CustomError(STRINGS.ERRORS.userNotFound, 404);
+
+    const userSite = await UserSites.findOne({ userId: id });
+    console.log("userSite", userSite); ///checked failed
+
+    if (!userSite) throw new CustomError(STRINGS.ERRORS.siteNotFound, 404);
+
+    if (userSite.sites[0]) {
+      const siteId = userSite.sites[0].siteId;
+      if (!siteId) throw new CustomError(STRINGS.ERRORS.siteNotFound, 404);
+
+      const userCompany = await SiteCompanies.findOne({
+        siteId: siteId,
+        "users.userId": id,
+      }).populate("users.companyId");
+      if (!userCompany) throw new CustomError(STRINGS.ERRORS.userNotFound, 404);
+      const company = userCompany.users[0].companyId;
+      user.company = company;
+    } else {
+      user.company = await Company.findById(user.company);
+    }
+
+    res.status(200).send(response(STRINGS.TEXTS.userData, user));
   }
 }
 

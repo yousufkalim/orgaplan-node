@@ -188,10 +188,10 @@ class MeanController {
 
     const total_means = await Mean.find({
       siteId: siteId,
-      $and: [
-        { "availability.start": { $lte: new Date() } },
-        { "availability.end": { $gte: new Date() } },
-      ],
+      // $and: [
+      //   { "availability.start": { $lte: new Date() } },
+      //   { "availability.end": { $gte: new Date() } },
+      // ],
     }).countDocuments();
 
     const locations = await Building.find({ siteId: siteId }).populate(

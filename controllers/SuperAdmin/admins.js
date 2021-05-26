@@ -153,11 +153,17 @@ class SuperAdminAdminsController {
     if (!userCheck) throw new CustomError(STRINGS.ERRORS.adminNotFound, 404);
 
     // If company needs to be changed
+
     if (String(userCheck.company) !== String(validatedData.companyId)) {
+      console.log(
+        "asdasdasdadsadads",
+        userCheck.company,
+        validatedData.companyId
+      );
       // Update Client
       // (remove)
       await Client.findOneAndUpdate(
-        { companyId: userCheck.companyId },
+        { companyId: userCheck.company },
         {
           $pull: { adminIds: validatedData.adminId },
         }
@@ -187,9 +193,10 @@ class SuperAdminAdminsController {
       firstName: validatedData.firstName,
       lastName: validatedData.lastName,
       company: validatedData.companyId,
+      adminType: validatedData.adminType,
     };
     validatedData.image && (userData.image = validatedData.image);
-
+    //working
     // Update user
     const result = await User.findByIdAndUpdate(
       validatedData.adminId,
@@ -201,6 +208,7 @@ class SuperAdminAdminsController {
 
     if (!result) throw new CustomError(STRINGS.ERRORS.adminNotFound, 404);
 
+    console.log("result", result);
     res.status(201).send(response(STRINGS.TEXTS.adminUpdated, result));
   }
 

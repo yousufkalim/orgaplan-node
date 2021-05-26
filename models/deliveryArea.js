@@ -6,6 +6,10 @@ const deliveryArea = new Schema(
   {
     name: String,
     color: String,
+    isInside: {
+      type: Boolean,
+      default: false,
+    },
     addresses: [
       {
         pdf: String,
@@ -22,30 +26,20 @@ const deliveryArea = new Schema(
     unavailabilityDates: [
       {
         date: Date,
+        reason: String,
         startHour: Number,
         endHour: Number,
         dayOff: { type: Boolean, default: false },
         reason: String,
       },
     ],
+    vehicles: [{ type: String }],
     notificationPriorToDays: Number,
     notificationTo: [{ type: String }],
-    vehicles: [{ type: String }],
-    deliveryAreaEndNotificaionTime: Number,
     siteId: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.SITE,
     },
-    // means: [
-    //   {
-    //     type: Schema.Types.ObjectId,
-    //     ref: STRINGS.MODALS.MEAN,
-    //   },
-    // ],
-    // picCoordinates: {
-    //   x: { type: Number },
-    //   y: { type: Number },
-    // },
     status: {
       type: String,
       enum: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],

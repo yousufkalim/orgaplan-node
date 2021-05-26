@@ -1,37 +1,25 @@
+"use strict";
+const moment = require("moment");
 const STRINGS = require("../utils/texts");
+const Validations = require("../validators");
 const response = require("../utils/response");
-const CustomError = require("../utils/customError");
 const Delivery = require("../models/delivery");
-const Company = require("../models/company");
-const DeliveryArea = require("../models/deliveryArea");
-const StorageArea = require("../models/storageArea");
-const Building = require("../models/building");
-const Means = require("../models/mean");
-const EmailService = require("../services/mail.service");
-var HTMLParser = require("node-html-parser");
+const StroageArea = require("../models/storageArea");
+const Incidents = require("../models/incidents");
+const CustomError = require("../utils/customError");
 
 class DeliveryController {
-  async sendEmail(req, res) {
-    const body = req.body;
-
-    res
-      .status(200)
-      .send(response(STRINGS.TEXTS.deliveryCreated, { sent: "email send" }));
-  }
-
   async create(req, res) {
-    const body = req.body;
-    if (!body.isExterior) {
-      if (!body.level) throw new CustomError(STRINGS.ERRORS.leveRequired);
-    }
-    const result = await new Delivery(req.body).save();
+    const validatedData = await Validations.delivery.create(req.body);
 
-    if (body.sendDeliverySummary) {
-      await new EmailService().sendDeliverySummaryEmail(
-        body.userEmail,
-        body.html
-      );
-    }
+    const result = await Delivery.create(validatedData);
+
+    // if (body.sendDeliverySummary) {
+    //   await new EmailService().sendDeliverySummaryEmail(
+    //     body.userEmail,
+    //     body.html
+    //   );
+    // }
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryCreated, result));
   }
@@ -44,85 +32,140 @@ class DeliveryController {
   async getOne(req, res) {
     const id = req.params.id;
 
-    const result = await Delivery.findOne({ _id: id }, { password: 0, __v: 0 });
+    const result = await Delivery.findOne({ _id: id }, { password: 0, __v: 0 })
+      .populate("companyId")
+      .populate("storageArea")
+      .populate("deliveryArea")
+      .populate("liftingMeans")
+      .populate("routingMeans");
     if (!result) throw new CustomError(STRINGS.ERRORS.deliveryNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryRequested, result));
   }
 
-  async getEnterprise(req, res) {
-    const { userId, siteId } = req.params;
-    console.log(siteId);
-    const userCompany = await Company.findOne({
-      "users.userId": userId,
-      "users.siteId": siteId,
-    })
-      .populate({
-        path: "connection",
-        populate: { path: "parentCompanyId", model: STRINGS.MODALS.COMPANY },
-      })
-      .populate({
-        path: "connection",
-        populate: { path: "trades", model: STRINGS.MODALS.TRADES },
-      });
+  async update(req, res) {
+    const validatedData = await Validations.delivery.update({
+      deliveryId: req.params.id,
+      ...req.body,
+    });
 
-    if (!userCompany) throw new CustomError(STRINGS.ERRORS.companyNotFound);
-    const userCompanyId = userCompany._id;
-    console.log(userCompanyId);
-    const siteDeliveryAreas = await DeliveryArea.find({
-      siteId: siteId,
-    }).populate("means");
-    if (!siteDeliveryAreas)
-      throw new CustomError(STRINGS.ERRORS.deliveyAreaNotFount);
-    const siteStorageAreas = await StorageArea.find({
-      siteId: siteId,
-      companies: userCompanyId,
-      location: { $ne: STRINGS.STATUS.OUTSIDE },
+    const result = await Delivery.findByIdAndUpdate(validatedData.deliveryId, {
+      $set: validatedData,
     });
-    if (!siteStorageAreas)
-      throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
-    const siteBuildings = await Building.find({ siteId: siteId });
-    const siteLiftingMeans = await Means.find({
-      siteId: siteId,
-      meanType: STRINGS.MEANTYPES.LIFTING,
-    });
-    const siteRoutingMeans = await Means.find({
-      siteId: siteId,
-      meanType: STRINGS.MEANTYPES.ROUTING,
-    });
-    const data = {
-      user_company: userCompany,
-      site_delivery_areas: siteDeliveryAreas,
-      site_storage_areas: siteStorageAreas,
-      site_buildings: siteBuildings,
-      site_lifting_means: siteLiftingMeans,
-      site_routing_means: siteRoutingMeans,
-    };
-    res.status(200).send(response(STRINGS.TEXTS.deliveryRequested, data));
-    // const result = await Delivery.findOne({ _id: id }, { password: 0, __v: 0 });
-    // if (!result) throw new CustomError(STRINGS.ERRORS.deliveryNotFound);
 
-    // res.status(200).send(response(STRINGS.TEXTS.deliveryRequested, result));
+    // if (body.sendDeliverySummary) {
+    //   await new EmailService().sendDeliverySummaryEmail(
+    //     body.userEmail,
+    //     body.html
+    //   );
+    // }
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.error, 400);
+
+    res.status(200).send(response(STRINGS.TEXTS.deliveryUpdated, result));
   }
 
-  async update(req, res) {
+  async delete(req, res) {
     const id = req.params.id;
-    const body = req.body;
-    if (!body.isExterior) {
-      if (!body.level) throw new CustomError(STRINGS.ERRORS.leveRequired);
-    }
-    if (body.trades) {
-      const companyTrades = await CompanyTrades.findOne({
-        companyId: body.companyId,
-        siteId: body.siteId,
-        trades: body.trades,
+
+    const result = await Delivery.findByIdAndDelete(id);
+
+    res.status(200).send(response(STRINGS.TEXTS.deliveryDeleted, result));
+  }
+
+  async enterpriseDeliveries(req, res) {
+    const { siteId, companyId, date } = req.body;
+    const secondDate = moment(date).add(1, "days");
+    const result = await Delivery.find({
+      siteId: siteId,
+      companyId: companyId,
+      $and: [
+        date ? { date: { $gte: new Date(date) } } : {},
+        date ? { date: { $lte: new Date(secondDate) } } : {},
+      ],
+    })
+      .populate("companyId")
+      .populate("deliveryArea")
+      .populate("storageArea");
+    res.status(200).send(response(STRINGS.TEXTS.allDeliveries, result));
+  }
+
+  async trafficAgentDeliveries(req, res) {
+    const {
+      siteId,
+      date, // YYYY-MM-DD
+      companyId,
+      locationType,
+      location,
+      status,
+    } = req.query;
+
+    let query = {
+      siteId: siteId,
+      status: { $ne: STRINGS.STATUS.PENDING },
+    };
+    status && (query.status = status);
+    companyId && (query.companyId = companyId);
+    locationType && location && (query[locationType] = location);
+    date &&
+      (query.date = {
+        $gte: new Date(`${date}T00:00:00.000+00:00`),
+        $lte: new Date(
+          `${moment(date)
+            .add(1, "day")
+            .format("YYYY-MM-DD")}T00:00:00.000+00:00`
+        ),
       });
-      if (!companyTrades)
-        throw new CustomError(STRINGS.ERRORS.invalidCompanyTradeAssign);
-    }
+
+    const result = await Delivery.find(query)
+      .populate("companyId")
+      .populate("liftingMeans")
+      .populate("routingMeans")
+      .populate("deliveryArea")
+      .populate("storageArea");
+    res.status(200).send(response(STRINGS.TEXTS.allDeliveries, result));
+  }
+
+  async enterpiseDeliveries(req, res) {
+    const {
+      siteId,
+      date, // YYYY-MM-DD
+      companyId,
+      locationType,
+      location,
+      status,
+    } = req.query;
+
+    let query = {
+      siteId: siteId,
+    };
+    status && (query.status = status);
+    companyId && (query.companyId = companyId);
+    locationType && location && (query[locationType] = location);
+    date &&
+      (query.date = {
+        $gte: new Date(`${date}T00:00:00.000+00:00`),
+        $lte: new Date(
+          `${moment(date)
+            .add(1, "day")
+            .format("YYYY-MM-DD")}T00:00:00.000+00:00`
+        ),
+      });
+
+    const result = await Delivery.find(query)
+      .populate("companyId")
+      .populate("liftingMeans")
+      .populate("routingMeans")
+      .populate("deliveryArea")
+      .populate("storageArea");
+    res.status(200).send(response(STRINGS.TEXTS.allDeliveries, result));
+  }
+
+  async updateStatus(req, res) {
+    const id = req.params.id;
     const result = await Delivery.findByIdAndUpdate(
       { _id: id },
-      { $set: body },
+      { $set: { status: "VALIDATED" } },
       { new: true }
     );
 
@@ -131,15 +174,83 @@ class DeliveryController {
     res.status(200).send(response(STRINGS.TEXTS.deliveryUpdated, result));
   }
 
-  async delete(req, res) {
+  async completeDelivery(req, res) {
+    const id = req.params.id;
+    const validatedData = await Validations.delivery.complete({
+      deliveryId: id,
+      ...req.body,
+    });
+
+    const result = await Delivery.findByIdAndUpdate(
+      { _id: id },
+      {
+        $set: {
+          status: validatedData.status,
+          materialsDelivered: validatedData.materialsDelivered,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+    if (validatedData.delay) {
+      if (validatedData.image) {
+        validatedData.photos = [validatedData.image];
+        delete validatedData.image;
+      }
+      await Incidents.create({
+        name: result.name,
+        date: result.date,
+        time: validatedData.time,
+        comment: validatedData.comment,
+        isBillable: true,
+        isPaid: false,
+        location: {
+          deliveryArea: result.deliveryArea,
+          storageArea: result.storageArea,
+        },
+        photos: validatedData.photos,
+        siteId: result.siteId,
+        companyId: result.companyId,
+        type: STRINGS.INCIDENTTYPE.DELAY,
+      });
+    }
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.deliveryNotFound, 404);
+
+    res.status(200).send(response(STRINGS.TEXTS.deliveryUpdated, result));
+  }
+
+  async bufferUpdateDelivery(req, res) {
     const id = req.params.id;
 
-    const result = await Delivery.findOne({
-      _id: id,
-    });
-    result.remove();
+    const validatedData = req.body;
 
-    res.status(200).send(response(STRINGS.TEXTS.deliveryDeleted, result));
+    const result = await Delivery.findByIdAndUpdate(
+      { _id: id },
+      {
+        $set: validatedData,
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.deliveryNotFound, 404);
+
+    res.status(200).send(response(STRINGS.TEXTS.deliveryUpdated, result));
+  }
+
+  async getDeliveryAllStroageArea(req, res) {
+    const siteId = req.params.siteId;
+    const deliveryId = req.params.deliveryId;
+    const result = await StroageArea.find({
+      $and: [{ deliveryArea: deliveryId }, { siteId: siteId }],
+    });
+    res
+      .status(200)
+      .send(response(STRINGS.TEXTS.getDeliveryAllStorageArea, result));
   }
 }
+
 module.exports = new DeliveryController();
