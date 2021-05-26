@@ -11,6 +11,7 @@ module.exports = {
     deleteSiteFirst: "Delete it's sites first",
     deleteClientAdminSitesFirst: "Delete it's admin's sites first",
 
+    picNotFound: "Pic not found",
     siteNotFound: "No Site Found",
     clientNotActive: "Client not active",
 
@@ -106,16 +107,21 @@ module.exports = {
     delteSiteFirst: "You need to delete user sites before deleting the user",
     locationAddressRequired: "Location Address Reuired For Exterior Location",
     locationBuildingRequired: "Location Building Reuired For Interior Location",
+    roleOfCompanyAlreadyExist: "Role of company already exist",
   },
   TEXTS: {
     allUsers: "All users",
     userData: "User data",
-
     userAdded: "User Added",
     userCreated: "User created",
     userUpdated: "User updated",
     userDeleted: "User deleted",
     quoteCreated: "Quote Created",
+
+    picCreated: "Pic created",
+    picUpdated: "Pic updated",
+    picDeleted: "Pic deleted",
+    picRequested: "Pic Requested",
 
     clientCreated: "Client created",
     clientUpdated: "Client deleted",
@@ -229,6 +235,7 @@ module.exports = {
     allOrganigramme: "All Organigrammes",
 
     allMeanBookings: "All Mean Bookings",
+    FilterBookingCalendar: "Filter Booking Calendar",
     meanBookingDeleted: "Mean Booking Deleted",
     meanBookingCreated: "Mean Booking Created",
     meanBookingUpdated: "Mean Booking Updated",
@@ -323,6 +330,9 @@ module.exports = {
     UNAPPROVED: "UNAPPROVED",
     UNAVAILABLE: "UNAVAILABLE",
     UNSCHEDULED: "UNSCHEDULED",
+    VALIDATED: "Validated",
+    MODIFIED: "Modified",
+    ALERTE: "Alerte",
   },
   INVOICETYPES: {
     WAYS: "WAYS",

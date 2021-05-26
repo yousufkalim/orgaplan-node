@@ -30,10 +30,17 @@ router.get(
   storageAreaController.getStorageAreaBySiteId
 );
 router.get(
+  "/get_all_storage_site/enterprise/:id",
+  auth(),
+  storageAreaController.getAllStorageAreaBySiteId
+);
+
+router.get(
   "/get_exterior_means/enterprise/:siteId",
   auth(),
   storageAreaController.getExteriorMeans
 );
+
 // POSTS
 router.post("/", auth(), storageAreaController.create);
 // PUTS

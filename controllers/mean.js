@@ -1,80 +1,96 @@
-const STRINGS = require("../utils/texts");
-const response = require("../utils/response");
-const CustomError = require("../utils/customError");
+const ObjectId = require("mongodb").ObjectID;
 const Mean = require("../models/mean");
 const Site = require("../models/site");
+const STRINGS = require("../utils/texts");
+const Validations = require("../validators");
+const response = require("../utils/response");
+const Building = require("../models/building");
+const CustomError = require("../utils/customError");
+const StorageArea = require("../models/storageArea");
+const DeliveryArea = require("../models/deliveryArea");
 const SiteCompanies = require("../models/SiteCompanies");
 
-const Building = require("../models/building");
-const DeliveryArea = require("../models/deliveryArea");
-const StorageArea = require("../models/storageArea");
-const Validations = require("../validators");
+const { isDateBefore, isDateAfter } = require("../utils/helpers");
 
-const Company = require("../models/company");
-const {
-  isDateBefore,
-  isDateAfter,
-  isDateOccuranceChronological,
-} = require("../utils/helpers");
-const moment = require("moment");
 class MeanController {
   async create(req, res) {
-    const body = req.body;
+    const validatedData = Validations.mean.create(req.body);
 
-    const validatedData = Validations.Mean.create(body);
-    console.log(validatedData);
+    const site = await Site.findById(validatedData.siteId);
+    if (!site) throw new CustomError(STRINGS.ERRORS.siteNotFound);
 
-    if (req.files) {
-      if (req.files["sheet"]) {
-        validatedData.sheet = req.files["sheet"][0].path;
-      }
+    if (isDateBefore(validatedData.availability.start, site.start))
+      throw new CustomError(STRINGS.ERRORS.meanStartDateBeforeSiteStartDate);
+    if (isDateAfter(validatedData.availability.start, site.end))
+      throw new CustomError(STRINGS.ERRORS.meanStartDateBeforeSiteEndtDate);
+    if (isDateBefore(validatedData.availability.end, site.start))
+      throw new CustomError(STRINGS.ERRORS.meanEndDateBeforeSiteStartDate);
+    if (isDateAfter(validatedData.availability.end, site.end))
+      throw new CustomError(STRINGS.ERRORS.meanEndDateAfterSiteEndtDate);
 
-      if (req.files["image"]) {
-        validatedData.image = req.files["image"][0].path;
-      }
-    }
+    const result = await Mean.create(validatedData);
 
-    if (!validatedData.availability)
-      throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound);
+    await site.update({
+      $addToSet: { means: result._id },
+    });
 
-    if (validatedData.availability) {
-      validatedData.availability = JSON.parse(validatedData.availability);
-
-      if (!validatedData.availability.start)
-        throw new CustomError(STRINGS.ERRORS.startDateIsRequred);
-      const site = await Site.findById(validatedData.siteId);
-      if (!site) throw new CustomError(STRINGS.ERRORS.siteNotFound);
-
-      isDateOccuranceChronological(
-        validatedData.availability.start,
-        validatedData.availability.end
-      );
-
-      if (isDateBefore(validatedData.availability.start, site.start))
-        throw new CustomError(STRINGS.ERRORS.meanStartDateBeforeSiteStartDate);
-      if (isDateAfter(validatedData.availability.start, site.end))
-        throw new CustomError(STRINGS.ERRORS.meanStartDateBeforeSiteEndtDate);
-      if (isDateBefore(validatedData.availability.end, site.start))
-        throw new CustomError(STRINGS.ERRORS.meanEndDateBeforeSiteStartDate);
-
-      if (isDateAfter(validatedData.availability.end, site.end))
-        throw new CustomError(STRINGS.ERRORS.meanEndDateAfterSiteEndtDate);
-    }
-    if (validatedData.location) {
-      validatedData.location = JSON.parse(validatedData.location);
-    }
-
-    if (validatedData.unavailability)
-      validatedData.unavailability = JSON.parse(validatedData.unavailability);
-
-    // if (body.picCoordinates)
-    //   body.picCoordinates = JSON.parse(body.picCoordinates);
-    const result = await new Mean(validatedData).save();
     res.status(200).send(response(STRINGS.TEXTS.meanCreated, result));
   }
 
-  async getAll(req, res) {
-    const result = await Mean.find({}, { password: 0, __v: 0 });
+  async getOne(req, res) {
+    const id = req.params.id;
+
+    const result = await Mean.findById(id, { __v: 0 });
+    if (!result) throw new CustomError(STRINGS.ERRORS.meanNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.meanRequested, result));
+  }
+
+  async update(req, res) {
+    const data = {
+      meanId: req.params.id,
+      ...req.body,
+    };
+    const validatedData = Validations.mean.update(data);
+
+    const site = await Site.findById(validatedData.siteId);
+    if (!site) throw new CustomError(STRINGS.ERRORS.siteNotFound);
+
+    if (isDateBefore(validatedData.availability.start, site.start))
+      throw new CustomError(STRINGS.ERRORS.meanStartDateBeforeSiteStartDate);
+    if (isDateAfter(validatedData.availability.start, site.end))
+      throw new CustomError(STRINGS.ERRORS.meanStartDateBeforeSiteEndtDate);
+    if (isDateBefore(validatedData.availability.end, site.start))
+      throw new CustomError(STRINGS.ERRORS.meanEndDateBeforeSiteStartDate);
+    if (isDateAfter(validatedData.availability.end, site.end))
+      throw new CustomError(STRINGS.ERRORS.meanEndDateAfterSiteEndtDate);
+
+    const result = await Mean.findByIdAndUpdate(
+      { _id: validatedData.meanId },
+      { $set: validatedData },
+      { new: true }
+    );
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.error, 400);
+
+    res.status(200).send(response(STRINGS.TEXTS.meanUpdated, result));
+  }
+
+  async delete(req, res) {
+    const id = req.params.id;
+
+    const result = await Mean.findByIdAndDelete(id);
+
+    res.status(200).send(response(STRINGS.TEXTS.meadDeleted, result));
+  }
+
+  async getAllBySite(req, res) {
+    const siteId = req.params.siteId;
+
+    const result = await Mean.find({
+      siteId: siteId,
+    });
+
     res.status(200).send(response(STRINGS.TEXTS.allMeans, result));
   }
 
@@ -90,6 +106,7 @@ class MeanController {
 
     const siteStorageAreas = await StorageArea.find({
       siteId: siteId,
+      location: { $ne: STRINGS.STATUS.OUTSIDE },
     });
     const meanTypes = [STRINGS.MEANTYPES.LIFTING, STRINGS.MEANTYPES.ROUTING];
     let result = {
@@ -109,16 +126,8 @@ class MeanController {
       siteId: siteId,
       "location.locationType": STRINGS.MEANLOCATIONTYPE.EXTERIOR,
     }).populate("location.storageArea");
+
     res.status(200).send(response(STRINGS.TEXTS.allMeans, result));
-  }
-
-  async getOne(req, res) {
-    const id = req.params.id;
-
-    const result = await Mean.findOne({ _id: id }, { password: 0, __v: 0 });
-    if (!result) throw new CustomError(STRINGS.ERRORS.meanNotFound);
-
-    res.status(200).send(response(STRINGS.TEXTS.meanRequested, result));
   }
 
   async filterMeans(req, res) {
@@ -126,44 +135,42 @@ class MeanController {
     const siteId = body.siteId;
 
     const deliveryArea = body.deliveryArea;
+    // const location = body.location;
+    // const building = body.building;
+    // const level = body.level;
     const storageArea = body.storageArea;
-    const location = body.location;
     const type = body.type;
+    const company = body.company;
+    const status = body.status;
     const startDate = body.startDate;
     const endDate = body.endDate;
-    const status = body.status;
-    const name = body.name;
+    const name = body.name || "";
+
+    var re = new RegExp(`^${name}`, "i");
+
+    let filters = [];
+    filters.push({ name: { $regex: re } });
+    type && filters.push({ meanType: { $eq: type } });
+    status && filters.push({ status: { $eq: status } });
+    startDate &&
+      filters.push({ "availability.start": { $gte: new Date(startDate) } });
+    endDate &&
+      filters.push({ "availability.end": { $lte: new Date(endDate) } });
+    deliveryArea && filters.push({ "location.deliveryArea": deliveryArea });
+    storageArea && filters.push({ "location.storageArea": storageArea });
+    // location && filters.push({ "location._id": location });
+    // filters.push({ "availability.start": { $lte: new Date() } });
+    // filters.push({ "availability.end": { $gte: new Date() } });
 
     const result = await Mean.find({
       siteId: siteId,
-      $and: [
-        name ? { name: { $eq: name } } : {},
-        type ? { meanType: { $eq: type } } : {},
-        status ? { status: { $eq: status } } : {},
-        startDate
-          ? { "availability.start": { $gte: new Date(startDate) } }
-          : {},
-        endDate ? { "availability.end": { $lte: new Date(endDate) } } : {},
-        deliveryArea ? { "location.deliveryArea": deliveryArea } : {},
-        location ? { "location._id": location } : {},
-        storageArea ? { "location.storageArea": storageArea } : {},
-        { "availability.start": { $lte: new Date() } },
-        { "availability.end": { $gte: new Date() } },
-      ],
+      $and: filters,
     })
       .populate({
         path: "location",
-
         populate: {
           path: "storageArea",
-
           model: STRINGS.MODALS.STORAGEAREA,
-
-          // populate: {
-          //   path: "level",
-          //   model: STRINGS.MODALS.LEVEL,
-          //   match: level ? { _id: { $eq: level } } : {},
-          // },
         },
       })
       .populate({
@@ -179,101 +186,41 @@ class MeanController {
   async getListOfMeans(req, res) {
     const siteId = req.params.siteId;
 
-    const result = await Mean.find({
+    const total_means = await Mean.find({
       siteId: siteId,
       $and: [
         { "availability.start": { $lte: new Date() } },
         { "availability.end": { $gte: new Date() } },
       ],
-    })
-      .populate({
-        path: "location",
+    }).countDocuments();
 
-        populate: {
-          path: "storageArea",
-
-          model: STRINGS.MODALS.STORAGEAREA,
-
-          // populate: {
-          //   path: "level",
-          //   model: STRINGS.MODALS.LEVEL,
-          // },
-        },
-      })
-      .populate({
-        path: "location",
-        populate: { path: "deliveryArea", model: STRINGS.MODALS.DELIVERYAREA },
-      });
-
-    const building = await Building.find({ siteId: siteId });
-    if (!building) throw new CustomError(STRINGS.ERRORS.buildingNotFound);
-
-    const siteDeliveryAreas = await DeliveryArea.find({
+    const locations = await Building.find({ siteId: siteId }).populate(
+      "levels"
+    );
+    const deliveryAreas = await DeliveryArea.find({
       siteId: siteId,
     });
-
-    if (!siteDeliveryAreas)
-      throw new CustomError(STRINGS.ERRORS.deliveyAreaNotFount);
-    const siteStorageAreas = await StorageArea.find({
+    const storageAreas = await StorageArea.find({
       siteId: siteId,
+      // location: { $ne: STRINGS.STATUS.OUTSIDE },
     });
-
-    if (!siteStorageAreas)
-      throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
 
     const siteCompanies = await SiteCompanies.findOne({
       siteId: siteId,
     }).populate("companies.companyId");
     if (!siteCompanies) throw new CustomError(STRINGS.ERRORS.companyNotFound);
-    if (!result) throw new CustomError(STRINGS.ERRORS.meanNotFound);
-    res.status(200).send(
-      response(STRINGS.TEXTS.meanRequested, {
-        means: result,
-        site_locations: building,
-        site_delivery_areas: siteDeliveryAreas,
-        siteStorageAreas: siteStorageAreas,
-        // site_locations: siteLocations,
-        site_companies: siteCompanies.companies,
-        mean_types: [STRINGS.MEANTYPES.LIFTING, STRINGS.MEANTYPES.ROUTING],
-        mean_status: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],
-      })
-    );
-  }
 
-  async update(req, res) {
-    const id = req.params.id;
-    const body = req.body;
+    const result = {
+      total_means: total_means,
+      site_locations: locations,
+      site_storage_areas: storageAreas,
+      site_delivery_areas: deliveryAreas,
+      site_companies: siteCompanies.companies,
+      mean_types: [STRINGS.MEANTYPES.LIFTING, STRINGS.MEANTYPES.ROUTING],
+      mean_status: [STRINGS.STATUS.AVAILABLE, STRINGS.STATUS.UNAVAILABLE],
+    };
 
-    if (req.file) {
-      body.sheet = req.file.path;
-    }
-    if (body.location) body.location = JSON.parse(body.location);
-    if (body.availability) body.availability = JSON.parse(body.availability);
-    if (body.unavailability)
-      body.unavailability = JSON.parse(body.unavailability);
-
-    if (body.picCoordinates)
-      body.picCoordinates = JSON.parse(body.picCoordinates);
-    const result = await Mean.findByIdAndUpdate(
-      { _id: id },
-      { $set: body },
-      { new: true }
-    );
-
-    if (!result) throw new CustomError(STRINGS.ERRORS.meanNotFound, 404);
-
-    res.status(200).send(response(STRINGS.TEXTS.meanUpdated, result));
-  }
-
-  async delete(req, res) {
-    const id = req.params.id;
-
-    const result = await Mean.findOne({
-      _id: id,
-    });
-    result.remove();
-
-    res.status(200).send(response(STRINGS.TEXTS.meadDeleted, result));
+    res.status(200).send(response(STRINGS.TEXTS.meanRequested, result));
   }
 }
 module.exports = new MeanController();

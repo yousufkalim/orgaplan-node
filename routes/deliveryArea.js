@@ -1,38 +1,25 @@
 const router = require("express").Router();
 
-const STRINGS = require("../utils/texts");
-const auth = require("../middlewares/auth");
-const upload = require("../middlewares/multer");
-
 const deliveryAreaController = require("../controllers/deliveryArea");
+
 // GETS
-router.get("/", auth(STRINGS.ROLES.ALL), deliveryAreaController.getAll);
-router.get("/:id", auth(), deliveryAreaController.getOne);
+router.get("/", deliveryAreaController.getAll);
+router.get("/:id", deliveryAreaController.getOne);
 router.get(
   "/get_delivery_area_means/enterprise/:id",
-  auth(),
   deliveryAreaController.getDeliveryAreaMeans
 );
 
 router.get(
   "/get_delivery_area_site/enterprise/:id",
-  auth(),
   deliveryAreaController.getDelveryAreaBySiteId
 );
+
 // POSTS
-router.post(
-  "/",
-  auth(),
-  upload("deliveryArea", "document"),
-  deliveryAreaController.create
-);
+router.post("/", deliveryAreaController.create);
 // PUTS
-router.put(
-  "/:id",
-  auth(),
-  upload("deliveryArea", "document"),
-  deliveryAreaController.update
-);
+router.put("/:id", deliveryAreaController.update);
 // DELETES
 router.delete("/:id", deliveryAreaController.delete);
+
 module.exports = router;

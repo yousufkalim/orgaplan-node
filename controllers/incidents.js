@@ -1,3 +1,4 @@
+const ObjectId = require("mongodb").ObjectID;
 const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
@@ -10,27 +11,15 @@ const Validations = require("../validators");
 
 class IncidentsController {
   async create(req, res) {
-    const body = req.body;
-
-    body.photos = body.images;
-    delete body.images;
-    const validatedData = Validations.Invoice.create(body);
-
-    if (req.files) {
-      let photos = [];
-      if (req.files["photos"]) {
-        req.files["photos"].map((file) => photos.push(file.path));
-        validatedData.photos = photos;
-      }
-
-      if (req.files["document"]) {
-        validatedData.document = req.files["document"][0].path;
-      }
+    const validatedData = await Validations.incident.create(req.body);
+    if (req.body["image"]) {
+      validatedData.photos = req.body["image"];
+      delete validatedData.image;
     }
-    if (validatedData.location)
+    if (validatedData.location) {
       validatedData.location = JSON.parse(validatedData.location);
+    }
     const result = await new Incidents(validatedData).save();
-
     res.status(200).send(response(STRINGS.TEXTS.incidentCreated, result));
   }
 
@@ -53,7 +42,6 @@ class IncidentsController {
 
   async getIncidentList(req, res) {
     const id = req.params.id;
-
     const incidents = await Incidents.find({
       siteId: id,
     })
@@ -66,12 +54,23 @@ class IncidentsController {
 
     const siteBuildings = await Building.find({
       siteId: id,
-    }).populate("siteId");
+    })
+      .populate("siteId")
+      .populate({
+        path: "levels",
+        model: STRINGS.MODALS.LEVEL,
+        populate: {
+          path: "storage",
+          model: STRINGS.MODALS.STORAGEAREA,
+        },
+      });
+
     const siteDeliveryAreas = await DeliveryArea.find({
       siteId: id,
     });
     const siteStorageAreas = await StorageArea.find({
       siteId: id,
+      location: { $ne: STRINGS.STATUS.OUTSIDE },
     });
 
     const result = {
@@ -98,7 +97,9 @@ class IncidentsController {
 
     const siteCompanies = await SiteCompanies.findOne({
       siteId: id,
-    }).populate("companies.companyId");
+    })
+      .populate("companies.companyId")
+      .populate("companies.subContractors");
 
     const result = {
       site_companies: siteCompanies.companies,
@@ -119,35 +120,29 @@ class IncidentsController {
 
   async update(req, res) {
     const id = req.params.id;
-
-    const body = req.body;
-
-    body.photos = body.images;
-    delete body.images;
-    const validatedData = Validations.Invoice.update(body);
-
-    if (req.files) {
-      let photos = [];
-      if (req.files["photos"]) {
-        req.files["photos"].map((file) => photos.push(file.path));
-        validatedData.photos = photos;
-      }
-
-      if (req.files["document"]) {
-        validatedData.document = req.files["document"][0].path;
-      }
+    const validatedData = await Validations.incident.update(req.body);
+    if (req.body["image"]) {
+      validatedData.photos = req.body["image"];
+      delete validatedData.image;
     }
-    if (validatedData.location)
-      validatedData.location = JSON.parse(validatedData.location);
-
+    const body = validatedData;
+    // if (req.files) {
+    //   let photos = [];
+    //   if (req.files["photos"]) {
+    //     req.files["photos"].map((file) => photos.push(file.path));
+    //     body.photos = photos;
+    //   }
+    //   if (req.files["document"]) {
+    //     body.document = req.files["document"][0].path;
+    //   }
+    // }
+    if (body.location) body.location = JSON.parse(body.location);
     const result = await Incidents.findByIdAndUpdate(
       { _id: id },
       { $set: validatedData },
       { new: true }
     );
-
     if (!result) throw new CustomError(STRINGS.ERRORS.indcidentNotFound, 404);
-
     res.status(200).send(response(STRINGS.TEXTS.incidentUpdated, result));
   }
 
@@ -165,7 +160,6 @@ class IncidentsController {
   async filterIncidents(req, res) {
     const body = req.body;
     const siteId = body.siteId;
-
     const deliveryArea = body.deliveryArea;
     const storageArea = body.storageArea;
     const location = body.location;
@@ -182,13 +176,13 @@ class IncidentsController {
         type ? { type: { $eq: type } } : {},
         status ? { status: { $eq: status } } : {},
         startDate ? { date: { $gte: new Date(startDate) } } : {},
-        endDate ? { endDate: { $lte: new Date(endDate) } } : {},
+        endDate ? { date: { $lte: new Date(endDate) } } : {},
         deliveryArea ? { "location.deliveryArea": deliveryArea } : {},
-        location ? { "location._id": location } : {},
+        // location ? { "location._id": location } : {},
         company ? { companyId: { $eq: company } } : {},
         storageArea ? { "location.storageArea": storageArea } : {},
-        { "availability.start": { $lte: new Date() } },
-        { "availability.end": { $gte: new Date() } },
+        // { "availability.start": { $lte: new Date() } },
+        // { "availability.end": { $gte: new Date() } },
       ],
     })
       .populate({
@@ -208,7 +202,6 @@ class IncidentsController {
         populate: { path: "deliveryArea", model: STRINGS.MODALS.DELIVERYAREA },
       })
       .populate("companyId");
-
     if (!result) throw new CustomError(STRINGS.ERRORS.siteIncidentsNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.incidentRequested, result));

@@ -1,11 +1,12 @@
 const router = require("express").Router();
-const auth = require("../middlewares/auth");
 const upload = require("../middlewares/multer");
 
 const meanController = require("../controllers/mean");
+
 // GETS
-router.get("/", meanController.getAll);
-router.get("/:id", meanController.getOne);
+router.get("/get/:id", meanController.getOne);
+
+router.get("/get_site_means/:siteId", meanController.getAllBySite);
 router.get("/get_list_of_means/:siteId", meanController.getListOfMeans);
 
 router.get("/get_add_mean/:siteId", meanController.getAddMean);
@@ -31,7 +32,6 @@ router.put(
   "/:id",
   upload(
     "mean",
-
     [
       { name: "sheet", maxCount: 1 },
       { name: "image", maxCount: 1 },
@@ -40,6 +40,8 @@ router.put(
   ),
   meanController.update
 );
+
 // DELETES
 router.delete("/:id", meanController.delete);
+
 module.exports = router;

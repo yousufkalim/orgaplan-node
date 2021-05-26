@@ -16,14 +16,11 @@ class CompanyController {
     // Check if company name exists
     if (!body.trades) body.trades = [];
     else body.trades = JSON.parse(body.trades);
-
     if (body.incharge) body.incharge = JSON.parse(body.incharge);
     const companyName = await Company.findOne({ name: body.name });
-
     if (companyName) {
       if (body.parentCompanyId) {
         // Remove pervious general contractor if any exists
-
         await SiteCompaniesModel.findOneAndUpdate(
           {
             siteId: body.siteId,
@@ -36,7 +33,6 @@ class CompanyController {
           }
         );
         // Create New General Contrctor
-
         await SiteCompaniesModel.findOneAndUpdate(
           {
             siteId: body.siteId,
@@ -48,7 +44,6 @@ class CompanyController {
             },
           }
         );
-
         // Update The Company
         const result = await Company.findByIdAndUpdate(
           { _id: companyName._id },
@@ -59,7 +54,6 @@ class CompanyController {
         res.status(200).send(response(STRINGS.TEXTS.companyUpdated, result));
       } else {
         // Remove pervious general contractor if any exists
-
         await SiteCompaniesModel.findOneAndUpdate(
           {
             siteId: body.siteId,
@@ -78,7 +72,6 @@ class CompanyController {
             $set: req.body,
           }
         );
-
         res.status(200).send(response(STRINGS.TEXTS.companyUpdated, result));
       }
     } else {
@@ -191,95 +184,16 @@ class CompanyController {
   async getCompanyUsersPerSite(req, res) {
     const siteId = req.params.siteId;
     const companyId = req.params.companyId;
-    // const result = await SiteCompaniesModel.findOne(
-    //   {
-    //     siteId: siteId,
-    //     "companies.companyId": companyId,
-    //     "users.companyId": companyId,
-    //   },
-    //   { companies: { $elemMatch: { companyId: companyId } } },
-    //   { users: { $elemMatch: { companyId: companyId } } }
-    // )
-    //   .populate("companies.companyId")
-    //   .populate("users.userId");
-    // const result = await SiteCompaniesModel.aggregate([
-    //   {
-    //     $project: {
-    //       siteId: { $cond: [{ $eq: [siteId, siteId] }, 1, 0] },
-    //     },
-    //   },
-    // ]);
-    console.log(siteId, companyId);
+    console.log(siteId);
+    console.log(companyId);
+    const result = await SiteCompaniesModel.findOne({
+      siteId: siteId,
+      users: { $elemMatch: { companyId: ObjectId(companyId) } },
+    })
+      .populate("users.userId")
+      .populate("users.companyId");
 
-    let result = await SiteCompaniesModel.aggregate([
-      {
-        $match: {
-          siteId: { $eq: ObjectId(siteId) },
-        },
-      },
-      {
-        $project: {
-          siteId: 1,
-          users: {
-            $filter: {
-              input: "$users",
-              as: "users",
-              cond: { $eq: ["$$users.companyId", ObjectId(companyId)] },
-            },
-          },
-          companies: 1,
-        },
-      },
-      {
-        $lookup: {
-          from: User.collection.name,
-          localField: "users.userId",
-          foreignField: "_id",
-          as: "usersArray",
-        },
-      },
-      {
-        $lookup: {
-          from: Company.collection.name,
-          localField: "companies.companyId",
-          foreignField: "_id",
-          as: "companies",
-        },
-      },
-      {
-        $lookup: {
-          from: Company.collection.name,
-          localField: "users.companyId",
-          foreignField: "_id",
-          as: "company",
-        },
-      },
-      {
-        $unwind: "$company",
-      },
-      {
-        $project: {
-          siteId: 1,
-          usersArray: 1,
-          company: 1,
-          companies: 1,
-        },
-      },
-    ]);
-    // .aggregate([
-    //   {
-    //     $lookup: {
-    //       from: User.collection.name,
-    //       localField: "users.userId",
-    //       foreignField: "_id",
-    //       as: "user",
-    //     },
-    //   },
-    //   {
-    //     $match: { siteId: { $eq: siteId } },
-    //   },
-    // ]);
-    // if (!result) throw new CustomError(STRINGS.ERRORS.companyNotFound);
+    if (!result) throw new CustomError(STRINGS.ERRORS.userNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.companyRequested, result));
   }

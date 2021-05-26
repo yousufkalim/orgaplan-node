@@ -2,6 +2,7 @@ const router = require("express").Router();
 const auth = require("../middlewares/auth");
 const upload = require("../middlewares/multer");
 const incidentsController = require("../controllers/incidents");
+const multer = require("../middlewares/multer");
 
 // GETS
 router.get("/", incidentsController.getAll);
@@ -18,16 +19,17 @@ router.get(
 // router.post("/", auth(), upload("logo"), companyController.create);
 router.post(
   "/",
+  multer("incidents", "photos", "single"),
 
-  upload(
-    "incidents",
+  // upload(
+  //   "incidents",
 
-    [
-      { name: "photos", maxCount: 3 },
-      { name: "document", maxCount: 1 },
-    ],
-    "fields"
-  ),
+  //   [
+  //     { name: "photos", maxCount: 3 },
+  //     { name: "document", maxCount: 1 },
+  //   ],
+  //   "fields"
+  // ),
   //  upload("incidents", "document"),
   incidentsController.create
 );
@@ -47,9 +49,8 @@ router.put(
   incidentsController.update
 );
 // DELETES
-router.delete("/:id", auth() , incidentsController.delete);
+router.delete("/:id", auth(), incidentsController.delete);
 
 router.post("/filter", incidentsController.filterIncidents);
-
 
 module.exports = router;

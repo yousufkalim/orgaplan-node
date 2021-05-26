@@ -6,27 +6,18 @@ const isDateChoronological = require("../utils/date");
 
 class StorageAreaController {
   async create(req, res) {
-    const body = req.body;
-    if (!body.name) throw new CustomError(STRINGS.ERRORS.nameRequired);
+    const validatedData = req.body;
 
-    if (body.location == STRINGS.STATUS.INSIDE && !body.level)
-      throw new CustomError(STRINGS.ERRORS.leveRequired);
-
-    if (!body.availability)
-      throw new CustomError(STRINGS.ERRORS.startDateIsRequred);
-    if (body.availability) {
-      isDateChoronological(body.availability.start, body.availability.end);
-
-      if (!body.availability.start)
-        throw new CustomError(STRINGS.ERRORS.startDateIsRequred);
-    }
-    const result = await StorageArea.create(body);
+    const result = await StorageArea.create(validatedData);
 
     res.status(200).send(response(STRINGS.TEXTS.storateAreaCreated, result));
   }
 
   async getAll(req, res) {
-    const result = await StorageArea.find({}, { password: 0, __v: 0 });
+    const result = await StorageArea.find(
+      { location: { $ne: STRINGS.STATUS.OUTSIDE } },
+      { password: 0, __v: 0 }
+    );
     res.status(200).send(response(STRINGS.TEXTS.allStorateAreas, result));
   }
 
@@ -36,7 +27,7 @@ class StorageAreaController {
     const result = await StorageArea.find({
       level: levelId,
       companies: companyId,
-      location: STRINGS.STATUS.INSIDE,
+      location: { $ne: STRINGS.STATUS.OUTSIDE },
     });
 
     if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
@@ -48,7 +39,7 @@ class StorageAreaController {
     const levelId = req.params.level_id;
     const result = await StorageArea.find({
       level: levelId,
-      location: STRINGS.STATUS.INSIDE,
+      location: { $ne: STRINGS.STATUS.OUTSIDE },
     });
 
     if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
@@ -84,6 +75,7 @@ class StorageAreaController {
     const id = req.params.id;
     const result = await StorageArea.findOne({
       siteId: id,
+      location: { $ne: STRINGS.STATUS.OUTSIDE },
     });
 
     if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
@@ -138,6 +130,17 @@ class StorageAreaController {
     result.remove();
 
     res.status(200).send(response(STRINGS.TEXTS.storateAreaDeleted, result));
+  }
+  async getAllStorageAreaBySiteId(req, res) {
+    const id = req.params.id;
+    const result = await StorageArea.find({
+      siteId: id,
+      location: { $ne: STRINGS.STATUS.OUTSIDE },
+    });
+
+    if (!result) throw new CustomError(STRINGS.ERRORS.storageAreaNotFount);
+
+    res.status(200).send(response(STRINGS.TEXTS.storateAreaRequested, result));
   }
 }
 module.exports = new StorageAreaController();
