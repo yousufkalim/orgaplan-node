@@ -61,6 +61,7 @@ class IncidentsController {
       validatedData.location = JSON.parse(validatedData.location);
     }
     const body = validatedData;
+    console.log("body",body)
     // if (body.location) body.location = JSON.parse(body.location);    
 
     const result = await Incidents.findByIdAndUpdate(
