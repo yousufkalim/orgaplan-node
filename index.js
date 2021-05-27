@@ -4,8 +4,7 @@ const dotenv = require("dotenv");
 const express = require("express");
 const mongoose = require("mongoose");
 const cron = require("node-cron");
-const request = require("request");
-
+const Cronjobs = require("./services/Cron");
 // Load env vars
 dotenv.config({ path: ".env" });
 
@@ -23,7 +22,6 @@ app.get("/ping", (req, res) => res.status(200).send("Hello world!"));
 
 // Error middlewares
 require("./middlewares/error")(app);
-
 // PORT Handling
 const PORT = process.env.PORT || 8080;
 
@@ -44,12 +42,5 @@ mongoose
     console.log("[App.Mongoose]".red, err);
   });
 cron.schedule("0 0 * * *", () => {
-  request(
-    `${process.env.BASE_URL}/api/v1/notification/send`,
-    function (error, response, body) {
-      if (!error && response.statusCode == 200) {
-        console.log("Client Email Notification");
-      }
-    }
-  );
+  new Cronjobs();
 });
