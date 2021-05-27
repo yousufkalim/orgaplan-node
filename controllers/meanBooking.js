@@ -78,7 +78,8 @@ class MeanBookingController {
           .populate("deliveryArea")
           .populate("storageArea")
           .populate("liftingMeans")
-          .populate("routingMeans");
+          .populate("routingMeans")
+          .populate("userId");
         let resultData = [];
         deliveriesResult.forEach((element, index) => {
           let data = JSON.parse(JSON.stringify(element));
@@ -173,7 +174,8 @@ class MeanBookingController {
           .populate("routingMeans")
           .populate("deliveryArea")
           .populate("storageArea")
-          .populate("building");
+          .populate("building")
+          .populate("userId");
       } else if (typeOfPlace === "storageArea") {
         Deliveries = await Delivery.find({
           siteId: siteId,
@@ -188,7 +190,8 @@ class MeanBookingController {
           .populate("routingMeans")
           .populate("deliveryArea")
           .populate("storageArea")
-          .populate("building");
+          .populate("building")
+          .populate("userId");
       } else if (typeOfPlace === "building") {
         Deliveries = await Delivery.find({
           siteId: siteId,
@@ -203,7 +206,8 @@ class MeanBookingController {
           .populate("routingMeans")
           .populate("deliveryArea")
           .populate("storageArea")
-          .populate("building");
+          .populate("building")
+          .populate("userId");
       } else {
         Deliveries = await Delivery.find({
           siteId: siteId,
@@ -217,7 +221,8 @@ class MeanBookingController {
           .populate("routingMeans")
           .populate("deliveryArea")
           .populate("storageArea")
-          .populate("building");
+          .populate("building")
+          .populate("userId");
       }
     } else if (typeOfPlaning === "Means") {
       Means = await Booking.find({
