@@ -3,7 +3,8 @@ require("express-async-ERRORS");
 const dotenv = require("dotenv");
 const express = require("express");
 const mongoose = require("mongoose");
-
+const cron = require("node-cron");
+const Cronjobs = require("./services/Cron");
 // Load env vars
 dotenv.config({ path: ".env" });
 
@@ -21,7 +22,6 @@ app.get("/ping", (req, res) => res.status(200).send("Hello world!"));
 
 // Error middlewares
 require("./middlewares/error")(app);
-
 // PORT Handling
 const PORT = process.env.PORT || 8080;
 
@@ -41,3 +41,6 @@ mongoose
   .catch((err) => {
     console.log("[App.Mongoose]".red, err);
   });
+cron.schedule("0 0 * * *", () => {
+  new Cronjobs();
+});

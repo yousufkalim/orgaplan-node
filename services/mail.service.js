@@ -215,6 +215,129 @@ class MailService {
 
     return;
   }
+
+  async sendEmailClientNotification(emailArray) {
+    let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
+    if (!emailArray) throw new CustomError(STRINGS.ERRORS.recipientRequired);
+
+    // Email Starts
+    const filePath = path.join(
+      __dirname,
+      "../html_templates/requestClientNotification.html"
+    );
+    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const template = handlebars.compile(source);
+
+    emailArray.map(async (key, index) => {
+      key.email.map(async (email, emailIndex) => {
+        const replacements = {
+          name: key.firstName + " " + key.lastName,
+          email: email,
+        };
+        const htmlToSend = template(replacements);
+
+        await this.transporter.sendMail({
+          from,
+          to: email,
+          subject: STRINGS.TEXTS.requestEmailClientSubject,
+          html: htmlToSend,
+        });
+      });
+    });
+    return;
+  }
+
+  async sendEmailSiteNotification(emailArray) {
+    let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
+    if (!emailArray) throw new CustomError(STRINGS.ERRORS.recipientRequired);
+
+    // Email Starts
+    const filePath = path.join(
+      __dirname,
+      "../html_templates/requestSiteNotification.html"
+    );
+    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const template = handlebars.compile(source);
+
+    emailArray.map(async (key, index) => {
+      key.email.map(async (email, emailIndex) => {
+        const replacements = {
+          name: key.name,
+          email: email,
+        };
+        const htmlToSend = template(replacements);
+
+        await this.transporter.sendMail({
+          from,
+          to: email,
+          subject: STRINGS.TEXTS.requestEmailSubject,
+          html: htmlToSend,
+        });
+      });
+    });
+    return;
+  }
+  async sendEmailStorageAreaNotification(emailArray) {
+    let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
+    if (!emailArray) throw new CustomError(STRINGS.ERRORS.recipientRequired);
+
+    // Email Starts
+    const filePath = path.join(
+      __dirname,
+      "../html_templates/requestStorageAreaNotification.html"
+    );
+    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const template = handlebars.compile(source);
+
+    emailArray.map(async (key, index) => {
+      key.email.map(async (email, emailIndex) => {
+        const replacements = {
+          name: key.name,
+          email: email,
+        };
+        const htmlToSend = template(replacements);
+
+        await this.transporter.sendMail({
+          from,
+          to: email,
+          subject: STRINGS.TEXTS.requestEmailSubject,
+          html: htmlToSend,
+        });
+      });
+    });
+    return;
+  }
+
+  async sendEmailDeliveryAreaNotification(emailArray) {
+    let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
+    if (!emailArray) throw new CustomError(STRINGS.ERRORS.recipientRequired);
+
+    // Email Starts
+    const filePath = path.join(
+      __dirname,
+      "../html_templates/requestDeliveryAreaNotification.html"
+    );
+    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const template = handlebars.compile(source);
+
+    emailArray.map(async (key, index) => {
+      key.email.map(async (email, emailIndex) => {
+        const replacements = {
+          name: key.name,
+          email: email,
+        };
+        const htmlToSend = template(replacements);
+
+        await this.transporter.sendMail({
+          from,
+          to: email,
+          subject: STRINGS.TEXTS.requestEmailSubject,
+          html: htmlToSend,
+        });
+      });
+    });
+    return;
+  }
 }
 
 module.exports = MailService;

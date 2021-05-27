@@ -22,5 +22,6 @@ router.use("/v1/organigramme", require("./organigramme"));
 router.use("/v1/delivery-area", require("./deliveryArea"));
 router.use("/v1/storage-area-request", require("./storageAreaRequest"));
 router.use("/v1/alert", require("./alert"));
+router.use("/v1/notification", require("./notification"));
 
 module.exports = router;
