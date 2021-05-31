@@ -51,6 +51,7 @@ class MeanController {
       meanId: req.params.id,
       ...req.body,
     };
+    console.log(data.unavailability);
     const validatedData = Validations.mean.update(data);
 
     const site = await Site.findById(validatedData.siteId);
