@@ -8,14 +8,7 @@ const schemas = {
       email: Joi.string()
         .email({ tlds: { allow: false } })
         .required(),
-      phone: Joi.number()
-        .integer()
-        .custom((value, helper) => {
-          if (String(value).startsWith("0") || String(value).length !== 9)
-            return helper.message("phone is invalid");
-          return value;
-        })
-        .required(),
+      phone: Joi.string().min(10).max(25).required(),
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
       image: Joi.string().required(),
@@ -42,14 +35,7 @@ const schemas = {
       adminId: Joi.string().required(),
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
-      phone: Joi.number()
-        .integer()
-        .custom((value, helper) => {
-          if (String(value).startsWith("0") || String(value).length !== 9)
-            return helper.message("phone is invalid");
-          return value;
-        })
-        .required(),
+      phone: Joi.string().min(10).max(25).required(),
       image: Joi.string().optional(),
       companyId: Joi.string().required(),
       adminType: Joi.string()
@@ -73,14 +59,7 @@ const schemas = {
   },
   completeRegistration: (data) => {
     const Validation = Joi.object().keys({
-      phone: Joi.number()
-        .integer()
-        .custom((value, helper) => {
-          if (String(value).startsWith("0") || String(value).length !== 9)
-            return helper.message("phone is invalid");
-          return value;
-        })
-        .required(),
+      phone: Joi.string().min(10).max(25).required(),
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
       password: Joi.string().required(),
