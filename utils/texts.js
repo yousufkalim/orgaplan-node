@@ -191,6 +191,10 @@ module.exports = {
     companyTradeRequested: "Company Trade Requested",
 
     buildingCreated: "Building Created",
+    historyCreated: "History Created",
+    getHistory: "Get History Successfully",
+
+
     buildingDeleted: "Building Deleted",
     buildingUpdated: "Building Updated",
     buildingRequested: "Building Requested",
@@ -448,6 +452,8 @@ module.exports = {
     LOCATION: "Location",
     CONTRACT: "Contract",
     BUILDING: "Building",
+    HISTORY: "History",
+
     DELIVERY: "Delivery",
     MATERIAL: "Material",
     VECHICLES: "Vehicles",

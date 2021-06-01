@@ -52,7 +52,6 @@ class SitePicController {
   async update(req, res) {
     const id = req.params.id;
     const data = req.body;
-
     const result = await SitePic.findByIdAndUpdate(
       id,
       { $set: data },
@@ -87,7 +86,6 @@ class SitePicController {
 
   async updateShape(req, res) {
     const validatedData = req.body;
-
     const result = await SitePic.findByIdAndUpdate(
       validatedData.picId,
       { $addToSet: { shapes: validatedData } },
@@ -105,7 +103,30 @@ class SitePicController {
 
     res.status(200).send(response(STRINGS.TEXTS.picUpdated, result));
   }
+  async updateShapePoints(req, res) {
+    const { points, picID } = req.body;
+    const siteID = req.params.siteID;
+    console.log(req.body, "req.body", siteID);
+    const result = await SitePic.findOneAndUpdate(
+      { siteId: siteID },
+      { $set: { "shapes.$[el].points": points } },
+      {
+        arrayFilters: [{ "el._id": `${picID}` }],
+        new: true,
+      }
+    )
+      .populate("shapes.mean")
+      .populate({
+        path: "shapes.building",
+        populate: { path: "levels" },
+      })
+      .populate("shapes.storageArea")
+      .populate("shapes.deliveryArea");
 
+    if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
+
+    res.status(200).send(response(STRINGS.TEXTS.picUpdated, result));
+  }
   async deleteShape(req, res) {
     const picId = req.params.picId;
     const shapeId = req.params.shapeId;
