@@ -2,6 +2,8 @@ const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const Building = require("../models/building");
+const History = require("../models/history");
+
 class BuildingController {
   async create(req, res) {
     const doesBuildingNameExist = await Building.findOne({
@@ -90,6 +92,26 @@ class BuildingController {
     );
 
     res.status(200).send(response(STRINGS.TEXTS.siteDeleted, result));
+  }
+
+  async history(req, res) {
+    console.log(req.body, "req.bodys");
+    const result = await new History(req.body).save();
+    res.status(200).send(response(STRINGS.TEXTS.historyCreated, result));
+  }
+  async getAllHistory(req, res) {
+    const result = await History.find({
+      $and: [
+        {
+          siteId: req.body.siteId,
+        },
+        { LevelId: req.body.LevelId },
+        {
+          BuildingId: req.body.BuildingId,
+        },
+      ],
+    });
+    res.status(200).send(response(STRINGS.TEXTS.getHistory, result));
   }
 }
 

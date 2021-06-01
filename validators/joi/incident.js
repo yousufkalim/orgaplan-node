@@ -47,7 +47,6 @@ const schemas = {
       status: Joi.string().optional().allow(""),
       price: Joi.number().optional().allow(""),
     });
-
     const { error, value } = Validation.validate(data);
     if (error) {
       const { details } = error;

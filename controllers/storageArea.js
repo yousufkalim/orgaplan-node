@@ -14,7 +14,10 @@ class StorageAreaController {
   }
 
   async getAll(req, res) {
-    const result = await StorageArea.find({}, { password: 0, __v: 0 });
+    const result = await StorageArea.find(
+      { location: { $ne: STRINGS.STATUS.OUTSIDE } },
+      { password: 0, __v: 0 }
+    );
     res.status(200).send(response(STRINGS.TEXTS.allStorateAreas, result));
   }
 

@@ -7,11 +7,13 @@ router.get("/", auth(), buildingController.getAll);
 router.get("/:id", auth(), buildingController.getOne);
 router.get(
   "/get_by_site_id/:siteId",
-
   buildingController.getBuildingsBySiteId
 );
 // POSTS
 router.post("/", auth(), buildingController.create);
+router.post("/history", auth(), buildingController.history);
+router.post("/getHistory", auth(), buildingController.getAllHistory);
+
 
 // PUTS
 router.put("/:id", auth(), buildingController.update);

@@ -83,6 +83,11 @@ class SuperAdminSitesController {
 
     let result = site;
 
+    await SitePic.create({
+      siteId: site._id,
+      exteriorBuilding: building._id,
+    });
+
     await res.status(200).send(response(STRINGS.TEXTS.siteCreated, result));
   }
 

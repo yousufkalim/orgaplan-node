@@ -1,8 +1,8 @@
 const router = require("express").Router();
 
 const auth = require("../middlewares/auth");
-const multer = require("../middlewares/multer");
 const incidentsController = require("../controllers/incidents");
+const multer = require("../middlewares/multer");
 
 // GETS
 router.get("/", incidentsController.getAll);

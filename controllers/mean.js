@@ -107,6 +107,7 @@ class MeanController {
 
     const siteStorageAreas = await StorageArea.find({
       siteId: siteId,
+      location: { $ne: STRINGS.STATUS.OUTSIDE },
     });
     const meanTypes = [STRINGS.MEANTYPES.LIFTING, STRINGS.MEANTYPES.ROUTING];
     let result = {

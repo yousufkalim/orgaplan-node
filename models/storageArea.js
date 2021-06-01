@@ -5,6 +5,7 @@ const STRINGS = require("../utils/texts");
 const storageArea = new Schema(
   {
     name: String,
+    color: String,
     isInside: {
       type: Boolean,
       default: false,

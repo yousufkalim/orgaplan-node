@@ -61,6 +61,7 @@ class IncidentsController {
       validatedData.location = JSON.parse(validatedData.location);
     }
     const body = validatedData;
+    console.log("body",body)
     // if (body.location) body.location = JSON.parse(body.location);    
 
     const result = await Incidents.findByIdAndUpdate(
@@ -115,6 +116,7 @@ class IncidentsController {
     });
     const siteStorageAreas = await StorageArea.find({
       siteId: id,
+      location: { $ne: STRINGS.STATUS.OUTSIDE },
     });
 
     const result = {
@@ -197,6 +199,56 @@ class IncidentsController {
   }
 
   async filterIncidents(req, res) {  
+    const body = req.body;
+    const siteId = body.siteId;
+    const deliveryArea = body.deliveryArea;
+    const storageArea = body.storageArea;
+    const location = body.location;
+    const type = body.type;
+    const startDate = body.startDate;
+    const endDate = body.endDate;
+    const status = body.status;
+    const name = body.name;
+    const company = body.company;
+    const result = await Incidents.find({
+      siteId: siteId,
+      $and: [
+        name ? { name: { $eq: name } } : {},
+        type ? { type: { $eq: type } } : {},
+        status ? { status: { $eq: status } } : {},
+        startDate ? { date: { $gte: new Date(startDate) } } : {},
+        endDate ? { date: { $lte: new Date(endDate) } } : {},
+        deliveryArea ? { "location.deliveryArea": deliveryArea } : {},
+        // location ? { "location._id": location } : {},
+        company ? { companyId: { $eq: company } } : {},
+        storageArea ? { "location.storageArea": storageArea } : {},
+        // { "availability.start": { $lte: new Date() } },
+        // { "availability.end": { $gte: new Date() } },
+      ],
+    })
+      .populate({
+        path: "location",
+        populate: {
+          path: "storageArea",
+          model: STRINGS.MODALS.STORAGEAREA,
+          //     // populate: {
+          //     //   path: "level",
+          //     //   model: STRINGS.MODALS.LEVEL,
+          //     //   match: level ? { _id: { $eq: level } } : {},
+          //     // },
+        },
+      })
+      .populate({
+        path: "location",
+        populate: { path: "deliveryArea", model: STRINGS.MODALS.DELIVERYAREA },
+      })
+      .populate("companyId");
+    if (!result) throw new CustomError(STRINGS.ERRORS.siteIncidentsNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.incidentRequested, result));
+  }
+
+  async filterIncidents(req, res) {
     const body = req.body;
     const siteId = body.siteId;
     const deliveryArea = body.deliveryArea;

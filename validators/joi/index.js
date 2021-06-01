@@ -13,6 +13,7 @@ const exportsObj = {
   incident: require("./incident"),
   organigramme: require("./organigramme"),
   clientInvoice: require("./ClientInvoice"),
+  mean: require("./Mean"),
 };
 
 module.exports = exportsObj;
