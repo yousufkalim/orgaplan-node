@@ -27,7 +27,7 @@ const PORT = process.env.PORT || 8080;
 
 // Connecting to Database and listening to server
 mongoose
-  .connect("mongodb://REDACTED:REDACTED@cluster0.es81r.mongodb.net/orgaplan?authSource=admin&replicaSet=atlas-148r4l-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true", {
+  .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
