@@ -214,6 +214,7 @@ module.exports = {
     deliveryAreaUpdated: "Delivery Area Updated",
     deliveryAreaRequested: "Delivery Area Requested",
     getDeliveryAllStorageArea: "get Delivery All StorageArea",
+    getValidatedDeliveryMean: "get Validated Delivery Mean",
 
     allStorateAreas: "All Storage Areas",
     storateAreaCreated: "Storage Area Created",

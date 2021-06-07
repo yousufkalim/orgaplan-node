@@ -251,6 +251,24 @@ class DeliveryController {
       .status(200)
       .send(response(STRINGS.TEXTS.getDeliveryAllStorageArea, result));
   }
+  async getValidatedDeliveryMean(req, res) {
+    const siteId = req.params.siteId;
+    const meanId = req.params.meanId;
+    const result = await Delivery.find({
+      $and: [
+        { siteId: siteId },
+        {
+          status: "VALIDATED",
+        },
+        {
+          $or: [{ liftingMeans: meanId }, { routingMeans: meanId }],
+        },
+      ],
+    }).populate("companyId");
+    res
+      .status(200)
+      .send(response(STRINGS.TEXTS.getValidatedDeliveryMean, result));
+  }
 }
 
 module.exports = new DeliveryController();
