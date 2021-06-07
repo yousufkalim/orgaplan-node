@@ -43,4 +43,5 @@ mongoose
   });
 cron.schedule("0 0 * * *", () => {
   new Cronjobs();
+  console.log("Corn is Running", new Date());
 });
