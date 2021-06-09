@@ -3,7 +3,9 @@ const auth = require("../middlewares/auth");
 const meanBookingController = require("../controllers/meanBooking");
 // GETS
 router.get("/", auth(), meanBookingController.getAll);
+router.get("/getValidatedMean", meanBookingController.validatedMean);
 router.get("/:id", auth(), meanBookingController.getOne);
+
 router.get(
   "/getBookingBySiteId/:siteId",
   auth(),
