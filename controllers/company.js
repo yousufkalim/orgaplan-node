@@ -90,7 +90,6 @@ class CompanyController {
 
   async delete(req, res) {
     const id = req.params.id;
-
     // const result = await Company.findByIdAndDelete(id);
 
     res.status(200).send(response(STRINGS.TEXTS.compantDeleted, result));
