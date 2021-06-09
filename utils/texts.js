@@ -194,7 +194,6 @@ module.exports = {
     historyCreated: "History Created",
     getHistory: "Get History Successfully",
 
-
     buildingDeleted: "Building Deleted",
     buildingUpdated: "Building Updated",
     buildingRequested: "Building Requested",
@@ -215,6 +214,7 @@ module.exports = {
     deliveryAreaUpdated: "Delivery Area Updated",
     deliveryAreaRequested: "Delivery Area Requested",
     getDeliveryAllStorageArea: "get Delivery All StorageArea",
+    getValidatedDeliveryMean: "get Validated Delivery Mean",
 
     allStorateAreas: "All Storage Areas",
     storateAreaCreated: "Storage Area Created",
@@ -270,6 +270,7 @@ module.exports = {
     meanBookingDeleted: "Mean Booking Deleted",
     meanBookingCreated: "Mean Booking Created",
     meanBookingUpdated: "Mean Booking Updated",
+    meanBookingValidated: "Mean Booking Validated",
     meanBookingRequested: "Mean Booking Requested",
 
     locationDeleted: "Location Deleted",

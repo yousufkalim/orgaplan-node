@@ -8,6 +8,10 @@ const deliveryController = require("../controllers/delivery");
 router.get("/", auth(), deliveryController.getAll);
 router.get("/get/:id", auth(), deliveryController.getOne);
 router.get(
+  "/getValidatedDeliveryMean/:siteId/:meanId",
+  deliveryController.getValidatedDeliveryMean
+);
+router.get(
   "/getDeliveryAllStroageArea/:siteId/:deliveryId",
   deliveryController.getDeliveryAllStroageArea
 );

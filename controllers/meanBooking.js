@@ -354,7 +354,7 @@ class MeanBookingController {
 
     if (!result) throw new CustomError(STRINGS.ERRORS.meanBookingNotFound, 404);
 
-    res.status(200).send(response(STRINGS.TEXTS.meanBookingUpdated, result));
+    res.status(200).send(response(STRINGS.TEXTS.meanBookingValidated, result));
   }
 }
 module.exports = new MeanBookingController();
