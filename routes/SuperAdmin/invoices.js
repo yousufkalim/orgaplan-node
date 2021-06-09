@@ -11,14 +11,14 @@ router.get("/get/:id", superAdmin.invoicesController.getById);
 // POSTS
 router.post(
   "/",
-  multer("invoice", "file", "single"),
+  multer("site", "file", "single"),
   superAdmin.invoicesController.create
 );
 
 // PUTS
 router.put(
   "/",
-  multer("invoice", "file", "single"),
+  multer("site", "file", "single"),
   superAdmin.invoicesController.update
 );
 
