@@ -8,7 +8,6 @@ const ENV = process.env;
 class SuperAdminClientInvoicesController {
   async create(req, res) {
     const validatedData = await Validations.clientInvoice.create(req.body);
-
     let result = await ClientInvoice.create(validatedData);
 
     res.status(200).send(response(STRINGS.TEXTS.invoiceCreated, result));
