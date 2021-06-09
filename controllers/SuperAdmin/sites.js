@@ -20,6 +20,7 @@ class SuperAdminSitesController {
     // if (siteCheck) throw new CustomError(STRINGS.ERRORS.siteNameExists, 404);
 
     // Check Client
+
     const client = await Client.findOne(
       { adminIds: validatedData.adminId },
       { _id: 1, companyId: 1 }

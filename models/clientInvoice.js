@@ -8,6 +8,7 @@ const clientInvoiceSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.CLIENT,
     },
+    file: String,
     startDate: Date,
     endDate: Date,
     siteId: {
