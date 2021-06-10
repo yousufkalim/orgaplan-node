@@ -37,8 +37,10 @@ const schemas = {
       description: Joi.string().optional().allow(""),
     });
 
-    data.file = data.image;
-    delete data.image;
+    if (data.image) {
+      data.file = data.image;
+      delete data.image;
+    } else delete data.image;
     const { error, value } = Validation.validate(data);
     if (error) {
       const { details } = error;
