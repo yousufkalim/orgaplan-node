@@ -23,6 +23,12 @@ router.post(
   upload("user", "image"),
   companyController.addUser
 );
+router.post(
+  "/add_companiesData",
+  auth(),
+  upload("company", "companiesdata"),
+  companyController.addCompaniesData
+);
 router.post("/filter", companyController.filterCompanies);
 
 // PUTS

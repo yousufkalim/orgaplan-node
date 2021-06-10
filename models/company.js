@@ -10,6 +10,7 @@ const companySchema = new Schema(
     color: String,
     website: String,
     description: String,
+    companiesdata: String,
     incharge: {
       firstName: String,
       lastName: String,

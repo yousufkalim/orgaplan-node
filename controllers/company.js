@@ -45,6 +45,13 @@ class CompanyController {
     res.status(200).send(response(STRINGS.TEXTS.companyAdded, company));
   }
 
+  async addCompaniesData(req, res) {
+    console.log("addCompaniesData");
+    const data = req.body;
+
+    res.status(200).send(response(STRINGS.TEXTS.addCompaniesData, data));
+  }
+
   async getAll(req, res) {
     const result = await Company.find({}, { password: 0, __v: 0 });
     res.status(200).send(response(STRINGS.TEXTS.companyRequested, result));
