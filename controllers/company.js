@@ -6,6 +6,8 @@ const response = require("../utils/response");
 const UserSites = require("../models/userSites");
 const CustomError = require("../utils/customError");
 const SiteCompanies = require("../models/SiteCompanies");
+const csv = require("csv-parser");
+const fs = require("fs");
 
 class CompanyController {
   async create(req, res) {
@@ -46,10 +48,49 @@ class CompanyController {
   }
 
   async addCompaniesData(req, res) {
-    console.log("addCompaniesData");
-    const data = req.body;
+    const companyId = req.params.companyId;
+    const results = [];
+    var flag = false;
+    const success = false;
+    const { image } = req.body; // CSV file name is image
+    fs.createReadStream(image)
+      .pipe(csv())
+      .on("data", (data) => results.push(data))
+      .on("end", async () => {
+        for (let i = 0; i < results.length; i++) {
+          if (
+            results[i].Company !== "" &&
+            (results[i].Type === "Enterprise mandataire" ||
+              results[i].Type === "Sous-traitant")
+          ) {
+            // file is ok uploaded file
+          } else {
+            flag = true;
+            break;
+          }
+        }
 
-    res.status(200).send(response(STRINGS.TEXTS.addCompaniesData, data));
+        if (flag) {
+          res
+            .status(400)
+            .send(
+              response(STRINGS.ERRORS.companyDataValidation, null, success)
+            );
+        } else {
+          let company = await Company.findByIdAndUpdate(
+            companyId,
+            {
+              $set: {
+                companiesdata: image,
+              },
+            },
+            { new: true }
+          );
+          res
+            .status(200)
+            .send(response(STRINGS.TEXTS.addCompaniesData, company));
+        }
+      });
   }
 
   async getAll(req, res) {

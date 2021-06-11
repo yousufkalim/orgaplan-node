@@ -122,6 +122,8 @@ module.exports = {
     userAlreadyExistWithAdminRole: "User Already Exist with Admin Role",
     requestedDateIsNotBetweenStorageAreaDate:
       "Requested date is not between storage area date",
+    companyDataValidation:
+      "Company Name and Type (Enterprise mandataire, Sous-traitant) are Mandatory",
   },
   TEXTS: {
     allUsers: "All users",
