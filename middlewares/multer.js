@@ -53,6 +53,7 @@ const uploader = (folder) =>
       "image/jpg",
       "image/jpeg",
       "application/pdf",
+      "application/octet-stream",
     ]),
   });
 

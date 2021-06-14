@@ -251,7 +251,16 @@ class DeliveryController {
       .status(200)
       .send(response(STRINGS.TEXTS.getDeliveryAllStorageArea, result));
   }
+
   async getValidatedDeliveryMean(req, res) {
+    const result = await Delivery.find({
+      status: "VALIDATED",
+    }).populate("companyId");
+    res
+      .status(200)
+      .send(response(STRINGS.TEXTS.getValidatedDeliveryMean, result));
+  }
+  async getValidatedDeliveryMeanbySiteandMean(req, res) {
     const siteId = req.params.siteId;
     const meanId = req.params.meanId;
     const result = await Delivery.find({

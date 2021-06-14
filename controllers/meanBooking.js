@@ -356,5 +356,12 @@ class MeanBookingController {
 
     res.status(200).send(response(STRINGS.TEXTS.meanBookingValidated, result));
   }
+
+  async validatedMean(req, res) {
+    const result = await Booking.find({
+      status: "VALIDATED",
+    });
+    res.status(200).send(response(STRINGS.TEXTS.meanBookingValidated, result));
+  }
 }
 module.exports = new MeanBookingController();
