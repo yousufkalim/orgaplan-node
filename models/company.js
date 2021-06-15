@@ -15,7 +15,7 @@ const companySchema = new Schema(
       firstName: String,
       lastName: String,
       email: String,
-      phone: Number,
+      phone: String,
     },
     quoteVerified: {
       type: Boolean,

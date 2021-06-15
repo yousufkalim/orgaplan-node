@@ -25,14 +25,19 @@ const schemas = {
   update: (data) => {
     const Validation = Joi.object().keys({
       email: Joi.string().required(),
-      phone: Joi.number()
-        .integer()
-        .custom((value, helper) => {
-          if (String(value).startsWith("0") || String(value).length !== 9)
-            return helper.message("phone is invalid");
-          return value;
-        })
-        .allow(""),
+      phone: Joi.custom((value, helper) => {
+        if (String(value).length > 26)
+          return helper.message("phone is invalid");
+        return value;
+      }).allow(""),
+      // phone: Joi.number()
+      //   .integer()
+      //   .custom((value, helper) => {
+      //     if (String(value).startsWith("0") || String(value).length !== 9)
+      //       return helper.message("phone is invalid");
+      //     return value;
+      //   })
+      //   .allow(""),
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
       type: Joi.string().required(),
