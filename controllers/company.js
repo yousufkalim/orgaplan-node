@@ -53,44 +53,50 @@ class CompanyController {
     var flag = false;
     const success = false;
     const { image } = req.body; // CSV file name is image
-    fs.createReadStream(image)
-      .pipe(csv())
-      .on("data", (data) => results.push(data))
-      .on("end", async () => {
-        for (let i = 0; i < results.length; i++) {
-          if (
-            results[i].Company !== "" &&
-            (results[i].Type === "Enterprise mandataire" ||
-              results[i].Type === "Sous-traitant")
-          ) {
-            // file is ok uploaded file
-          } else {
-            flag = true;
-            break;
+    if (image) {
+      fs.createReadStream(image)
+        .pipe(csv())
+        .on("data", (data) => results.push(data))
+        .on("end", async () => {
+          for (let i = 0; i < results.length; i++) {
+            if (
+              results[i].Company !== "" &&
+              (results[i].Type === "Enterprise mandataire" ||
+                results[i].Type === "Sous-traitant")
+            ) {
+              // file is ok uploaded file
+            } else {
+              flag = true;
+              break;
+            }
           }
-        }
 
-        if (flag) {
-          res
-            .status(400)
-            .send(
-              response(STRINGS.ERRORS.companyDataValidation, null, success)
-            );
-        } else {
-          let company = await Company.findByIdAndUpdate(
-            companyId,
-            {
-              $set: {
-                companiesdata: image,
+          if (flag) {
+            res
+              .status(400)
+              .send(
+                response(STRINGS.ERRORS.companyDataValidation, null, success)
+              );
+          } else {
+            let company = await Company.findByIdAndUpdate(
+              companyId,
+              {
+                $set: {
+                  companiesdata: image,
+                },
               },
-            },
-            { new: true }
-          );
-          res
-            .status(200)
-            .send(response(STRINGS.TEXTS.addCompaniesData, company));
-        }
-      });
+              { new: true }
+            );
+            res
+              .status(200)
+              .send(response(STRINGS.TEXTS.addCompaniesData, company));
+          }
+        });
+    } else {
+      res
+        .status(400)
+        .send(response(STRINGS.ERRORS.fileNotFound, null, success));
+    }
   }
 
   async getAll(req, res) {

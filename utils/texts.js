@@ -124,6 +124,7 @@ module.exports = {
       "Requested date is not between storage area date",
     companyDataValidation:
       "Company Name and Type (Enterprise mandataire, Sous-traitant) are Mandatory",
+    fileNotFound: "file not Found",
   },
   TEXTS: {
     allUsers: "All users",
