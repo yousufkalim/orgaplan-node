@@ -13,7 +13,7 @@ class SuperAdminZacsController {
 
     let level = await Level.findOne({
       building: validatedData.building,
-      number: { $eq: Number(validatedData.number) },
+      number: { $eq: validatedData.number },
     });
     if (level) throw new CustomError(STRINGS.ERRORS.levelExists, 404);
 
