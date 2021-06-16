@@ -125,6 +125,7 @@ module.exports = {
     companyDataValidation:
       "Company Name and Type (Enterprise mandataire, Sous-traitant) are Mandatory",
     fileNotFound: "file not Found",
+    downloadcsvFile: "File download successFully",
   },
   TEXTS: {
     allUsers: "All users",

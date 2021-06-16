@@ -27,7 +27,6 @@ router.post(
 router.post("/filter", companyController.filterCompanies);
 router.post(
   "/add_companiesData/:companyId",
-  auth(),
   upload("company", "companiesdata"),
   companyController.addCompaniesData
 );

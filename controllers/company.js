@@ -98,6 +98,11 @@ class CompanyController {
         .send(response(STRINGS.ERRORS.fileNotFound, null, success));
     }
   }
+  async downloadCsvFile(req, res) {
+    const companyId = req.params.companyId;
+    const result = await Company.find({ companyId: companyId });
+    res.status(200).send(response(STRINGS.TEXTS.downloadcsvFile, result));
+  }
 
   async getAll(req, res) {
     const result = await Company.find({}, { password: 0, __v: 0 });
