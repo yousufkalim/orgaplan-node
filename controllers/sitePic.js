@@ -72,7 +72,6 @@ class SitePicController {
 
   async addShape(req, res) {
     const validatedData = req.body;
-
     const result = await SitePic.findByIdAndUpdate(
       validatedData.picId,
       { $addToSet: { shapes: validatedData } },
