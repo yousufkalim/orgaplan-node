@@ -41,7 +41,7 @@ mongoose
   .catch((err) => {
     console.log("[App.Mongoose]".red, err);
   });
-cron.schedule("00 00 * * *", () => {
+cron.schedule("01 01 * * *", () => {
   new Cronjobs();
   console.log("Corn is Running", new Date());
 });

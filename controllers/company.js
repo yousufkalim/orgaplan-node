@@ -47,7 +47,7 @@ class CompanyController {
     res.status(200).send(response(STRINGS.TEXTS.companyAdded, company));
   }
 
-  async addCompaniesData(req, res) {
+  async UploadCompaniesUserData(req, res) {
     const companyId = req.params.companyId;
     const results = [];
     var flag = false;
@@ -58,19 +58,6 @@ class CompanyController {
         .pipe(csv())
         .on("data", (data) => results.push(data))
         .on("end", async () => {
-          for (let i = 0; i < results.length; i++) {
-            if (
-              results[i].Company !== "" &&
-              (results[i].Type === "Enterprise mandataire" ||
-                results[i].Type === "Sous-traitant")
-            ) {
-              // file is ok uploaded file
-            } else {
-              flag = true;
-              break;
-            }
-          }
-
           if (flag) {
             res
               .status(400)
@@ -78,18 +65,9 @@ class CompanyController {
                 response(STRINGS.ERRORS.companyDataValidation, null, success)
               );
           } else {
-            let company = await Company.findByIdAndUpdate(
-              companyId,
-              {
-                $set: {
-                  companiesdata: image,
-                },
-              },
-              { new: true }
-            );
             res
               .status(200)
-              .send(response(STRINGS.TEXTS.addCompaniesData, company));
+              .send(response(STRINGS.TEXTS.CompaniesUserData, results));
           }
         });
     } else {
