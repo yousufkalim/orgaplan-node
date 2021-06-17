@@ -42,5 +42,6 @@ router.put(
 
 // DELETES
 router.delete("/:id", meanController.delete);
+router.get("/get_path", meanController.getPath);
 
 module.exports = router;
