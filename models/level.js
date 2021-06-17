@@ -6,7 +6,7 @@ const levelSchema = new Schema(
   {
     plan: String,
     name: String,
-    number: Number,
+    number: String,
     building: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.BUILDING,

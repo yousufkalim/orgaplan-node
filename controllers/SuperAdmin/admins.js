@@ -155,11 +155,6 @@ class SuperAdminAdminsController {
     // If company needs to be changed
 
     if (String(userCheck.company) !== String(validatedData.companyId)) {
-      console.log(
-        "asdasdasdadsadads",
-        userCheck.company,
-        validatedData.companyId
-      );
       // Update Client
       // (remove)
       await Client.findOneAndUpdate(
@@ -208,7 +203,6 @@ class SuperAdminAdminsController {
 
     if (!result) throw new CustomError(STRINGS.ERRORS.adminNotFound, 404);
 
-    console.log("result", result);
     res.status(201).send(response(STRINGS.TEXTS.adminUpdated, result));
   }
 

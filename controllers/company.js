@@ -6,6 +6,8 @@ const response = require("../utils/response");
 const UserSites = require("../models/userSites");
 const CustomError = require("../utils/customError");
 const SiteCompanies = require("../models/SiteCompanies");
+const csv = require("csv-parser");
+const fs = require("fs");
 
 class CompanyController {
   async create(req, res) {
@@ -43,6 +45,63 @@ class CompanyController {
       }
     );
     res.status(200).send(response(STRINGS.TEXTS.companyAdded, company));
+  }
+
+  async addCompaniesData(req, res) {
+    const companyId = req.params.companyId;
+    const results = [];
+    var flag = false;
+    const success = false;
+    const { image } = req.body; // CSV file name is image
+    if (image) {
+      fs.createReadStream(image)
+        .pipe(csv())
+        .on("data", (data) => results.push(data))
+        .on("end", async () => {
+          for (let i = 0; i < results.length; i++) {
+            if (
+              results[i].Company !== "" &&
+              (results[i].Type === "Enterprise mandataire" ||
+                results[i].Type === "Sous-traitant")
+            ) {
+              // file is ok uploaded file
+            } else {
+              flag = true;
+              break;
+            }
+          }
+
+          if (flag) {
+            res
+              .status(400)
+              .send(
+                response(STRINGS.ERRORS.companyDataValidation, null, success)
+              );
+          } else {
+            let company = await Company.findByIdAndUpdate(
+              companyId,
+              {
+                $set: {
+                  companiesdata: image,
+                },
+              },
+              { new: true }
+            );
+            res
+              .status(200)
+              .send(response(STRINGS.TEXTS.addCompaniesData, company));
+          }
+        });
+    } else {
+      res
+        .status(400)
+        .send(response(STRINGS.ERRORS.fileNotFound, null, success));
+    }
+  }
+  async downloadCsvFile(req, res) {
+    const companyId = req.params.companyId;
+    const result = await Company.find({ companyId: companyId });
+    res.status(200).send(response(STRINGS.TEXTS.downloadcsvFile, result));
   }
 
   async getAll(req, res) {
@@ -90,7 +149,6 @@ class CompanyController {
 
   async delete(req, res) {
     const id = req.params.id;
-
     // const result = await Company.findByIdAndDelete(id);
 
     res.status(200).send(response(STRINGS.TEXTS.compantDeleted, result));

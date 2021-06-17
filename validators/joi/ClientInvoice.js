@@ -9,15 +9,20 @@ const schemas = {
       endDate: Joi.date().required(),
       siteId: Joi.string().required(),
       amount: Joi.number().required(),
+      file: Joi.string(),
       description: Joi.string().optional().allow(""),
     });
 
+    data.file = data.image;
+    delete data.image;
     const { error, value } = Validation.validate(data);
     if (error) {
       const { details } = error;
+
       const message = details.map((i) => i.message).join(",");
       throw new CustomError(message);
     }
+
     return value;
   },
   update: (data) => {
@@ -28,9 +33,14 @@ const schemas = {
       endDate: Joi.date().required(),
       siteId: Joi.string().required(),
       amount: Joi.number().required(),
+      file: Joi.string(),
       description: Joi.string().optional().allow(""),
     });
 
+    if (data.image) {
+      data.file = data.image;
+      delete data.image;
+    } else delete data.image;
     const { error, value } = Validation.validate(data);
     if (error) {
       const { details } = error;

@@ -20,6 +20,7 @@ class SuperAdminSitesController {
     // if (siteCheck) throw new CustomError(STRINGS.ERRORS.siteNameExists, 404);
 
     // Check Client
+
     const client = await Client.findOne(
       { adminIds: validatedData.adminId },
       { _id: 1, companyId: 1 }
@@ -85,7 +86,7 @@ class SuperAdminSitesController {
 
     await SitePic.create({
       siteId: site._id,
-      exteriorBuilding: building._id,
+      // exteriorBuilding: building._id,
     });
 
     await res.status(200).send(response(STRINGS.TEXTS.siteCreated, result));

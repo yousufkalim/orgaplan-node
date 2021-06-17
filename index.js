@@ -23,7 +23,7 @@ app.get("/ping", (req, res) => res.status(200).send("Hello world!"));
 // Error middlewares
 require("./middlewares/error")(app);
 // PORT Handling
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT;
 
 // Connecting to Database and listening to server
 mongoose
@@ -41,6 +41,7 @@ mongoose
   .catch((err) => {
     console.log("[App.Mongoose]".red, err);
   });
-cron.schedule("0 0 * * *", () => {
+cron.schedule("00 00 * * *", () => {
   new Cronjobs();
+  console.log("Corn is Running", new Date());
 });

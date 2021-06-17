@@ -14,14 +14,20 @@ const schemas = {
       email: Joi.string()
         .email({ tlds: { allow: false } })
         .allow(""),
-      phone: Joi.number()
-        .integer()
-        .custom((value, helper) => {
-          if (String(value).startsWith("0") || String(value).length !== 9)
-            return helper.message("phone is invalid");
-          return value;
-        })
-        .allow(""),
+      phone: Joi.custom((value, helper) => {
+        if (String(value).length > 26)
+          return helper.message("phone is invalid");
+        return value;
+      }).allow(""),
+      // Joi.number()
+      //   .integer()
+      //   .custom((value, helper) => {
+      //     console.log(value);
+      //     if (String(value).startsWith("0") || String(value).length > 9)
+      //       return helper.message("phone is invalid");
+      //     return value;
+      //   })
+      //   .allow("")
       contractType: Joi.string()
         .required()
         .valid(
@@ -76,14 +82,13 @@ const schemas = {
       email: Joi.string()
         .email({ tlds: { allow: false } })
         .allow(""),
-      phone: Joi.number()
-        .integer()
-        .custom((value, helper) => {
-          if (String(value).startsWith("0") || String(value).length !== 9)
-            return helper.message("phone is invalid");
-          return value;
-        })
-        .allow(""),
+      phone: Joi.custom((value, helper) => {
+        console.log(value);
+
+        if (String(value).length > 26)
+          return helper.message("phone is invalid");
+        return value;
+      }).allow(""),
       contractType: Joi.string()
         .required()
         .valid(

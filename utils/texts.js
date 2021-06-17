@@ -122,6 +122,10 @@ module.exports = {
     userAlreadyExistWithAdminRole: "User Already Exist with Admin Role",
     requestedDateIsNotBetweenStorageAreaDate:
       "Requested date is not between storage area date",
+    companyDataValidation:
+      "Company Name and Type (Enterprise mandataire, Sous-traitant) are Mandatory",
+    fileNotFound: "file not Found",
+    downloadcsvFile: "File download successFully",
   },
   TEXTS: {
     allUsers: "All users",
@@ -167,6 +171,7 @@ module.exports = {
 
     companyData: "Company data",
     companyAdded: "Company Added",
+    addCompaniesData: "Companies Data",
     companyCreated: "Company created",
     companyUpdated: "Company updated",
     companyDeleted: "Company deleted",
@@ -194,7 +199,6 @@ module.exports = {
     historyCreated: "History Created",
     getHistory: "Get History Successfully",
 
-
     buildingDeleted: "Building Deleted",
     buildingUpdated: "Building Updated",
     buildingRequested: "Building Requested",
@@ -215,6 +219,7 @@ module.exports = {
     deliveryAreaUpdated: "Delivery Area Updated",
     deliveryAreaRequested: "Delivery Area Requested",
     getDeliveryAllStorageArea: "get Delivery All StorageArea",
+    getValidatedDeliveryMean: "get Validated Delivery Mean",
 
     allStorateAreas: "All Storage Areas",
     storateAreaCreated: "Storage Area Created",
@@ -270,6 +275,7 @@ module.exports = {
     meanBookingDeleted: "Mean Booking Deleted",
     meanBookingCreated: "Mean Booking Created",
     meanBookingUpdated: "Mean Booking Updated",
+    meanBookingValidated: "Mean Booking Validated",
     meanBookingRequested: "Mean Booking Requested",
 
     locationDeleted: "Location Deleted",

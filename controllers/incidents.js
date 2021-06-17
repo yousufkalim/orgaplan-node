@@ -17,6 +17,7 @@ class IncidentsController {
       validatedData.photos = req.body["image"];
       delete validatedData.image;
     }
+
     if (validatedData.location) {
       validatedData.location = JSON.parse(validatedData.location);
     }
@@ -34,7 +35,7 @@ class IncidentsController {
   }
 
   async getAll(req, res) {
-   const result = await Incidents.find({}, { password: 0, __v: 0 });
+    const result = await Incidents.find({}, { password: 0, __v: 0 });
     res.status(200).send(response(STRINGS.TEXTS.allIncidents, result));
   }
 
@@ -51,7 +52,7 @@ class IncidentsController {
   }
 
   async update(req, res) {
-    const id = req.params.id;   
+    const id = req.params.id;
     const validatedData = await Validations.incident.update(req.body);
     if (req.body["image"]) {
       validatedData.photos = req.body["image"];
@@ -61,8 +62,11 @@ class IncidentsController {
       validatedData.location = JSON.parse(validatedData.location);
     }
     const body = validatedData;
-    console.log("body",body)
-    // if (body.location) body.location = JSON.parse(body.location);    
+    // if (body.location) body.location = JSON.parse(body.location);
+    if (body.location == "") {
+      console.log("2body", body);
+      delete body.location;
+    }
 
     const result = await Incidents.findByIdAndUpdate(
       { _id: id },
@@ -89,15 +93,14 @@ class IncidentsController {
     const incidents = await Incidents.find({
       siteId: id,
     })
-      .populate("location.deliveryArea")
-      .populate("location.storageArea")
+      .populate("location?.deliveryArea")
+      .populate("location?.storageArea")
       .populate("companyId");
     const siteCompanies = await SiteCompanies.findOne({
       siteId: id,
     })
       .populate("companies.companyId")
       .populate("companies.parentCompanyId");
-
     const siteBuildings = await Building.find({
       siteId: id,
     })
@@ -128,14 +131,12 @@ class IncidentsController {
       status: [STRINGS.INCIDENTSTATUS.OPEN, STRINGS.INCIDENTSTATUS.CLOSED],
       type: [STRINGS.INCIDENTTYPE.DELAY, STRINGS.INCIDENTTYPE.LETIGATON],
     };
-
     if (!result) throw new CustomError(STRINGS.ERRORS.indcidentNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.incidentRequested, result));
   }
 
   async getIncidentsList(req, res) {
-
     const siteId = req.params.siteId;
     const total_inciddents = await Incidents.find({
       siteId: siteId,
@@ -168,7 +169,6 @@ class IncidentsController {
   }
 
   async getIncidentAdmin(req, res) {
-
     const siteId = req.params.siteId;
     const siteCompanies = await SiteCompanies.findOne({
       siteId: siteId,
@@ -198,7 +198,7 @@ class IncidentsController {
     res.status(200).send(response(STRINGS.TEXTS.incidentRequested, result));
   }
 
-  async filterIncidents(req, res) {  
+  async filterIncidents(req, res) {
     const body = req.body;
     const siteId = body.siteId;
     const deliveryArea = body.deliveryArea;
@@ -210,6 +210,7 @@ class IncidentsController {
     const status = body.status;
     const name = body.name;
     const company = body.company;
+
     const result = await Incidents.find({
       siteId: siteId,
       $and: [
@@ -260,6 +261,7 @@ class IncidentsController {
     const status = body.status;
     const name = body.name;
     const company = body.company;
+
     const result = await Incidents.find({
       siteId: siteId,
       $and: [
@@ -276,6 +278,8 @@ class IncidentsController {
         // { "availability.end": { $gte: new Date() } },
       ],
     })
+      // .populate("location?.deliveryArea")
+      // .populate("location?.storageArea")
       .populate({
         path: "location",
         populate: {
