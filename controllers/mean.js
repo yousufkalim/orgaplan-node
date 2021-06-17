@@ -9,7 +9,7 @@ const CustomError = require("../utils/customError");
 const StorageArea = require("../models/storageArea");
 const DeliveryArea = require("../models/deliveryArea");
 const SiteCompanies = require("../models/SiteCompanies");
-
+const fs = require("fs");
 const { isDateBefore, isDateAfter } = require("../utils/helpers");
 
 class MeanController {
@@ -223,5 +223,20 @@ class MeanController {
 
     res.status(200).send(response(STRINGS.TEXTS.meanRequested, result));
   }
+  async getPath(req, res) {
+    try {
+      let path = `${req.query.path}`;
+      // res.status(200).send(response(STRINGS.TEXTS.getPath, path));
+      let data = "false";
+      if (fs.existsSync(path)) {
+        // Do something
+        data = "true";
+      }
+      res.status(200).send(response(STRINGS.TEXTS.getPath, data));
+    } catch (e) {
+      res.status(400).send({ message: e.message });
+    }
+  }
 }
+
 module.exports = new MeanController();

@@ -105,7 +105,6 @@ class SitePicController {
   async updateShapePoints(req, res) {
     const { points, picID } = req.body;
     const siteID = req.params.siteID;
-    console.log(req.body, "req.body", siteID);
     const result = await SitePic.findOneAndUpdate(
       { siteId: siteID },
       { $set: { "shapes.$[el].points": points } },
