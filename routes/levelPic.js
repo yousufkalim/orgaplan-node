@@ -13,6 +13,7 @@ router.post("/shape", LevelPicController.addShape);
 // PUTS
 router.put("/update/:id", LevelPicController.update);
 router.put("/shape/:levelPicId/:shapeId", LevelPicController.updateShape);
+router.put("/shape/:levelId", LevelPicController.updateShapePoints);
 
 // DELETE
 router.delete("/shape/:levelPicId/:shapeId", LevelPicController.deleteShape);

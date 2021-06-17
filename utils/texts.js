@@ -292,6 +292,8 @@ module.exports = {
 
     allZacs: "All Zacs",
     allMeans: "All Means",
+    getPath: "Path Get Successfully",
+
     allLevels: "All Levels",
     allTrades: "All Trades",
     siteCreated: "Site created",

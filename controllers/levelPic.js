@@ -20,7 +20,6 @@ class LevelPicController {
 
   async getByLevel(req, res) {
     const levelId = req.params.id;
-
     const result = await LevelPic.findOne({ levelId })
       .populate("shapes.mean")
       .populate("shapes.storageArea");
@@ -79,7 +78,24 @@ class LevelPicController {
 
     res.status(200).send(response(STRINGS.TEXTS.picUpdated, result));
   }
+  async updateShapePoints(req, res) {
+    const { points, picID } = req.body;
+    const levelId = req.params.levelId;
+    const result = await LevelPic.findOneAndUpdate(
+      { levelId: levelId },
+      { $set: { "shapes.$[el].points": points } },
+      {
+        arrayFilters: [{ "el._id": `${picID}` }],
+        new: true,
+      }
+    )
+    .populate("shapes.mean")
+    .populate("shapes.storageArea");
 
+    if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
+
+    res.status(200).send(response(STRINGS.TEXTS.picUpdated, result));
+  }
   async deleteShape(req, res) {
     const shapeId = req.params.shapeId;
     const levelPicId = req.params.levelPicId;
