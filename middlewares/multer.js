@@ -54,6 +54,7 @@ const uploader = (folder) =>
       "image/jpeg",
       "application/pdf",
       "application/octet-stream",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     ]),
   });
 

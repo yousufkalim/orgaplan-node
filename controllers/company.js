@@ -8,6 +8,7 @@ const CustomError = require("../utils/customError");
 const SiteCompanies = require("../models/SiteCompanies");
 const csv = require("csv-parser");
 const fs = require("fs");
+const readXlsxFile = require("read-excel-file/node");
 
 class CompanyController {
   async create(req, res) {
@@ -47,29 +48,44 @@ class CompanyController {
     res.status(200).send(response(STRINGS.TEXTS.companyAdded, company));
   }
 
+  // async UploadCompaniesUserData(req, res) {
+  //   const companyId = req.params.companyId;
+  //   const results = [];
+  //   var flag = false;
+  //   const success = false;
+  //   const { image } = req.body; // CSV file name is image
+  //   if (image) {
+  //     fs.createReadStream(image)
+  //       .pipe(csv())
+  //       .on("data", (data) => results.push(data))
+  //       .on("end", async () => {
+  //         if (flag) {
+  //           res
+  //             .status(400)
+  //             .send(
+  //               response(STRINGS.ERRORS.companyDataValidation, null, success)
+  //             );
+  //         } else {
+  //           res
+  //             .status(200)
+  //             .send(response(STRINGS.TEXTS.CompaniesUserData, results));
+  //         }
+  //       });
+  //   } else {
+  //     res
+  //       .status(400)
+  //       .send(response(STRINGS.ERRORS.fileNotFound, null, success));
+  //   }
+  // }
+
   async UploadCompaniesUserData(req, res) {
     const companyId = req.params.companyId;
-    const results = [];
     var flag = false;
     const success = false;
     const { image } = req.body; // CSV file name is image
     if (image) {
-      fs.createReadStream(image)
-        .pipe(csv())
-        .on("data", (data) => results.push(data))
-        .on("end", async () => {
-          if (flag) {
-            res
-              .status(400)
-              .send(
-                response(STRINGS.ERRORS.companyDataValidation, null, success)
-              );
-          } else {
-            res
-              .status(200)
-              .send(response(STRINGS.TEXTS.CompaniesUserData, results));
-          }
-        });
+      let results = await readXlsxFile(image);
+      res.status(200).send(response(STRINGS.TEXTS.CompaniesUserData, results));
     } else {
       res
         .status(400)
