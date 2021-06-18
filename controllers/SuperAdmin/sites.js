@@ -77,10 +77,11 @@ class SuperAdminSitesController {
       });
     }
 
-    // 5- Create Site PIC
-    await SitePic.create({
-      siteId: site._id,
-    });
+    //sitePic(model) is created two times that,s why i just commented these lines 
+    //  5- Create Site PIC
+    // await SitePic.create({
+    //   siteId: site._id,
+    // });
 
     let result = site;
 
