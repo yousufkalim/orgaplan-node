@@ -15,7 +15,7 @@ const moment = require("moment");
 
 class DashboardController {
   async getAll(req, res) {
-    let clients = await Client.find();
+    let clients = await Client.find({ status: { $not: { $eq: "DELETED" } } });
     // let invoices = await Invoice.find();
 
     const result = {
@@ -205,7 +205,9 @@ class DashboardController {
   }
 
   async getIncidents(req, res) {
-    const incident = await Incident.find();
+    const incident = await Incident.find({
+      status: { $ne: STRINGS.INCIDENTSTATUS.CLOSED},
+    });
 
     const siteIncidents = await Incident.aggregate().group({
       _id: "$siteId",
