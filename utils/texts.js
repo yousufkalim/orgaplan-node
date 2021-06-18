@@ -172,6 +172,7 @@ module.exports = {
     companyData: "Company data",
     companyAdded: "Company Added",
     addCompaniesData: "Companies Data",
+    CompaniesUserData: "Companies User Data",
     companyCreated: "Company created",
     companyUpdated: "Company updated",
     companyDeleted: "Company deleted",
