@@ -3,6 +3,7 @@ uploads/company/*.pdf
 uploads/company/*.png
 uploads/company/*.jpg
 uploads/company/*.jpeg
+/.vscode
 
 
 uploads/deliveryArea/*.pdf
