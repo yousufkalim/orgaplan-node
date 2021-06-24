@@ -198,22 +198,22 @@ class DeliveryController {
         validatedData.photos = [validatedData.image];
         delete validatedData.image;
       }
-      await Incidents.create({
-        name: result.name,
-        date: result.date,
-        time: validatedData.time,
-        comment: validatedData.comment,
-        isBillable: true,
-        isPaid: false,
-        location: {
-          deliveryArea: result.deliveryArea,
-          storageArea: result.storageArea,
-        },
-        photos: validatedData.photos,
-        siteId: result.siteId,
-        companyId: result.companyId,
-        type: STRINGS.INCIDENTTYPE.DELAY,
-      });
+      // await Incidents.create({
+      //   name: result.name,
+      //   date: result.date,
+      //   time: validatedData.time,
+      //   comment: validatedData.comment,
+      //   isBillable: true,
+      //   isPaid: false,
+      //   location: {
+      //     deliveryArea: result.deliveryArea,
+      //     storageArea: result.storageArea,
+      //   },
+      //   photos: validatedData.photos,
+      //   siteId: result.siteId,
+      //   companyId: result.companyId,
+      //   type: STRINGS.INCIDENTTYPE.DELAY,
+      // });
     }
 
     if (!result) throw new CustomError(STRINGS.ERRORS.deliveryNotFound, 404);
