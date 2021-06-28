@@ -34,6 +34,7 @@ router.put(
   multer("user", "image", "single"),
   userController.updateCompanyUser
 );
+router.put("/delete_company_user", userController.deleteCompanyUser);
 router.put("/update/:userId", upload("user", "image"), userController.update);
 
 // DELETES

@@ -273,6 +273,57 @@ class UserContoller {
     }
   }
 
+  async deleteCompanyUser(req, res) {
+    const { userId, siteId, email, companyId, role, phone, image } = req.body;
+    console.log("for delete 1", req.body);
+    // const userCheck = await User.findOne({ email: email });
+    // if (userCheck) {
+    //   const checkCompanyInSite = await SiteCompanies.findOne({
+    //     siteId: siteId,
+    //     "users.companyId": companyId,
+    //   });
+    //   if (!checkCompanyInSite)
+    //     throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound, 404);
+
+    //   const userData = {
+    //     phone: phone,
+    //   };
+    //   image && (userData.image = image);
+
+    //   await userCheck.update({
+    //     $set: userData,
+    //   });
+    //   await UserSites.findOneAndUpdate(
+    //     {
+    //       userId: ObjectId(userId),
+    //     },
+    //     { $set: { "sites.$[el].role": role } },
+    //     {
+    //       arrayFilters: [{ "el.siteId": ObjectId(siteId) }],
+    //       new: true,
+    //     }
+    //   );
+    //   await SiteCompanies.findOneAndUpdate(
+    //     {
+    //       siteId: ObjectId(siteId),
+    //     },
+    //     { $set: { "users.$[el].role": role } },
+    //     {
+    //       arrayFilters: [
+    //         {
+    //           "el.companyId": ObjectId(companyId),
+    //           "el.userId": ObjectId(userId),
+    //         },
+    //       ],
+    //       new: true,
+    //     }
+    //   );
+    //   await res.status(200).send(response(STRINGS.TEXTS.userUpdated));
+    // } else {
+    //   throw new CustomError(STRINGS.ERRORS.error, 404);
+    // }
+  }
+
   async updateCompanyUser(req, res) {
     const { userId, siteId, email, companyId, role, phone, image } = req.body;
 
