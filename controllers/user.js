@@ -272,56 +272,36 @@ class UserContoller {
       await res.status(200).send(response(STRINGS.TEXTS.userCreated, user));
     }
   }
-
+  // Delete User By admin
   async deleteCompanyUser(req, res) {
-    const { userId, siteId, email, companyId, role, phone, image } = req.body;
+    const { userId, siteId, email, companyId } = req.body;
     console.log("for delete 1", req.body);
-    // const userCheck = await User.findOne({ email: email });
-    // if (userCheck) {
-    //   const checkCompanyInSite = await SiteCompanies.findOne({
-    //     siteId: siteId,
-    //     "users.companyId": companyId,
-    //   });
-    //   if (!checkCompanyInSite)
-    //     throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound, 404);
-
-    //   const userData = {
-    //     phone: phone,
-    //   };
-    //   image && (userData.image = image);
-
-    //   await userCheck.update({
-    //     $set: userData,
-    //   });
-    //   await UserSites.findOneAndUpdate(
-    //     {
-    //       userId: ObjectId(userId),
-    //     },
-    //     { $set: { "sites.$[el].role": role } },
-    //     {
-    //       arrayFilters: [{ "el.siteId": ObjectId(siteId) }],
-    //       new: true,
-    //     }
-    //   );
-    //   await SiteCompanies.findOneAndUpdate(
-    //     {
-    //       siteId: ObjectId(siteId),
-    //     },
-    //     { $set: { "users.$[el].role": role } },
-    //     {
-    //       arrayFilters: [
-    //         {
-    //           "el.companyId": ObjectId(companyId),
-    //           "el.userId": ObjectId(userId),
-    //         },
-    //       ],
-    //       new: true,
-    //     }
-    //   );
-    //   await res.status(200).send(response(STRINGS.TEXTS.userUpdated));
-    // } else {
-    //   throw new CustomError(STRINGS.ERRORS.error, 404);
-    // }
+    const userCheck = await User.findOne({ email: email });
+    if (userCheck) {
+      const checkCompanyInSite = await SiteCompanies.findOne({
+        siteId: siteId,
+        "users.companyId": companyId,
+      });
+      if (!checkCompanyInSite)
+        throw new CustomError(STRINGS.ERRORS.siteCompanyNotFound, 404);
+      // Delete User From SiteCompanies Modal
+      let newSiteCompanies = await SiteCompanies.findOneAndUpdate(
+        {
+          siteId: ObjectId(siteId),
+        },
+        { $pull: { users: { userId: ObjectId(userId) } } }
+      );
+      // Remove Site From UserSites Modal
+      let newUserSite = await UserSites.findOneAndUpdate(
+        {
+          userId: ObjectId(userId),
+        },
+        { $pull: { sites: { siteId: ObjectId(siteId) } } }
+      );
+      await res.status(200).send(response("User Remove Successfully"));
+    } else {
+      throw new CustomError(STRINGS.ERRORS.error, 404);
+    }
   }
 
   async updateCompanyUser(req, res) {
