@@ -197,7 +197,7 @@ class SuperAdminSitesController {
         }
       );
     });
-    /// update user Site id only
+    /// update user Site id only //
     validatedData.clientAdmin.map(async (fromEditId, index) => {
       itemCheck.clientAdmin.map(async (dbId, index) => {
         if (String(fromEditId.adminId) !== String(dbId.adminId)) {
