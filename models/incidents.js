@@ -42,7 +42,7 @@ const incidentSchema = new Schema(
         STRINGS.INCIDENTTYPE.MEAN,
         STRINGS.INCIDENTTYPE.DELAY,
         STRINGS.INCIDENTTYPE.INCIDENT,
-        STRINGS.INCIDENTTYPE.UNEXPRECTED,
+        STRINGS.INCIDENTTYPE.UNEXPECTED,
       ],
       required: true,
     },

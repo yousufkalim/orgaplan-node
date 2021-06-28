@@ -56,6 +56,7 @@ const uploader = (folder) =>
       "application/octet-stream",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     ]),
+    limits: { fileSize: "15MB" },
   });
 
 module.exports = (folder, field, type = "single") => {

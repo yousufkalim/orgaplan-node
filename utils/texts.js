@@ -420,7 +420,7 @@ module.exports = {
     DELAY: "DELAY",
     INCIDENT: "INCIDENT",
     LETIGATON: "LETIGATION",
-    UNEXPRECTED: "UNEXPRECTED",
+    UNEXPECTED: "UNEXPECTED",
   },
   INCIDENTSTATUS: {
     OPEN: "OPEN",
@@ -428,7 +428,7 @@ module.exports = {
   },
   SITEPENALTY: {
     LATE: "LATE",
-    UNEXPRECTED: "UNEXPECTED",
+    UNEXPECTED: "UNEXPECTED",
   },
   MEANLOCATIONTYPE: {
     LEVEL: "LEVEL",
