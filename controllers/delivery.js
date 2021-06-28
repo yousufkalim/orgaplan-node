@@ -10,6 +10,7 @@ const CustomError = require("../utils/customError");
 
 class DeliveryController {
   async create(req, res) {
+    console.log(req.body);
     const validatedData = await Validations.delivery.create(req.body);
 
     const result = await Delivery.create(validatedData);

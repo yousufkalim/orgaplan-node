@@ -19,35 +19,28 @@ class SuperAdminSitesController {
     // const siteCheck = await Site.findOne({ name: validatedData.name });
     // if (siteCheck) throw new CustomError(STRINGS.ERRORS.siteNameExists, 404);
 
-    // Check Client
-
-    const client = await Client.findOne(
-      { adminIds: validatedData.adminId },
-      { _id: 1, companyId: 1 }
-    ).lean();
-    if (!client) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
-
-    validatedData.clientId = client._id;
-
     // 1- Create the site
     const site = await Site.create(validatedData);
+    const clientAdmin = validatedData.clientAdmin;
+    const siteCompanyUser = clientAdmin.map((key, index) => {
+      return {
+        userId: key.adminId,
+        companyId: key.companyId,
+        role: STRINGS.ROLES.ADMIN,
+      };
+    });
+    const siteCompanyCompanies = clientAdmin.map((key, index) => {
+      return {
+        companyId: key.companyId,
+        trades: validatedData.trades,
+      };
+    });
 
     // 2- Create Site Companies Doc
     await SiteCompanies.create({
       siteId: site._id,
-      users: [
-        {
-          userId: validatedData.adminId,
-          companyId: client.companyId,
-          role: STRINGS.ROLES.ADMIN,
-        },
-      ],
-      companies: [
-        {
-          companyId: client.companyId,
-          trades: validatedData.trades,
-        },
-      ],
+      users: siteCompanyUser,
+      companies: siteCompanyCompanies,
     });
 
     // 3- Add site to zac
@@ -57,27 +50,28 @@ class SuperAdminSitesController {
       });
     }
 
-    // 4- Check if the userSites Obj exists
-    const userSitesCheck = await UserSites.findOne({
-      userId: validatedData.adminId,
-    });
-    if (userSitesCheck) {
-      await UserSites.findByIdAndUpdate(userSitesCheck._id, {
-        $addToSet: { sites: { siteId: site._id, role: STRINGS.ROLES.ADMIN } },
+    await clientAdmin.map(async (key, index) => {
+      // 4- Check if the userSites Obj exists
+      const userSitesCheck = await UserSites.findOne({
+        userId: key.adminId,
       });
-    } else {
-      await UserSites.create({
-        userId: validatedData.adminId,
-        sites: [
-          {
-            siteId: site._id,
-            role: STRINGS.ROLES.ADMIN,
-          },
-        ],
-      });
-    }
-
-    //sitePic(model) is created two times that,s why i just commented these lines 
+      if (userSitesCheck) {
+        return UserSites.findByIdAndUpdate(userSitesCheck._id, {
+          $addToSet: { sites: { siteId: site._id, role: STRINGS.ROLES.ADMIN } },
+        });
+      } else {
+        return UserSites.create({
+          userId: key.adminId,
+          sites: [
+            {
+              siteId: site._id,
+              role: STRINGS.ROLES.ADMIN,
+            },
+          ],
+        });
+      }
+    }); // map several admin
+    //sitePic(model) is created two times that,s why i just commented these lines
     //  5- Create Site PIC
     // await SitePic.create({
     //   siteId: site._id,
@@ -124,8 +118,8 @@ class SuperAdminSitesController {
       .skip((page - 1) * ITEMS_PER_PAGE)
       .limit(ITEMS_PER_PAGE)
       .populate("zacId")
-      .populate("clientId")
-      .populate("adminId");
+      .populate("clientAdmin.adminId")
+      .populate("clientAdmin.clientId");
 
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
 
@@ -146,11 +140,10 @@ class SuperAdminSitesController {
 
   async getById(req, res) {
     const id = req.params.id;
-
     const result = await Site.findById(id, { password: 0, __v: 0 })
       .populate("zacId")
-      .populate("clientId")
-      .populate("adminId");
+      .populate("clientAdmin.adminId")
+      .populate("clientAdmin.clientId");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.siteNotFound, 404);
 
@@ -163,17 +156,14 @@ class SuperAdminSitesController {
     const itemCheck = await Site.findById(validatedData.siteId, {
       _id: 1,
       zacId: 1,
-      adminId: 1,
+      "clientAdmin.adminId": 1,
     }).lean();
     if (!itemCheck) throw new CustomError(STRINGS.TEXTS.siteNotFound, 404);
-
-    const client = await Client.findOne(
-      { adminIds: validatedData.adminId },
-      { _id: 1 }
-    ).lean();
-    if (!client) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
-
-    validatedData.clientId = client._id;
+    // const client = await Client.findOne(
+    //   { adminIds: validatedData.adminId },
+    //   { _id: 1 }
+    // ).lean();
+    // if (!client) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 
     if (
       validatedData.zacId &&
@@ -192,30 +182,52 @@ class SuperAdminSitesController {
         $unset: { zacId: "" },
       });
     }
-
-    if (String(itemCheck.adminId) !== String(validatedData.adminId)) {
-      // Check if the userSites Obj exists
-      const userSitesCheck = await UserSites.findOne({
-        userId: validatedData.adminId,
-      });
-      if (userSitesCheck) {
-        await UserSites.findByIdAndUpdate(userSitesCheck._id, {
-          $addToSet: {
-            sites: { siteId: validatedData.siteId, role: STRINGS.ROLES.ADMIN },
-          },
-        });
-      } else {
-        await UserSites.create({
-          userId: validatedData.adminId,
-          sites: [
-            {
-              siteId: validatedData.siteId,
-              role: STRINGS.ROLES.ADMIN,
+    // Delete user site id
+    itemCheck.clientAdmin.map(async (dbId, index) => {
+      const userSitesCheck = await UserSites.findOneAndUpdate(
+        {
+          userId: dbId.adminId,
+        },
+        {
+          $pull: {
+            sites: {
+              siteId: itemCheck._id,
             },
-          ],
-        });
-      }
-    }
+          },
+        }
+      );
+    });
+    /// update user Site id only
+    validatedData.clientAdmin.map(async (fromEditId, index) => {
+      itemCheck.clientAdmin.map(async (dbId, index) => {
+        if (String(fromEditId.adminId) !== String(dbId.adminId)) {
+          // Check if the userSites Obj exists
+          const userSitesCheck = await UserSites.findOne({
+            userId: fromEditId.adminId,
+          });
+          if (userSitesCheck) {
+            await UserSites.findByIdAndUpdate(userSitesCheck._id, {
+              $addToSet: {
+                sites: {
+                  siteId: validatedData.siteId,
+                  role: STRINGS.ROLES.ADMIN,
+                },
+              },
+            });
+          } else {
+            await UserSites.create({
+              userId: fromEditId.adminId,
+              sites: [
+                {
+                  siteId: validatedData.siteId,
+                  role: STRINGS.ROLES.ADMIN,
+                },
+              ],
+            });
+          }
+        }
+      });
+    });
 
     const result = await Site.findByIdAndUpdate(
       validatedData.siteId,
@@ -255,14 +267,16 @@ class SuperAdminSitesController {
 
   async getSitesByClient(req, res) {
     const clientId = req.params.clientId;
-
     const items = await Site.find(
-      { clientId: clientId, status: { $ne: STRINGS.STATUS.ARCHIVED } },
+      {
+        "clientAdmin.clientId": clientId,
+        status: { $ne: STRINGS.STATUS.ARCHIVED },
+      },
       { __v: 0, password: 0 }
     )
       .populate("zacId")
-      .populate("clientId")
-      .populate("adminId");
+      .populate("clientAdmin.clientId")
+      .populate("clientAdmin.adminId");
 
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
 
@@ -280,8 +294,8 @@ class SuperAdminSitesController {
       { __v: 0, password: 0 }
     )
       .populate("zacId")
-      .populate("clientId")
-      .populate("adminId");
+      .populate("clientAdmin.clientId")
+      .populate("clientAdmin.adminId");
 
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
 
@@ -309,8 +323,8 @@ class SuperAdminSitesController {
       .skip((page - 1) * ITEMS_PER_PAGE)
       .limit(ITEMS_PER_PAGE)
       .populate("zacId")
-      .populate("clientId")
-      .populate("adminId");
+      .populate("clientAdmin.clientId")
+      .populate("clientAdmin.adminId");
 
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
 
@@ -333,8 +347,8 @@ class SuperAdminSitesController {
       status: STRINGS.STATUS.ARCHIVED,
     })
       .populate("zacId")
-      .populate("clientId")
-      .populate("adminId");
+      .populate("clientAdmin.clientId")
+      .populate("clientAdmin.adminId");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
 
@@ -348,8 +362,8 @@ class SuperAdminSitesController {
       status: STRINGS.STATUS.ACTIVE,
     })
       .populate("zacId")
-      .populate("clientId")
-      .populate("adminId");
+      .populate("clientAdmin.clientId")
+      .populate("clientAdmin.adminId");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
 
