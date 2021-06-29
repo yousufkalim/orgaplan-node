@@ -34,9 +34,16 @@ router.put(
   multer("user", "image", "single"),
   userController.updateCompanyUser
 );
+
 router.put("/update/:userId", upload("user", "image"), userController.update);
 
 // DELETES
+router.delete(
+  "/delete_company_user",
+  upload(),
+  userController.deleteCompanyUser
+);
+
 router.delete("/:userId", auth("admin"), userController.delete);
 
 module.exports = router;
