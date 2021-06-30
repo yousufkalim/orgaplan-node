@@ -14,7 +14,10 @@ const schemas = {
         "boolean.base": "Mean location (isInside) must be a boolean type",
         "any.required": "Mean location (isInside) is required",
       }),
+
       level: Joi.string().optional().allow(""),
+      levelName: Joi.string().optional().allow(""),
+      buildingName: Joi.string().optional().allow(""),
       location: Joi.array()
         .items(
           Joi.object().keys({
@@ -86,6 +89,8 @@ const schemas = {
         "any.required": "Mean location (isInside) is required",
       }),
       level: Joi.string().optional().allow(""),
+      levelName: Joi.string().optional().allow(""),
+      buildingName: Joi.string().optional().allow(""),
       location: Joi.array()
         .items(
           Joi.object().keys({
