@@ -180,6 +180,8 @@ module.exports = {
     companysRequested: "Companys requested",
     companyExistsAlready: "Company exists already",
 
+    logsRequested: "Logs Requested",
+
     deliveryData: "Delivery Data",
     allDeliveries: "All Deliveries",
     deliveryAdded: "Delivery Added",
@@ -465,6 +467,7 @@ module.exports = {
     CONTRACT: "Contract",
     BUILDING: "Building",
     HISTORY: "History",
+    LOGS: "logs",
 
     DELIVERY: "Delivery",
     MATERIAL: "Material",

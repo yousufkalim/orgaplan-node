@@ -1,6 +1,7 @@
 const STRINGS = require("../utils/texts");
 const Auth = require("../controllers/auth");
 const Company = require("../models/company");
+const site = require("../models/site");
 const ObjectId = require("mongodb").ObjectID;
 const response = require("../utils/response");
 const UserSites = require("../models/userSites");
@@ -9,6 +10,7 @@ const SiteCompanies = require("../models/SiteCompanies");
 const csv = require("csv-parser");
 const fs = require("fs");
 const readXlsxFile = require("read-excel-file/node");
+const { writeLog } = require("../utils/logs");
 
 class CompanyController {
   async create(req, res) {
@@ -45,6 +47,14 @@ class CompanyController {
         },
       }
     );
+
+    // Logging this activity
+    const siteData = await site.findOne({ _id: validatedData.siteId });
+    await writeLog(
+      new Date().toLocaleString(),
+      `${validatedData.name} has been added to the site ${siteData.name}`
+    );
+
     res.status(200).send(response(STRINGS.TEXTS.companyAdded, company));
   }
 

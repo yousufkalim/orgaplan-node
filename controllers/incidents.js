@@ -9,6 +9,7 @@ const StorageArea = require("../models/storageArea");
 const DeliveryArea = require("../models/deliveryArea");
 const SiteCompanies = require("../models/SiteCompanies");
 const { isDateBefore, isDateAfter } = require("../utils/helpers");
+const { writeLog } = require("../utils/logs");
 
 class IncidentsController {
   async create(req, res) {
@@ -31,6 +32,13 @@ class IncidentsController {
       throw new CustomError(STRINGS.ERRORS.incidentDateBeforeSiteEndtDate);
 
     const result = await new Incidents(validatedData).save();
+
+    // Logging Activity
+    await writeLog(
+      new Date().toLocaleString(),
+      `Admin has created the incident named ${result.name} for the site ${site.name}`
+    );
+
     res.status(200).send(response(STRINGS.TEXTS.incidentCreated, result));
   }
 

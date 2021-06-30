@@ -73,6 +73,7 @@ const schemas = {
       status: Joi.string().required(""),
       comments: Joi.string().optional().allow(""),
       time: Joi.string().optional().allow(""),
+      username: Joi.string().optional().allow(""),
     });
 
     data.materialsDelivered = JSON.parse(data.materialsDelivered);

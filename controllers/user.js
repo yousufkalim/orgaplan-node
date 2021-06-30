@@ -4,11 +4,12 @@ const response = require("../utils/response");
 const UserSites = require("../models/userSites");
 const CustomError = require("../utils/customError");
 const SiteCompanies = require("../models/SiteCompanies");
-
+const site = require("../models/site");
 const Company = require("../models/company");
 const Auth = require("../controllers/auth");
 const ObjectId = require("mongodb").ObjectID;
 const Validations = require("../validators");
+const { writeLog } = require("../utils/logs");
 
 const bcrypt = require("bcryptjs");
 const ENV = process.env;
@@ -269,6 +270,13 @@ class UserContoller {
         }
       );
 
+      // Logging activity
+      const siteData = await site.findOne({ _id: siteId });
+      await writeLog(
+        new Date().toLocaleString(),
+        `${firstName} ${lastName} has been added to the site ${siteData.name}`
+      );
+
       await res.status(200).send(response(STRINGS.TEXTS.userCreated, user));
     }
   }
@@ -298,6 +306,15 @@ class UserContoller {
         },
         { $pull: { sites: { siteId: ObjectId(siteId) } } }
       );
+
+      // Logging activity
+      const siteData = await site.findOne({ _id: siteId });
+      const { firstName, lastName } = userCheck;
+      await writeLog(
+        new Date().toLocaleString(),
+        `${firstName} ${lastName} has been deleted from the site ${siteData.name}`
+      );
+
       await res.status(200).send(response("User Remove Successfully"));
     } else {
       throw new CustomError(STRINGS.ERRORS.error, 404);
