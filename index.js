@@ -45,7 +45,7 @@ cron.schedule(
   "00 12 * * *",
   () => {
     new Cronjobs();
-    console.log("Corn is Running", new Date());
+    console.log("Cron is Running", new Date());
   },
   {
     scheduled: true,
