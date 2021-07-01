@@ -41,7 +41,14 @@ mongoose
   .catch((err) => {
     console.log("[App.Mongoose]".red, err);
   });
-cron.schedule("01 01 * * *", () => {
-  new Cronjobs();
-  console.log("Corn is Running", new Date());
-});
+cron.schedule(
+  "00 12 * * *",
+  () => {
+    new Cronjobs();
+    console.log("Corn is Running", new Date());
+  },
+  {
+    scheduled: true,
+    timezone: "Asia/Karachi",
+  }
+);
