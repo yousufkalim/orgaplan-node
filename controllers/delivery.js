@@ -260,7 +260,7 @@ class DeliveryController {
 
     await writeLog(
       new Date().toLocaleString(),
-      `The traffic agent ${validatedData.username} has completed the delivery for ${result.name}, for ${company.name}, for ${siteData.name}`
+      `The traffic agent ${validatedData.username} has completed the delivery for ${result.date}, for ${company.name}, for ${siteData.name}`
     );
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryUpdated, result));
@@ -284,11 +284,13 @@ class DeliveryController {
     if (!result) throw new CustomError(STRINGS.ERRORS.deliveryNotFound, 404);
 
     // Logging Activity
-    const siteData = await Site.findOne({ _id: result.siteId });
-    await writeLog(
-      new Date().toLocaleString(),
-      `Truck ${result.flatRegistration} has returned to buffer area at ${result.arrivalTime} for site ${siteData.name}`
-    );
+    if (validatedData.bufferArea) {
+      const siteData = await Site.findOne({ _id: result.siteId });
+      await writeLog(
+        new Date().toLocaleString(),
+        `Truck ${result.flatRegistration} has returned to buffer area at ${result.arrivalTime} for site ${siteData.name}`
+      );
+    }
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryUpdated, result));
   }
