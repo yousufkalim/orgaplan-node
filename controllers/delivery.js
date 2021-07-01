@@ -33,7 +33,9 @@ class DeliveryController {
 
     await writeLog(
       new Date().toLocaleString(),
-      `A delivery request has been created by the ${firstName} ${lastName} for ${result.date}, for ${company.name}, for ${siteData.name}`
+      `A delivery request has been created by the ${firstName} ${lastName} for ${result.date.toLocaleString()}, for ${
+        company.name
+      }, for ${siteData.name}`
     );
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryCreated, result));
@@ -90,7 +92,9 @@ class DeliveryController {
     const company = await Company.findOne({ _id: result.companyId });
     await writeLog(
       new Date().toLocaleString(),
-      `Admin has refused a delivery request for ${result.date}, for ${company.name}, for ${siteData.name}`
+      `Admin has refused a delivery request for ${result.date.toLocaleString()}, for ${
+        company.name
+      }, for ${siteData.name}`
     );
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryDeleted, result));
@@ -199,7 +203,9 @@ class DeliveryController {
     const company = await Company.findOne({ _id: result.companyId });
     await writeLog(
       new Date().toLocaleString(),
-      `Admin has accepted a delivery request for ${result.date}, for ${company.name}, for ${siteData.name}`
+      `Admin has accepted a delivery request for ${result.date.toLocaleString()}, for ${
+        company.name
+      }, for ${siteData.name}`
     );
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryUpdated, result));
@@ -260,7 +266,11 @@ class DeliveryController {
 
     await writeLog(
       new Date().toLocaleString(),
-      `The traffic agent ${validatedData.username} has completed the delivery for ${result.date}, for ${company.name}, for ${siteData.name}`
+      `The traffic agent ${
+        validatedData.username
+      } has completed the delivery for ${result.date.toLocaleString()}, for ${
+        company.name
+      }, for ${siteData.name}`
     );
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryUpdated, result));
@@ -288,7 +298,11 @@ class DeliveryController {
       const siteData = await Site.findOne({ _id: result.siteId });
       await writeLog(
         new Date().toLocaleString(),
-        `Truck ${result.flatRegistration} has returned to buffer area at ${result.arrivalTime} for site ${siteData.name}`
+        `Truck ${
+          result.flatRegistration
+        } has returned to buffer area at ${result.arrivalTime.toLocaleString()} for site ${
+          siteData.name
+        }`
       );
     }
 
