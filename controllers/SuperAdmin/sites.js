@@ -9,6 +9,7 @@ const response = require("../../utils/response");
 const UserSites = require("../../models/userSites");
 const CustomError = require("../../utils/customError");
 const SiteCompanies = mongoose.model(STRINGS.MODALS.SITECOMPANIES);
+const { writeLog } = require("../../utils/logs");
 const ENV = process.env;
 
 class SuperAdminSitesController {
@@ -77,7 +78,7 @@ class SuperAdminSitesController {
       });
     }
 
-    //sitePic(model) is created two times that,s why i just commented these lines 
+    //sitePic(model) is created two times that,s why i just commented these lines
     //  5- Create Site PIC
     // await SitePic.create({
     //   siteId: site._id,
@@ -90,6 +91,11 @@ class SuperAdminSitesController {
       // exteriorBuilding: building._id,
     });
 
+    // Logging this activity
+    await writeLog(
+      new Date().toLocaleString(),
+      `Super admin has created the site ${validatedData.name}`
+    );
     await res.status(200).send(response(STRINGS.TEXTS.siteCreated, result));
   }
 
@@ -337,6 +343,12 @@ class SuperAdminSitesController {
       .populate("adminId");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
+
+    // Logging this activity
+    await writeLog(
+      new Date().toLocaleString(),
+      `Super admin has archived the site ${result.name}`
+    );
 
     res.status(200).send(response(STRINGS.TEXTS.siteArchived, result));
   }

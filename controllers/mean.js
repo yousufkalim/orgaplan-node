@@ -11,6 +11,7 @@ const DeliveryArea = require("../models/deliveryArea");
 const SiteCompanies = require("../models/SiteCompanies");
 const fs = require("fs");
 const { isDateBefore, isDateAfter } = require("../utils/helpers");
+const { writeLog } = require("../utils/logs");
 
 class MeanController {
   async create(req, res) {
@@ -33,6 +34,12 @@ class MeanController {
     await site.update({
       $addToSet: { means: result._id },
     });
+
+    // Logging Activity
+    await writeLog(
+      new Date().toLocaleString(),
+      `${validatedData.name} has been added to the site ${site.name}`
+    );
 
     res.status(200).send(response(STRINGS.TEXTS.meanCreated, result));
   }

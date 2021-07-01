@@ -9,6 +9,7 @@ const Contract = require("../../models/contract");
 const CustomError = require("../../utils/customError");
 const mongoose = require("mongoose");
 const ENV = process.env;
+const { writeLog } = require("../../utils/logs");
 
 class SuperAdminClientsController {
   async create(req, res) {
@@ -49,6 +50,10 @@ class SuperAdminClientsController {
       .populate("contractIds")
       .execPopulate();
 
+    await writeLog(
+      new Date().toLocaleString(),
+      `Super admin has added ${companyData.name} to the platform`
+    );
     res.status(200).send(response(STRINGS.TEXTS.clientCreated, client));
   }
 

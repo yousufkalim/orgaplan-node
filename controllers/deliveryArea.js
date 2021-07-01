@@ -3,6 +3,8 @@ const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const DeliveryArea = require("../models/deliveryArea");
+const site = require("../models/site");
+const { writeLog } = require("../utils/logs");
 
 class DeliveryAreaController {
   async create(req, res) {
@@ -10,6 +12,12 @@ class DeliveryAreaController {
 
     const result = await DeliveryArea.create(validatedData);
 
+    // Logging Activity
+    const siteData = await site.findOne({ _id: validatedData.siteId });
+    await writeLog(
+      new Date().toLocaleString(),
+      `${validatedData.name} has been added to the site ${siteData.name}`
+    );
     res.status(201).send(response(STRINGS.TEXTS.deliveryAreaCreated, result));
   }
 

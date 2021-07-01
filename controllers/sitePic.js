@@ -9,6 +9,7 @@ const Building = require("../models/building");
 const CustomError = require("../utils/customError");
 const StorageArea = require("../models/storageArea");
 const DeliveryArea = require("../models/deliveryArea");
+const { writeLog } = require("../utils/logs");
 
 class SitePicController {
   async create(req, res) {
@@ -137,20 +138,22 @@ class SitePicController {
 
     if (!shape) throw new CustomError(STRINGS.ERRORS.error, 404);
 
+    let del;
+
     if (shape.type === "MEAN") {
-      await Mean.findByIdAndRemove(shapeId);
+      del = await Mean.findByIdAndRemove(shapeId);
       await Site.findByIdAndUpdate(pic.siteId, {
         $pull: { means: shapeId },
       });
     } else if (shape.type === "BUILDING") {
-      await Building.findByIdAndRemove(shapeId);
+      del = await Building.findByIdAndRemove(shapeId);
       await Site.findByIdAndUpdate(pic.siteId, {
         $pull: { buildings: shapeId },
       });
     } else if (shape.type === "DELIVERYAREA") {
-      await DeliveryArea.findByIdAndRemove(shapeId);
+      del = await DeliveryArea.findByIdAndRemove(shapeId);
     } else if (shape.type === "STORAGEAREA") {
-      await StorageArea.findByIdAndRemove(shapeId);
+      del = await StorageArea.findByIdAndRemove(shapeId);
     }
 
     const result = await SitePic.findByIdAndUpdate(
@@ -167,6 +170,13 @@ class SitePicController {
       .populate("shapes.deliveryArea");
 
     if (!result) throw new CustomError(STRINGS.ERRORS.error, 404);
+
+    // Logging Activity
+    const siteData = await Site.findOne({ _id: pic.siteId });
+    await writeLog(
+      new Date().toLocaleString(),
+      `${del.name} has been deleted from the site ${siteData.name}`
+    );
 
     res.status(200).send(response(STRINGS.TEXTS.picUpdated, result));
   }

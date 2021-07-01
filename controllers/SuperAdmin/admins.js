@@ -12,6 +12,7 @@ const Validations = require("../../validators");
 const response = require("../../utils/response");
 const CustomError = require("../../utils/customError");
 const MailService = require("../../services/mail.service");
+const { writeLog } = require("../../utils/logs");
 const ENV = process.env;
 
 class SuperAdminAdminsController {
@@ -49,6 +50,13 @@ class SuperAdminAdminsController {
     });
 
     const result = await User.findById(user._id).populate("company");
+
+    // Logging this activity
+    const { firstName, lastName } = validatedData;
+    await writeLog(
+      new Date().toLocaleString(),
+      `Super admin has added ${firstName} ${lastName} to the platform`
+    );
 
     res.status(200).send(response(STRINGS.TEXTS.adminCreated, result));
   }

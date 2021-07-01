@@ -3,12 +3,21 @@ const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const StorageArea = require("../models/storageArea");
+const site = require("../models/site");
+const { writeLog } = require("../utils/logs");
 
 class StorageAreaController {
   async create(req, res) {
     const validatedData = req.body;
 
     const result = await StorageArea.create(validatedData);
+
+    // Logging Activity
+    const siteData = await site.findOne({ _id: validatedData.siteId });
+    await writeLog(
+      new Date().toLocaleString(),
+      `${validatedData.name} has been added to the site ${siteData.name}`
+    );
 
     res.status(200).send(response(STRINGS.TEXTS.storateAreaCreated, result));
   }
