@@ -141,6 +141,7 @@ class MeanController {
   async filterMeans(req, res) {
     const body = req.body;
     const siteId = body.siteId;
+    console.log("req.body get means", req.body);
 
     const deliveryArea = body.deliveryArea;
     // const location = body.location;

@@ -283,7 +283,6 @@ class UserContoller {
   // Delete User By admin
   async deleteCompanyUser(req, res) {
     const { userId, siteId, email, companyId } = req.body;
-    console.log("for delete 1", req.body);
     const userCheck = await User.findOne({ email: email });
     if (userCheck) {
       const checkCompanyInSite = await SiteCompanies.findOne({

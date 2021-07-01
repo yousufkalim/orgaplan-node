@@ -13,6 +13,7 @@ const incidentSchema = new Schema(
     isBillable: Boolean,
     isPaid: Boolean,
     description: String,
+    meanLocation: String,
     photos: [{ type: String }],
     location: {
       deliveryArea: {

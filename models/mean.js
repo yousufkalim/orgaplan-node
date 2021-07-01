@@ -18,6 +18,9 @@ const meanSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.LEVEL,
     },
+    levelName: String,
+    buildingName: String,
+
     siteId: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.SITE,
