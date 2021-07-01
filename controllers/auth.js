@@ -17,7 +17,16 @@ const ENV = process.env;
 class AuthContoller {
   async signup(data) {
     let user = await User.findOne({ email: data.email });
-    if (user) throw new CustomError(STRINGS.ERRORS.userAlreadyExists, 404);
+    if (user) {
+      if (user.adminType === "ADMINPERSITE") {
+        throw new CustomError(STRINGS.ERRORS.userAlreadyExists, 404);
+      } else {
+        User.findOne({ email: data.email }).then((user) => {
+          user.adminType = "ADMINPERSITE";
+          user.save();
+        });
+      }
+    }
 
     user = await User.create(data);
     if (!user) throw new CustomError(STRINGS.ERRORS.error, 404);
