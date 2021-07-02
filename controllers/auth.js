@@ -18,17 +18,18 @@ class AuthContoller {
   async signup(data) {
     let user = await User.findOne({ email: data.email });
     if (user) {
-      if (user.adminType === "ADMINPERSITE") {
+      if (
+        user.adminType === "ADMINPERSITE" ||
+        user.adminType === "MASTERADMIN"
+      ) {
         throw new CustomError(STRINGS.ERRORS.userAlreadyExists, 404);
       } else {
-        User.findOne({ email: data.email }).then((user) => {
-          user.adminType = "ADMINPERSITE";
-          user.save();
-        });
+        user = await User.findOneAndUpdate({ email: data.email }, { ...data });
       }
+    } else {
+      user = await User.create(data);
     }
 
-    user = await User.create(data);
     if (!user) throw new CustomError(STRINGS.ERRORS.error, 404);
 
     let verifyToken = crypto.randomBytes(32).toString("hex");
