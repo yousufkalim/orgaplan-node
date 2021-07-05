@@ -4,15 +4,12 @@ const STRINGS = require("../../utils/texts");
 const response = require("../../utils/response");
 const CustomError = require("../../utils/customError");
 
-// To get items per page
-const ENV = process.env;
-
 // Logs Controller
 class logsController {
   async getAll(req, res) {
     try {
       const page = +req.query.page || 1;
-      const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
+      const ITEMS_PER_PAGE = 20;
 
       const logsData = await logs
         .find()
