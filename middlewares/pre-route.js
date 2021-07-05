@@ -26,6 +26,9 @@ module.exports = (app) => {
   app.use(express.json());
   // app.use(limiter);
   app.use(express.urlencoded({ extended: false }));
-  app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+  app.use(
+    "/uploads",
+    express.static(path.join(__dirname, "../uploads"), { maxAge: "3153600" })
+  );
   return app;
 };
