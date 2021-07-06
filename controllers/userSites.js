@@ -1,4 +1,5 @@
 const UserSites = require("../models/userSites");
+const Site = require("../models/site");
 const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
@@ -44,6 +45,15 @@ class UserSitesController {
     const id = req.params.id;
 
     const result = await UserSites.findById({ _id: id });
+    if (!result) throw new CustomError(STRINGS.ERRORS.userSitesNotFound);
+
+    res.status(200).send(response(STRINGS.TEXTS.userSiteRequested, result));
+  }
+
+  async getOneSite(req, res) {
+    const id = req.params.id;
+
+    const result = await Site.findById({ _id: id });
     if (!result) throw new CustomError(STRINGS.ERRORS.userSitesNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.userSiteRequested, result));
