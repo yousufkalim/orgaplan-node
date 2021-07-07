@@ -146,6 +146,7 @@ module.exports = {
     picUpdated: "Pic updated",
     picDeleted: "Pic deleted",
     picRequested: "Pic Requested",
+    countRequested: "Count requested",
 
     clientCreated: "Client created",
     clientUpdated: "Client deleted",

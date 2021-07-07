@@ -1,5 +1,5 @@
-const Site = require("../models/site");
 const Mean = require("../models/mean");
+const Site = require("../models/site");
 const Level = require("../models/level");
 const STRINGS = require("../utils/texts");
 const Validations = require("../validators");
@@ -7,9 +7,16 @@ const SitePic = require("../models/sitePic");
 const response = require("../utils/response");
 const Building = require("../models/building");
 const CustomError = require("../utils/customError");
+const { writeLog } = require("../utils/logs");
+
+// Collections to get by site ID for alert Count
+
 const StorageArea = require("../models/storageArea");
 const DeliveryArea = require("../models/deliveryArea");
-const { writeLog } = require("../utils/logs");
+
+// Moment library to compare dates
+
+const moment = require("moment");
 
 class SitePicController {
   async create(req, res) {
@@ -206,6 +213,58 @@ class SitePicController {
     if (!result) throw new CustomError(STRINGS.ERRORS.error, 400);
 
     res.status(201).send(response(STRINGS.TEXTS.picUpdated, result));
+  }
+
+  // controller function to get count to send alert
+
+  async getAlertCount(req, res) {
+    const siteId = req.params.siteId;
+
+    let deliveryArea = await DeliveryArea.find({
+      siteId: siteId,
+      notificationPriorToDays: { $gt: 0 },
+    });
+    let storageArea = await StorageArea.find({
+      siteId: siteId,
+      notificationPriorToDays: { $gt: 0 },
+    });
+
+    deliveryArea = deliveryArea.filter((item) =>
+      moment(item.availability.end).isSameOrAfter(new Date())
+    );
+
+    storageArea = storageArea.filter((item) =>
+      moment(item.availability.end).isSameOrAfter(new Date())
+    );
+
+    deliveryArea = deliveryArea.filter((item) => {
+      let alertDate = moment(item.availability.end).subtract(
+        item.notificationPriorToDays,
+        "days"
+      );
+      return (
+        moment(new Date()).format("YYYY-MM-DD") >=
+          moment(alertDate).format("YYYY-MM-DD") &&
+        moment(new Date()).format("YYYY-MM-DD") <=
+          moment(item.availability.end).format("YYYY-MM-DD")
+      );
+    });
+
+    storageArea = storageArea.filter((item) => {
+      let alertDate = moment(item.availability.end).subtract(
+        item.notificationPriorToDays,
+        "days"
+      );
+      return (
+        moment(new Date()).format("YYYY-MM-DD") >=
+          moment(alertDate).format("YYYY-MM-DD") &&
+        moment(new Date()).format("YYYY-MM-DD") <=
+          moment(item.availability.end).format("YYYY-MM-DD")
+      );
+    });
+
+    let result = { count: deliveryArea.length + storageArea.length };
+    res.status(200).send(response(STRINGS.TEXTS.countRequested, result));
   }
 }
 
