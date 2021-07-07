@@ -8,7 +8,7 @@ const schemas = {
       name: Joi.string().required(),
       logo: Joi.string().optional().allow(""),
       zacId: Joi.string().optional().allow(""),
-      adminId: Joi.string().required(),
+      clientAdmin: Joi.array().items(),
       functionality: Joi.string().optional().allow(""),
       addresses: Joi.array()
         .items(
@@ -70,6 +70,7 @@ const schemas = {
 
     Helpers.isDateOccuranceChronological(data.start, data.end);
 
+    data.clientAdmin = JSON.parse(data.clientAdmin);
     data.addresses = JSON.parse(data.addresses);
     data.trades = JSON.parse(data.trades);
     data.openingHours = JSON.parse(data.openingHours);
@@ -94,7 +95,7 @@ const schemas = {
       name: Joi.string().required(),
       logo: Joi.string().optional().allow(""),
       zacId: Joi.string().optional().allow(""),
-      adminId: Joi.string().required(),
+      clientAdmin: Joi.array().items(),
       functionality: Joi.string().optional().allow(""),
       addresses: Joi.array()
         .items(
@@ -154,6 +155,7 @@ const schemas = {
       notificationTo: Joi.array().items(Joi.string()).optional(),
     });
 
+    data.clientAdmin = JSON.parse(data.clientAdmin);
     data.addresses = JSON.parse(data.addresses);
     data.trades = JSON.parse(data.trades);
     data.openingHours = JSON.parse(data.openingHours);
@@ -163,7 +165,6 @@ const schemas = {
       data.logo = data.image;
       delete data.image;
     }
-    console.log("data", data);
     const { error, value } = Validation.validate(data);
     if (error) {
       const { details } = error;
