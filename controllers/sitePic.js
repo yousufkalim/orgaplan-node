@@ -229,24 +229,15 @@ class SitePicController {
       notificationPriorToDays: { $gt: 0 },
     });
 
-    deliveryArea = deliveryArea.filter((item) =>
-      moment(item.availability.end).isSameOrAfter(new Date())
-    );
-
-    storageArea = storageArea.filter((item) =>
-      moment(item.availability.end).isSameOrAfter(new Date())
-    );
-
     deliveryArea = deliveryArea.filter((item) => {
       let alertDate = moment(item.availability.end).subtract(
         item.notificationPriorToDays,
         "days"
       );
       return (
+        moment(item.availability.end).isSameOrAfter(new Date()) &&
         moment(new Date()).format("YYYY-MM-DD") >=
-          moment(alertDate).format("YYYY-MM-DD") &&
-        moment(new Date()).format("YYYY-MM-DD") <=
-          moment(item.availability.end).format("YYYY-MM-DD")
+          moment(alertDate).format("YYYY-MM-DD")
       );
     });
 
@@ -255,16 +246,16 @@ class SitePicController {
         item.notificationPriorToDays,
         "days"
       );
+
       return (
+        moment(item.availability.end).isSameOrAfter(new Date()) &&
         moment(new Date()).format("YYYY-MM-DD") >=
-          moment(alertDate).format("YYYY-MM-DD") &&
-        moment(new Date()).format("YYYY-MM-DD") <=
-          moment(item.availability.end).format("YYYY-MM-DD")
+          moment(alertDate).format("YYYY-MM-DD")
       );
     });
 
     let result = { count: deliveryArea.length + storageArea.length };
-    res.status(200).send(response(STRINGS.TEXTS.countRequested, result));
+    res.status(200).send(response(STRINGS.TEXTS.alertCountRequested, result));
   }
 }
 
