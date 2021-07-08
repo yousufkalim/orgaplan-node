@@ -189,7 +189,7 @@ class SuperAdminSitesController {
       });
     }
     // Delete user site id
-    itemCheck.clientAdmin.map(async (dbId, index) => {
+    itemCheck.clientAdmin?.map(async (dbId, index) => {
       const userSitesCheck = await UserSites.findOneAndUpdate(
         {
           userId: dbId.adminId,

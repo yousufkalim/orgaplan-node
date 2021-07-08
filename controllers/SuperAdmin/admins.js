@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Auth = require("../auth");
 const bcrypt = require("bcryptjs");
 const JWT = require("jsonwebtoken");
@@ -221,7 +222,9 @@ class SuperAdminAdminsController {
     const userCheck = await User.findById(id);
     if (!userCheck) throw new CustomError(STRINGS.ERRORS.userNotFound, 404);
 
-    const siteCheck = await Site.findOne({ adminId: userCheck._id });
+    const siteCheck = await Site.findOne({
+      adminId: { $in: [mongoose.Types.ObjectId(userCheck._id)] },
+    });
     if (siteCheck) throw new CustomError(STRINGS.ERRORS.deleteSiteFirst, 404);
 
     // Update Client
