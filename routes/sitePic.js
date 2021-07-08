@@ -7,6 +7,9 @@ const sitePicController = require("../controllers/sitePic");
 router.get("/get/:id", sitePicController.getOne);
 router.get("/site/:siteId", sitePicController.getBySite);
 
+// GETS Count
+router.get("/alertcount/:siteId", sitePicController.getAlertCount);
+
 // POSTS
 router.post("/", sitePicController.create);
 router.post("/shape", sitePicController.addShape);
