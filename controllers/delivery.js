@@ -212,6 +212,7 @@ class DeliveryController {
   }
 
   async completeDelivery(req, res) {
+    console.log("completeDelivery");
     const id = req.params.id;
     const validatedData = await Validations.delivery.complete({
       deliveryId: id,
