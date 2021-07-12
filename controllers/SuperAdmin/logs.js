@@ -13,13 +13,14 @@ class logsController {
 
       const logsData = await logs
         .find()
+        .sort({ createdAt: -1 })
         .skip((page - 1) * ITEMS_PER_PAGE)
         .limit(ITEMS_PER_PAGE);
 
       const totalItems = await logs.find().countDocuments();
 
       const result = {
-        items: logsData.reverse(),
+        items: logsData,
         totalItems,
         totalPages: Math.ceil(totalItems / ITEMS_PER_PAGE),
         itemsPerPage: ITEMS_PER_PAGE,
