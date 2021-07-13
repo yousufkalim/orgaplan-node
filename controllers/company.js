@@ -160,21 +160,15 @@ class CompanyController {
 
   async getBySite(req, res) {
     const siteId = req.params.siteId;
-    const companyIds = await SiteCompanies.findOne({ siteId: siteId }).distinct(
-      "companies.companyId"
-    );
-    const data = await Company.find({
-      _id: { $in: companyIds },
-    });
 
-    let companies = [];
-
-    data.map((company, index) => {
-      companies.push({
-        companyId: company,
-      });
-    });
-    res.status(200).send(response(STRINGS.TEXTS.siteRequested, companies));
+    let result = await SiteCompanies.findOne({ siteId: siteId })
+      .populate("companies.companyId")
+      .populate("companies.parentCompanyId");
+    result = result ? result.companies : [];
+    const unique = [
+      ...new Map(result.map((item) => [item.companyId._id, item])).values(),
+    ];
+    res.status(200).send(response(STRINGS.TEXTS.siteRequested, unique));
   }
 
   async getNonSite(req, res) {
