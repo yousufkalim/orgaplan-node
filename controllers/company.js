@@ -160,7 +160,6 @@ class CompanyController {
 
   async getBySite(req, res) {
     const siteId = req.params.siteId;
-
     let result = await SiteCompanies.findOne({ siteId: siteId })
       .populate("companies.companyId")
       .populate("companies.parentCompanyId");
