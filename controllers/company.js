@@ -164,6 +164,8 @@ class CompanyController {
       .populate("companies.companyId")
       .populate("companies.parentCompanyId");
     result = result ? result.companies : [];
+
+    // Filtering duplicate companies
     const unique = [
       ...new Map(result.map((item) => [item.companyId._id, item])).values(),
     ];

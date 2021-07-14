@@ -165,11 +165,6 @@ class SuperAdminSitesController {
       "clientAdmin.adminId": 1,
     }).lean();
     if (!itemCheck) throw new CustomError(STRINGS.TEXTS.siteNotFound, 404);
-    // const client = await Client.findOne(
-    //   { adminIds: validatedData.adminId },
-    //   { _id: 1 }
-    // ).lean();
-    // if (!client) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 
     if (
       validatedData.zacId &&
@@ -188,7 +183,7 @@ class SuperAdminSitesController {
         $unset: { zacId: "" },
       });
     }
-    // Delete user site id
+    // Delete Admins  site id from UserSites
     itemCheck.clientAdmin?.map(async (dbId, index) => {
       const userSitesCheck = await UserSites.findOneAndUpdate(
         {
@@ -203,36 +198,35 @@ class SuperAdminSitesController {
         }
       );
     });
-    /// update user Site id only //
-    validatedData.clientAdmin.map(async (fromEditId, index) => {
-      itemCheck.clientAdmin.map(async (dbId, index) => {
-        if (String(fromEditId.adminId) !== String(dbId.adminId)) {
-          // Check if the userSites Obj exists
-          const userSitesCheck = await UserSites.findOne({
-            userId: fromEditId.adminId,
-          });
-          if (userSitesCheck) {
-            await UserSites.findByIdAndUpdate(userSitesCheck._id, {
-              $addToSet: {
-                sites: {
-                  siteId: validatedData.siteId,
-                  role: STRINGS.ROLES.ADMIN,
-                },
-              },
-            });
-          } else {
-            await UserSites.create({
-              userId: fromEditId.adminId,
-              sites: [
-                {
-                  siteId: validatedData.siteId,
-                  role: STRINGS.ROLES.ADMIN,
-                },
-              ],
-            });
-          }
-        }
+
+    //add Admin s sites user site from UserSites
+    validatedData.clientAdmin?.map(async (fromEditId, index) => {
+      const userSitesCheck = await UserSites.findOne({
+        userId: fromEditId.adminId,
       });
+      if (userSitesCheck) {
+        const userSiteupdate = await UserSites.findByIdAndUpdate(
+          userSitesCheck._id,
+          {
+            $addToSet: {
+              sites: {
+                siteId: validatedData.siteId,
+                role: STRINGS.ROLES.ADMIN,
+              },
+            },
+          }
+        );
+      } else {
+        await UserSites.create({
+          userId: fromEditId.adminId,
+          sites: [
+            {
+              siteId: validatedData.siteId,
+              role: STRINGS.ROLES.ADMIN,
+            },
+          ],
+        });
+      }
     });
 
     const result = await Site.findByIdAndUpdate(
@@ -265,8 +259,6 @@ class SuperAdminSitesController {
         $pull: { sites: { siteId: id } },
       }
     );
-    // await Building.deleteMany({ _id: { $in: result.buildings } });
-    // await Level.deleteMany({ building: { $in: result.buildings } });
 
     res.status(201).send(response(STRINGS.TEXTS.siteDeleted, "result"));
   }

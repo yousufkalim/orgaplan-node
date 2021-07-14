@@ -156,13 +156,12 @@ class SuperAdminAdminsController {
 
   async update(req, res) {
     const validatedData = Validations.admin.update(req.body);
-
     // Check User
     const userCheck = await User.findById(validatedData.adminId);
+
     if (!userCheck) throw new CustomError(STRINGS.ERRORS.adminNotFound, 404);
 
     // If company needs to be changed
-
     if (String(userCheck.company) !== String(validatedData.companyId)) {
       // Update Client
       // (remove)
@@ -183,13 +182,25 @@ class SuperAdminAdminsController {
 
       // Update Company
       // (remove)
-      await Company.findByIdAndUpdate(userCheck.companyId, {
-        $pull: { adminIds: userCheck._id },
-      });
+      await Company.findByIdAndUpdate(
+        { _id: userCheck.company },
+        {
+          $pull: { adminIds: userCheck._id },
+        }
+      );
       // (add)
-      await Company.findByIdAndUpdate(validatedData.companyId, {
-        $addToSet: { adminIds: userCheck._id },
-      });
+      await Company.findByIdAndUpdate(
+        { _id: validatedData.companyId },
+        {
+          $addToSet: { adminIds: validatedData.adminId },
+        }
+      );
+
+      // update clienId from Site scheema
+      const siteUpdate = await Site.updateMany(
+        { "clientAdmin.adminId": validatedData.adminId },
+        { $set: { "clientAdmin.$.clientId": validatedData.companyId } }
+      );
     }
 
     const userData = {
@@ -213,6 +224,7 @@ class SuperAdminAdminsController {
     if (!result) throw new CustomError(STRINGS.ERRORS.adminNotFound, 404);
 
     res.status(201).send(response(STRINGS.TEXTS.adminUpdated, result));
+    // res.status(201).send(response(STRINGS.TEXTS.adminUpdated, siteUpdate));
   }
 
   async delete(req, res) {
