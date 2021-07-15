@@ -260,7 +260,6 @@ class MeanBookingController {
 
   async getOne(req, res) {
     const id = req.params.id;
-
     const result = await Booking.findOne({ _id: id }, { password: 0, __v: 0 });
     if (!result) throw new CustomError(STRINGS.ERRORS.meanBookingNotFound);
 
