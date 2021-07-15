@@ -24,7 +24,7 @@ module.exports = (app) => {
   app.use(xss());
   app.use(hpp());
   app.use(express.json());
-  app.use(limiter);
+  // app.use(limiter);
   app.use(express.urlencoded({ extended: false }));
   app.use(
     "/uploads",
