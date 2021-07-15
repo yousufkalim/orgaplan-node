@@ -334,6 +334,7 @@ module.exports = {
     allRequestedSubscriptions: "All Subscriptions",
     requestEmailVerificationSubject: "Verify your email",
     requestEmailSubject: "Email Notification",
+    summaryDelivery: "Delivery Request Summary",
 
     sendSubscriptionActivationConfirmationSubject:
       "Subscription activated successfully",

@@ -11,6 +11,7 @@ const { writeLog } = require("../utils/logs");
 const Site = require("../models/site");
 const Company = require("../models/company");
 const User = require("../models/user");
+const MailService = require("../services/mail.service");
 
 class DeliveryController {
   async create(req, res) {
@@ -24,12 +25,16 @@ class DeliveryController {
     //     body.html
     //   );
     // }
-
     // Logging Activity
     const user = await User.findOne({ _id: result.userId });
     const { firstName, lastName } = user;
     const siteData = await Site.findOne({ _id: result.siteId });
     const company = await Company.findOne({ _id: result.companyId });
+
+    if (result.sendDeliverySummary) {
+      let emailService = new MailService();
+      await emailService.completedDeliverySummary(result._id, req.body);
+    }
 
     await writeLog(
       new Date().toLocaleString(),
@@ -217,7 +222,7 @@ class DeliveryController {
       deliveryId: id,
       ...req.body,
     });
-
+    let delivery = await Delivery.findOne({ _id: id });
     const result = await Delivery.findByIdAndUpdate(
       { _id: id },
       {
@@ -230,6 +235,11 @@ class DeliveryController {
         new: true,
       }
     );
+    if (delivery.sendDeliverySummary) {
+      let emailService = new MailService();
+      await emailService.completedDeliverySummary(id, req.body);
+    }
+
     if (validatedData.delay) {
       if (validatedData.image) {
         validatedData.photos = [validatedData.image];
