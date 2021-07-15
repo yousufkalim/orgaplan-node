@@ -15,7 +15,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 // });
 
 module.exports = (app) => {
-  // mongoose.set("debug", true);
+  mongoose.set("debug", true);
   app.options("*", cors());
   app.use(cors());
   app.use(morgan("dev"));
@@ -24,7 +24,7 @@ module.exports = (app) => {
   app.use(xss());
   app.use(hpp());
   app.use(express.json());
-  // app.use(limiter);
+  app.use(limiter);
   app.use(express.urlencoded({ extended: false }));
   app.use(
     "/uploads",

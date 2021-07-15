@@ -10,6 +10,7 @@ const UserSites = require("../../models/userSites");
 const CustomError = require("../../utils/customError");
 const SiteCompanies = mongoose.model(STRINGS.MODALS.SITECOMPANIES);
 const { writeLog } = require("../../utils/logs");
+const { findOneAndUpdate } = require("../../models/zac");
 const ENV = process.env;
 
 class SuperAdminSitesController {
@@ -183,6 +184,39 @@ class SuperAdminSitesController {
         $unset: { zacId: "" },
       });
     }
+    // start site_Companies update
+
+    const clientAdmin = validatedData.clientAdmin;
+
+    const siteCompanyUser = clientAdmin.map((key, index) => {
+      return {
+        userId: key.adminId,
+        companyId: key.companyId,
+        role: STRINGS.ROLES.ADMIN,
+      };
+    });
+    const siteCompanyCompanies = clientAdmin.map((key, index) => {
+      return {
+        companyId: key.companyId,
+        trades: validatedData.trades,
+      };
+    });
+
+    // 2- update Site Companies Doc
+
+    const update_Site_companies = await SiteCompanies.updateOne(
+      { siteId: validatedData.siteId },
+      { $set: { users: siteCompanyUser, companies: siteCompanyCompanies } },
+      { new: true }
+    );
+    // await SiteCompanies.create({
+    //   siteId: site._id,
+    //   users: siteCompanyUser,
+    //   companies: siteCompanyCompanies,
+    // });
+
+    // End  site Companies
+
     // Delete Admins  site id from UserSites
     itemCheck.clientAdmin?.map(async (dbId, index) => {
       const userSitesCheck = await UserSites.findOneAndUpdate(
@@ -238,7 +272,9 @@ class SuperAdminSitesController {
     );
     if (!result) throw new CustomError(STRINGS.ERRORS.siteNotFound, 404);
 
-    res.status(201).send(response(STRINGS.TEXTS.siteUpdated, result));
+    res
+      .status(201)
+      .send(response(STRINGS.TEXTS.siteUpdated, update_Site_companies));
   }
 
   async delete(req, res) {
