@@ -209,11 +209,6 @@ class SuperAdminSitesController {
       { $set: { users: siteCompanyUser, companies: siteCompanyCompanies } },
       { new: true }
     );
-    // await SiteCompanies.create({
-    //   siteId: site._id,
-    //   users: siteCompanyUser,
-    //   companies: siteCompanyCompanies,
-    // });
 
     // End  site Companies
 
