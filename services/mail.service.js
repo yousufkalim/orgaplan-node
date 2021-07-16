@@ -32,20 +32,10 @@ class MailService {
       _id: delivery.deliveryArea,
     });
     let storageArea = await StroageArea.findOne({ _id: delivery.storageArea });
-    let meanLifting = [];
-    let meanRouting = [];
-
-    await Promise.all(
-      delivery.liftingMeans.map(async (meanL) => {
-        let a = await Mean.findOne({ _id: meanL });
-        meanLifting.push(a.name);
-      }),
-
-      delivery.routingMeans.map(async (meanR) => {
-        let a = await Mean.findOne({ _id: meanR });
-        meanRouting.push(a.name);
-      })
-    );
+    let lm = await Delivery.findOne({ _id: id }).populate("liftingMeans");
+    let rm = await Delivery.findOne({ _id: id }).populate("routingMeans");
+    let meanLifting = lm.liftingMeans.map((item) => item.name);
+    let meanRouting = rm.routingMeans.map((item) => item.name);
 
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
     let to = delivery.userEmail;
@@ -58,7 +48,7 @@ class MailService {
     const source = fs.readFileSync(filePath, "utf-8").toString();
     const template = handlebars.compile(source);
     const replacements = {
-      name: user.firstName + " " + user.lastName,
+      name: user?.firstName + " " + user?.lastName,
       status:
         delivery.status === "COMPLETED"
           ? "Completed"

@@ -222,7 +222,6 @@ class DeliveryController {
       deliveryId: id,
       ...req.body,
     });
-    let delivery = await Delivery.findOne({ _id: id });
     const result = await Delivery.findByIdAndUpdate(
       { _id: id },
       {
@@ -235,7 +234,7 @@ class DeliveryController {
         new: true,
       }
     );
-    if (delivery.sendDeliverySummary) {
+    if (result.sendDeliverySummary) {
       let emailService = new MailService();
       await emailService.completedDeliverySummary(id, req.body);
     }
