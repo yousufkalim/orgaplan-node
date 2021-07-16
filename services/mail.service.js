@@ -7,12 +7,7 @@ const STRINGS = require("../utils/texts");
 const ENV = process.env;
 const moment = require("moment");
 
-const User = require("../models/user");
-const Company = require("../models/company");
 const Delivery = require("../models/delivery");
-const DeliveryArea = require("../models/deliveryArea");
-const StroageArea = require("../models/storageArea");
-const Mean = require("../models/mean");
 
 class MailService {
   constructor() {
@@ -25,20 +20,28 @@ class MailService {
     });
   }
   async completedDeliverySummary(id, body) {
-    let delivery = await Delivery.findOne({ _id: id });
-    let user = await User.findOne({ email: delivery.userEmail });
-    let company = await Company.findOne({ _id: delivery.companyId });
-    let deliveryArea = await DeliveryArea.findOne({
-      _id: delivery.deliveryArea,
-    });
-    let storageArea = await StroageArea.findOne({ _id: delivery.storageArea });
-    let lm = await Delivery.findOne({ _id: id }).populate("liftingMeans");
-    let rm = await Delivery.findOne({ _id: id }).populate("routingMeans");
-    let meanLifting = lm.liftingMeans.map((item) => item.name);
-    let meanRouting = rm.routingMeans.map((item) => item.name);
+    let delivery = await Delivery.findOne({ _id: id })
+      .populate("userId")
+      .populate("companyId")
+      .populate("deliveryArea")
+      .populate("storageArea")
+      .populate("liftingMeans")
+      .populate("routingMeans");
+
+    const {
+      userId,
+      companyId,
+      deliveryArea,
+      storageArea,
+      liftingMeans,
+      routingMeans,
+    } = delivery;
+
+    let meanLifting = liftingMeans.map((item) => item.name);
+    let meanRouting = routingMeans.map((item) => item.name);
 
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
-    let to = delivery.userEmail;
+    let to = userId.email;
 
     // Email Starts
     const filePath = path.join(
@@ -48,7 +51,7 @@ class MailService {
     const source = fs.readFileSync(filePath, "utf-8").toString();
     const template = handlebars.compile(source);
     const replacements = {
-      name: user.firstName + " " + user.lastName,
+      name: userId.firstName + " " + userId.lastName,
       status:
         delivery.status === "COMPLETED"
           ? "Completed"
@@ -59,8 +62,8 @@ class MailService {
           : delivery.status === "VALIDATED"
           ? "Validated by Admin"
           : "Incomplete",
-      email: user.email,
-      company: company.name,
+      email: userId.email,
+      company: companyId.name,
       date: moment(delivery.date).format("L"),
       start: delivery.startTime,
       end: delivery.endTime,
