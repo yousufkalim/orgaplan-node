@@ -48,7 +48,7 @@ class MailService {
     const source = fs.readFileSync(filePath, "utf-8").toString();
     const template = handlebars.compile(source);
     const replacements = {
-      name: user?.firstName + " " + user?.lastName,
+      name: user.firstName + " " + user.lastName,
       status:
         delivery.status === "COMPLETED"
           ? "Completed"
