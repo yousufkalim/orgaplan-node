@@ -160,14 +160,16 @@ class CompanyController {
 
   async getBySite(req, res) {
     const siteId = req.params.siteId;
-
     let result = await SiteCompanies.findOne({ siteId: siteId })
       .populate("companies.companyId")
       .populate("companies.parentCompanyId");
-
     result = result ? result.companies : [];
 
-    res.status(200).send(response(STRINGS.TEXTS.siteRequested, result));
+    // Filtering duplicate companies
+    const unique = [
+      ...new Map(result.map((item) => [item.companyId._id, item])).values(),
+    ];
+    res.status(200).send(response(STRINGS.TEXTS.siteRequested, unique));
   }
 
   async getNonSite(req, res) {

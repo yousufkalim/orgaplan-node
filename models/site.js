@@ -11,14 +11,14 @@ const siteSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.ZAC,
     },
-    clientId: {
-      type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.CLIENT,
-    },
-    adminId: {
-      type: Schema.Types.ObjectId,
-      ref: STRINGS.MODALS.USER,
-    },
+    clientAdmin: [
+      {
+        _id: false,
+        adminId: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.USER },
+        clientId: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.CLIENT },
+      },
+    ],
+
     functionality: {
       type: String,
       enum: [STRINGS.FUNCTIONALITY.DELIVERY],

@@ -286,20 +286,26 @@ class AuthContoller {
 
     if (!userSite) throw new CustomError(STRINGS.ERRORS.siteNotFound, 404);
 
-    if (userSite.sites[0]) {
-      const siteId = userSite.sites[0].siteId;
-      if (!siteId) throw new CustomError(STRINGS.ERRORS.siteNotFound, 404);
+    /*
+    ===========================>
+    This code block is disabled by Yousuf because it doesn't do anything but create bug
+    ===========================>
+    */
 
-      const userCompany = await SiteCompanies.findOne({
-        siteId: siteId,
-        "users.userId": id,
-      }).populate("users.companyId");
-      if (!userCompany) throw new CustomError(STRINGS.ERRORS.userNotFound, 404);
-      const company = userCompany.users[0].companyId;
-      user.company = company;
-    } else {
-      user.company = await Company.findById(user.company);
-    }
+    // if (userSite.sites[0]) {
+    //   const siteId = userSite.sites[0].siteId;
+    //   if (!siteId) throw new CustomError(STRINGS.ERRORS.siteNotFound, 404);
+
+    //   const userCompany = await SiteCompanies.findOne({
+    //     siteId: siteId,
+    //     "users.userId": id,
+    //   }).populate("users.companyId");
+    //   if (!userCompany) throw new CustomError(STRINGS.ERRORS.userNotFound, 404);
+    //   const company = userCompany.users[0].companyId;
+    //   user.company = company;
+    // }
+
+    user.company = await Company.findById(user.company);
 
     res.status(200).send(response(STRINGS.TEXTS.userData, user));
   }
