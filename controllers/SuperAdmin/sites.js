@@ -213,7 +213,7 @@ class SuperAdminSitesController {
     // End  site Companies
 
     // Delete Admins  site id from UserSites
-    itemCheck.clientAdmin?.map(async (dbId, index) => {
+    itemCheck.clientAdmin.map(async (dbId, index) => {
       const userSitesCheck = await UserSites.findOneAndUpdate(
         {
           userId: dbId.adminId,
