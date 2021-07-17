@@ -235,7 +235,7 @@ class SuperAdminAdminsController {
     if (!userCheck) throw new CustomError(STRINGS.ERRORS.userNotFound, 404);
 
     const siteCheck = await Site.findOne({
-      adminId: { $in: [mongoose.Types.ObjectId(userCheck._id)] },
+      clientAdmin: { $elemMatch: { adminId: userCheck._id } },
     });
     if (siteCheck) throw new CustomError(STRINGS.ERRORS.deleteSiteFirst, 404);
 
