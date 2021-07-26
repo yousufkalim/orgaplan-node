@@ -14,6 +14,9 @@ const response = require("../../utils/response");
 const CustomError = require("../../utils/customError");
 const MailService = require("../../services/mail.service");
 const { writeLog } = require("../../utils/logs");
+const site = require("../../models/site");
+const userSites = require("../../models/userSites");
+const { array } = require("joi");
 const ENV = process.env;
 
 class SuperAdminAdminsController {
@@ -80,7 +83,7 @@ class SuperAdminAdminsController {
       { $count: "Total" },
     ]);
 
-    const items = await User.aggregate([
+    let items = await User.aggregate([
       {
         $match: {
           firstName: { $regex: re },
@@ -124,6 +127,22 @@ class SuperAdminAdminsController {
       { $skip: (page - 1) * ITEMS_PER_PAGE },
       { $limit: ITEMS_PER_PAGE },
     ]);
+
+    // pushing updated user in arrays
+    let array = [];
+
+    await Promise.all(
+      items.map(async (user) => {
+        const result = await UserSites.findOne({ userId: user._id }).populate(
+          "sites.siteId"
+        );
+        user.sites = result.sites.length;
+        array.push(user);
+      })
+    );
+
+    // overwriting items with array
+    items = array;
 
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
     totalItems = totalItems.length > 0 ? totalItems[0].Total : 0;
