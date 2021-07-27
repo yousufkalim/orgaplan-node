@@ -34,7 +34,7 @@ router.put(
   multer("incidents", "photos", "single"),
   deliveryController.completeDelivery
 );
-router.put("/buffer/:id", deliveryController.bufferUpdateDelivery);
+router.put("/buffer/:id", multer(), deliveryController.bufferUpdateDelivery);
 
 // DELETES
 router.delete("/:id", deliveryController.delete);

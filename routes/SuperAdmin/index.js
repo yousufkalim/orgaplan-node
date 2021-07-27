@@ -11,5 +11,6 @@ router.use("/buildings", require("./buildings"));
 router.use("/dashboard", require("./dashboard"));
 router.use("/companies", require("./companies"));
 router.use("/logs", require("./logs"));
+router.use("/contactus", require("./contactus"));
 
 module.exports = router;

@@ -10,6 +10,7 @@ const exportsObj = {
   dashboardController: require("./dashboard"),
   buildingsController: require("./buildings"),
   logsController: require("./logs"),
+  contactsController: require("./contactus"),
 };
 
 module.exports = exportsObj;
