@@ -182,6 +182,7 @@ module.exports = {
     companyExistsAlready: "Company exists already",
 
     logsRequested: "Logs Requested",
+    contactCreated: "contactCreated",
 
     deliveryData: "Delivery Data",
     allDeliveries: "All Deliveries",
