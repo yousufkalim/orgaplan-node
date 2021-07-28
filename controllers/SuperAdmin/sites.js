@@ -97,7 +97,6 @@ class SuperAdminSitesController {
   async getAll(req, res) {
     const name = req.query.name || "";
     const status = req.query.status || "ALL";
-    const clientId = req.query.client || "ALL";
     const page = +req.query.page || 1;
     const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
 
@@ -117,7 +116,6 @@ class SuperAdminSitesController {
       name: { $regex: re },
       ...statusQuery,
     };
-    if (clientId !== "ALL") filters["clientId"] = clientId;
     // Fetching
     const totalItems = await Site.find(filters).countDocuments();
 
