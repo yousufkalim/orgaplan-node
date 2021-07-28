@@ -227,7 +227,7 @@ class SuperAdminSitesController {
     });
 
     //add Admin s sites user site from UserSites
-    validatedData.clientAdmin?.map(async (fromEditId, index) => {
+    validatedData.clientAdmin.map(async (fromEditId, index) => {
       const userSitesCheck = await UserSites.findOne({
         userId: fromEditId.adminId,
       });
