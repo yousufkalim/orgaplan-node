@@ -22,6 +22,7 @@ class SuperAdminSitesController {
     // if (siteCheck) throw new CustomError(STRINGS.ERRORS.siteNameExists, 404);
 
     // 1- Create the site
+
     const site = await Site.create(validatedData);
     const clientAdmin = validatedData.clientAdmin;
     const siteCompanyUser = clientAdmin.map((key, index) => {

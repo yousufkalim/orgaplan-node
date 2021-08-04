@@ -69,7 +69,6 @@ class SuperAdminAdminsController {
     const name = req.query.name || "";
     const page = +req.query.page || 1;
     const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
-
     var re = new RegExp(`^${name}`, "i");
 
     let totalItems = await User.aggregate([
@@ -136,11 +135,14 @@ class SuperAdminAdminsController {
         const result = await UserSites.findOne({ userId: user._id }).populate(
           "sites.siteId"
         );
-        user.sites = result.sites.length;
+
+        if (result !== null) {
+          user.sites = result.sites.length;
+        }
+
         array.push(user);
       })
     );
-
     // overwriting items with array
     items = array;
 
@@ -158,6 +160,7 @@ class SuperAdminAdminsController {
       nextPage: page + 1,
       previousPage: page - 1,
     };
+
     res.status(200).send(response(STRINGS.TEXTS.adminsRequested, result));
   }
 
