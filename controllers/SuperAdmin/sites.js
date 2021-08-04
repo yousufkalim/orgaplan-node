@@ -90,7 +90,7 @@ class SuperAdminSitesController {
 
     // Logging this activity
     await writeLog(
-      moment(new Date()).format("DD/MM/YYYY"),
+      moment().format("DD/MM/YYYY"),
       `Super admin has created the site ${validatedData.name}`
     );
     await res.status(200).send(response(STRINGS.TEXTS.siteCreated, result));

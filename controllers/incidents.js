@@ -36,7 +36,7 @@ class IncidentsController {
 
     // Logging Activity
     await writeLog(
-      moment(new Date()).format("DD/MM/YYYY"),
+      moment().format("DD/MM/YYYY"),
       `Admin has created the incident named ${result.name} for the site ${site.name}`
     );
 

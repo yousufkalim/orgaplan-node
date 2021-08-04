@@ -38,7 +38,7 @@ class MeanController {
 
     // Logging Activity
     await writeLog(
-      moment(new Date()).format("DD/MM/YYYY"),
+      moment().format("DD/MM/YYYY"),
       `${validatedData.name} has been added to the site ${site.name}`
     );
 

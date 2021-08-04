@@ -16,7 +16,7 @@ class StorageAreaController {
     // Logging Activity
     const siteData = await site.findOne({ _id: validatedData.siteId });
     await writeLog(
-      moment(new Date()).format("DD/MM/YYYY"),
+      moment().format("DD/MM/YYYY"),
       `${validatedData.name} has been added to the site ${siteData.name}`
     );
 

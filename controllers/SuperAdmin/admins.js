@@ -59,7 +59,7 @@ class SuperAdminAdminsController {
     // Logging this activity
     const { firstName, lastName } = validatedData;
     await writeLog(
-      moment(new Date()).format("DD/MM/YYYY"),
+      moment().format("DD/MM/YYYY"),
       `Super admin has added ${firstName} ${lastName} to the platform`
     );
 

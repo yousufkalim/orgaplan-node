@@ -16,7 +16,7 @@ class DeliveryAreaController {
     // Logging Activity
     const siteData = await site.findOne({ _id: validatedData.siteId });
     await writeLog(
-      moment(new Date()).format("DD/MM/YYYY"),
+      moment().format("DD/MM/YYYY"),
       `${validatedData.name} has been added to the site ${siteData.name}`
     );
     res.status(201).send(response(STRINGS.TEXTS.deliveryAreaCreated, result));

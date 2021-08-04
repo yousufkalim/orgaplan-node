@@ -52,7 +52,7 @@ class SuperAdminClientsController {
       .execPopulate();
 
     await writeLog(
-      moment(new Date()).format("DD/MM/YYYY"),
+      moment().format("DD/MM/YYYY"),
       `Super admin has added ${companyData.name} to the platform`
     );
     res.status(200).send(response(STRINGS.TEXTS.clientCreated, client));

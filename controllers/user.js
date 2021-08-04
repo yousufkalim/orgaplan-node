@@ -274,7 +274,7 @@ class UserContoller {
       // Logging activity
       const siteData = await site.findOne({ _id: siteId });
       await writeLog(
-        moment(new Date()).format("DD/MM/YYYY"),
+        moment().format("DD/MM/YYYY"),
         `${firstName} ${lastName} has been added to the site ${siteData.name}`
       );
 
@@ -311,7 +311,7 @@ class UserContoller {
       const siteData = await site.findOne({ _id: siteId });
       const { firstName, lastName } = userCheck;
       await writeLog(
-        moment(new Date()).format("DD/MM/YYYY"),
+        moment().format("DD/MM/YYYY"),
         `${firstName} ${lastName} has been deleted from the site ${siteData.name}`
       );
 
