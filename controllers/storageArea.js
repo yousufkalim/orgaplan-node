@@ -5,6 +5,7 @@ const CustomError = require("../utils/customError");
 const StorageArea = require("../models/storageArea");
 const site = require("../models/site");
 const { writeLog } = require("../utils/logs");
+const moment = require("moment");
 
 class StorageAreaController {
   async create(req, res) {
@@ -15,7 +16,7 @@ class StorageAreaController {
     // Logging Activity
     const siteData = await site.findOne({ _id: validatedData.siteId });
     await writeLog(
-      new Date().toLocaleString(),
+      moment(new Date()).format("DD/MM/YYYY"),
       `${validatedData.name} has been added to the site ${siteData.name}`
     );
 

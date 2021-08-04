@@ -10,6 +10,7 @@ const CustomError = require("../../utils/customError");
 const mongoose = require("mongoose");
 const ENV = process.env;
 const { writeLog } = require("../../utils/logs");
+const moment = require("moment");
 
 class SuperAdminClientsController {
   async create(req, res) {
@@ -51,7 +52,7 @@ class SuperAdminClientsController {
       .execPopulate();
 
     await writeLog(
-      new Date().toLocaleString(),
+      moment(new Date()).format("DD/MM/YYYY"),
       `Super admin has added ${companyData.name} to the platform`
     );
     res.status(200).send(response(STRINGS.TEXTS.clientCreated, client));

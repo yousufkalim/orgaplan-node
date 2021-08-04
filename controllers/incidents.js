@@ -10,6 +10,7 @@ const DeliveryArea = require("../models/deliveryArea");
 const SiteCompanies = require("../models/SiteCompanies");
 const { isDateBefore, isDateAfter } = require("../utils/helpers");
 const { writeLog } = require("../utils/logs");
+const moment = require("moment");
 
 class IncidentsController {
   async create(req, res) {
@@ -35,7 +36,7 @@ class IncidentsController {
 
     // Logging Activity
     await writeLog(
-      new Date().toLocaleString(),
+      moment(new Date()).format("DD/MM/YYYY"),
       `Admin has created the incident named ${result.name} for the site ${site.name}`
     );
 

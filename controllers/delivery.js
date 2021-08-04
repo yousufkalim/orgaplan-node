@@ -1,5 +1,5 @@
 "use strict";
-const moment = require("moment");
+
 const STRINGS = require("../utils/texts");
 const Validations = require("../validators");
 const response = require("../utils/response");
@@ -12,6 +12,7 @@ const Site = require("../models/site");
 const Company = require("../models/company");
 const User = require("../models/user");
 const MailService = require("../services/mail.service");
+const moment = require("moment");
 
 class DeliveryController {
   async create(req, res) {
@@ -37,7 +38,7 @@ class DeliveryController {
     }
 
     await writeLog(
-      new Date().toLocaleString(),
+      moment(new Date()).format("DD/MM/YYYY"),
       `A delivery request has been created by the ${firstName} ${lastName} for ${result.date.toLocaleString()}, for ${
         company.name
       }, for ${siteData.name}`
@@ -96,7 +97,7 @@ class DeliveryController {
     const siteData = await Site.findOne({ _id: result.siteId });
     const company = await Company.findOne({ _id: result.companyId });
     await writeLog(
-      new Date().toLocaleString(),
+      moment(new Date()).format("DD/MM/YYYY"),
       `Admin has refused a delivery request for ${result.date.toLocaleString()}, for ${
         company.name
       }, for ${siteData.name}`
@@ -207,7 +208,7 @@ class DeliveryController {
     const siteData = await Site.findOne({ _id: result.siteId });
     const company = await Company.findOne({ _id: result.companyId });
     await writeLog(
-      new Date().toLocaleString(),
+      moment(new Date()).format("DD/MM/YYYY"),
       `Admin has accepted a delivery request for ${result.date.toLocaleString()}, for ${
         company.name
       }, for ${siteData.name}`
@@ -274,7 +275,7 @@ class DeliveryController {
     const company = await Company.findOne({ _id: result.companyId });
 
     await writeLog(
-      new Date().toLocaleString(),
+      moment(new Date()).format("DD/MM/YYYY"),
       `The traffic agent ${
         validatedData.username
       } has completed the delivery for ${result.date.toLocaleString()}, for ${
@@ -306,7 +307,7 @@ class DeliveryController {
     if (validatedData.bufferArea) {
       const siteData = await Site.findOne({ _id: result.siteId });
       await writeLog(
-        new Date().toLocaleString(),
+        moment(new Date()).format("DD/MM/YYYY"),
         `Truck ${
           result.flatRegistration
         } has returned to buffer area at ${result.arrivalTime.toLocaleString()} for site ${

@@ -11,6 +11,7 @@ const csv = require("csv-parser");
 const fs = require("fs");
 const readXlsxFile = require("read-excel-file/node");
 const { writeLog } = require("../utils/logs");
+const moment = require("moment");
 
 class CompanyController {
   async create(req, res) {
@@ -51,7 +52,7 @@ class CompanyController {
     // Logging this activity
     const siteData = await site.findOne({ _id: validatedData.siteId });
     await writeLog(
-      new Date().toLocaleString(),
+      moment(new Date()).format("DD/MM/YYYY"),
       `${validatedData.name} has been added to the site ${siteData.name}`
     );
 

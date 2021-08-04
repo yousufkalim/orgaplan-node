@@ -10,6 +10,7 @@ const Auth = require("../controllers/auth");
 const ObjectId = require("mongodb").ObjectID;
 const Validations = require("../validators");
 const { writeLog } = require("../utils/logs");
+const moment = require("moment");
 
 const bcrypt = require("bcryptjs");
 const ENV = process.env;
@@ -273,7 +274,7 @@ class UserContoller {
       // Logging activity
       const siteData = await site.findOne({ _id: siteId });
       await writeLog(
-        new Date().toLocaleString(),
+        moment(new Date()).format("DD/MM/YYYY"),
         `${firstName} ${lastName} has been added to the site ${siteData.name}`
       );
 
@@ -310,7 +311,7 @@ class UserContoller {
       const siteData = await site.findOne({ _id: siteId });
       const { firstName, lastName } = userCheck;
       await writeLog(
-        new Date().toLocaleString(),
+        moment(new Date()).format("DD/MM/YYYY"),
         `${firstName} ${lastName} has been deleted from the site ${siteData.name}`
       );
 

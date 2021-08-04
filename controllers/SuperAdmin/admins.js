@@ -18,6 +18,7 @@ const site = require("../../models/site");
 const userSites = require("../../models/userSites");
 const { array } = require("joi");
 const ENV = process.env;
+const moment = require("moment");
 
 class SuperAdminAdminsController {
   async create(req, res) {
@@ -58,7 +59,7 @@ class SuperAdminAdminsController {
     // Logging this activity
     const { firstName, lastName } = validatedData;
     await writeLog(
-      new Date().toLocaleString(),
+      moment(new Date()).format("DD/MM/YYYY"),
       `Super admin has added ${firstName} ${lastName} to the platform`
     );
 

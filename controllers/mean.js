@@ -12,6 +12,7 @@ const SiteCompanies = require("../models/SiteCompanies");
 const fs = require("fs");
 const { isDateBefore, isDateAfter } = require("../utils/helpers");
 const { writeLog } = require("../utils/logs");
+const moment = require("moment");
 
 class MeanController {
   async create(req, res) {
@@ -37,7 +38,7 @@ class MeanController {
 
     // Logging Activity
     await writeLog(
-      new Date().toLocaleString(),
+      moment(new Date()).format("DD/MM/YYYY"),
       `${validatedData.name} has been added to the site ${site.name}`
     );
 

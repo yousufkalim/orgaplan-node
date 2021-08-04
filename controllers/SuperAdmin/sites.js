@@ -12,6 +12,7 @@ const SiteCompanies = mongoose.model(STRINGS.MODALS.SITECOMPANIES);
 const { writeLog } = require("../../utils/logs");
 const { findOneAndUpdate } = require("../../models/zac");
 const ENV = process.env;
+const moment = require("moment");
 
 class SuperAdminSitesController {
   async create(req, res) {
@@ -89,7 +90,7 @@ class SuperAdminSitesController {
 
     // Logging this activity
     await writeLog(
-      new Date().toLocaleString(),
+      moment(new Date()).format("DD/MM/YYYY"),
       `Super admin has created the site ${validatedData.name}`
     );
     await res.status(200).send(response(STRINGS.TEXTS.siteCreated, result));
@@ -382,7 +383,7 @@ class SuperAdminSitesController {
 
     // Logging this activity
     await writeLog(
-      new Date().toLocaleString(),
+      moment(new Date()).format("DD/MM/YYYY"),
       `Super admin has archived the site ${result.name}`
     );
 

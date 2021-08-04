@@ -5,6 +5,7 @@ const CustomError = require("../utils/customError");
 const DeliveryArea = require("../models/deliveryArea");
 const site = require("../models/site");
 const { writeLog } = require("../utils/logs");
+const moment = require("moment");
 
 class DeliveryAreaController {
   async create(req, res) {
@@ -15,7 +16,7 @@ class DeliveryAreaController {
     // Logging Activity
     const siteData = await site.findOne({ _id: validatedData.siteId });
     await writeLog(
-      new Date().toLocaleString(),
+      moment(new Date()).format("DD/MM/YYYY"),
       `${validatedData.name} has been added to the site ${siteData.name}`
     );
     res.status(201).send(response(STRINGS.TEXTS.deliveryAreaCreated, result));
