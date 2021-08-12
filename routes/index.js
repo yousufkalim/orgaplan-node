@@ -1,5 +1,6 @@
 const router = require("express").Router();
 
+router.use("/v1/alldata", require("./allData"));
 router.use("/v1/zac", require("./zac"));
 router.use("/v1/auth", require("./auth"));
 router.use("/v1/mean", require("./mean"));
