@@ -196,13 +196,11 @@ class MeanController {
   async getListOfMeans(req, res) {
     const siteId = req.params.siteId;
 
-    const total_means = await Mean.find({
+    const meanList = await Mean.find({
       siteId: siteId,
-      // $and: [
-      //   { "availability.start": { $lte: new Date() } },
-      //   { "availability.end": { $gte: new Date() } },
-      // ],
-    }).countDocuments();
+    });
+
+    const total_means = meanList.length;
 
     const locations = await Building.find({ siteId: siteId }).populate(
       "levels"
@@ -221,6 +219,7 @@ class MeanController {
     if (!siteCompanies) throw new CustomError(STRINGS.ERRORS.companyNotFound);
 
     const result = {
+      meanList: meanList,
       total_means: total_means,
       site_locations: locations,
       site_storage_areas: storageAreas,
