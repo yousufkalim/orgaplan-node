@@ -266,7 +266,6 @@ class SuperAdminSitesController {
       { new: true }
     );
     if (!result) throw new CustomError(STRINGS.ERRORS.siteNotFound, 404);
-
     res
       .status(201)
       .send(response(STRINGS.TEXTS.siteUpdated, update_Site_companies));

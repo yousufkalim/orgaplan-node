@@ -15,9 +15,12 @@ const moment = require("moment");
 
 class DashboardController {
   async getAll(req, res) {
-    let clients = await Client.find({ status: { $not: { $eq: "DELETED" } } });
-    // let invoices = await Invoice.find();
+    let clients = await Company.find({
+      status: { $not: { $eq: "DELETED" } },
+      quoteVerified: true,
+    });
 
+    // let invoices = await Invoice.find();
     const result = {
       clients: {
         delivery: clients.length,
@@ -70,61 +73,16 @@ class DashboardController {
           status: { $ne: STRINGS.STATUS.PENDING },
         },
       },
-      {
-        $lookup: {
-          from: Site.collection.name,
-          localField: "siteId",
-          foreignField: "_id",
-          as: "siteId",
-        },
-      },
-      { $unwind: "$siteId" },
-      {
-        $lookup: {
-          from: Client.collection.name,
-          localField: "siteId.clientId",
-          foreignField: "_id",
-          as: "siteId.clientId",
-        },
-      },
-      { $unwind: "$siteId.clientId" },
-      {
-        $lookup: {
-          from: Company.collection.name,
-          localField: "siteId.clientId.companyId",
-          foreignField: "_id",
-          as: "siteId.clientId.companyId",
-        },
-      },
-      { $unwind: "$siteId.clientId.companyId" },
-      {
-        $addFields: {
-          clientId: "$siteId.clientId._id",
-          comapanyName: "$siteId.clientId.companyId.name",
-        },
-      },
-      {
-        $project: {
-          clientId: 1,
-          comapanyName: 1,
-          count: { $sum: 1 },
-        },
-      },
-      {
-        $group: {
-          _id: "$clientId",
+    ]).group({
+      _id: "$companyId",
+      comapanyName: { $first: "$companyId" },
+      count: { $sum: 1 },
+    });
+    await Company.populate(clientDeliveries, { path: "comapanyName" });
 
-          comapanyName: { $first: "$comapanyName" },
-          count: { $sum: "$count" },
-        },
-      },
-    ]);
     const siteDeliveriesCount = siteDeliveries.reduce(function (acc, cur) {
       return acc + cur.count;
     }, 0);
-    // const clientDeliveriesCount = clientDeliveries.reduce(function (acc, cur) {
-    //   return acc + cur.count;
-    // }, 0);
 
     const result = {
       siteDeliveries,
@@ -206,7 +164,7 @@ class DashboardController {
 
   async getIncidents(req, res) {
     const incident = await Incident.find({
-      status: { $ne: STRINGS.INCIDENTSTATUS.CLOSED},
+      status: { $ne: STRINGS.INCIDENTSTATUS.CLOSED },
     });
 
     const siteIncidents = await Incident.aggregate().group({
@@ -217,58 +175,12 @@ class DashboardController {
     });
     await Site.populate(siteIncidents, { path: "siteId" });
 
-    const clientIncidents = await Incident.aggregate([
-      {
-        $lookup: {
-          from: Site.collection.name,
-          localField: "siteId",
-          foreignField: "_id",
-          as: "siteId",
-        },
-      },
-      { $unwind: "$siteId" },
-      {
-        $lookup: {
-          from: Client.collection.name,
-          localField: "siteId.clientId",
-          foreignField: "_id",
-          as: "siteId.clientId",
-        },
-      },
-      { $unwind: "$siteId.clientId" },
-      {
-        $lookup: {
-          from: Company.collection.name,
-          localField: "siteId.clientId.companyId",
-          foreignField: "_id",
-          as: "siteId.clientId.companyId",
-        },
-      },
-      { $unwind: "$siteId.clientId.companyId" },
-      {
-        $addFields: {
-          clientId: "$siteId.clientId._id",
-          comapanyName: "$siteId.clientId.companyId.name",
-        },
-      },
-      {
-        $project: {
-          clientId: 1,
-          price: 1,
-          comapanyName: 1,
-          count: { $sum: 1 },
-        },
-      },
-      {
-        $group: {
-          _id: "$clientId",
-
-          comapanyName: { $first: "$comapanyName" },
-          totalAmount: { $sum: "$price" },
-          count: { $sum: "$count" },
-        },
-      },
-    ]);
+    const clientIncidents = await Incident.aggregate().group({
+      _id: "$companyId",
+      comapanyName: { $first: "$companyId" },
+      count: { $sum: 1 },
+    });
+    await Company.populate(clientIncidents, { path: "comapanyName" });
 
     const result = {
       siteIncidents,
@@ -300,8 +212,8 @@ class DashboardController {
       const today = moment();
       if (moment(item.end).diff(today, "days") > -1) {
         data["daysLeft"] = moment(item.end).diff(today, "days");
+        resultData.push(data);
       }
-      resultData.push(data);
     });
 
     const site = resultData.sort((a, b) => {
