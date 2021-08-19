@@ -16,7 +16,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 
 module.exports = (app) => {
   mongoose.set("debug", true);
-  app.options("*", cors());
+  app.options("*", cors({ origin: true }));
   app.use(cors());
   app.use(morgan("dev"));
   app.use(mongoSanitize());
