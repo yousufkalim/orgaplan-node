@@ -115,25 +115,25 @@ class DashboardController {
       {
         $lookup: {
           from: Client.collection.name,
-          localField: "siteId.clientId",
+          localField: "siteId.clientAdmin.clientId",
           foreignField: "_id",
-          as: "siteId.clientId",
+          as: "siteId.clientAdmin.clientId",
         },
       },
-      { $unwind: "$siteId.clientId" },
+      { $unwind: "$siteId.clientAdmin.clientId" },
       {
         $lookup: {
           from: Company.collection.name,
-          localField: "siteId.clientId.companyId",
+          localField: "siteId.clientAdmin.clientId.companyId",
           foreignField: "_id",
-          as: "siteId.clientId.companyId",
+          as: "siteId.clientAdmin.clientId.companyId",
         },
       },
-      { $unwind: "$siteId.clientId.companyId" },
+      { $unwind: "$siteId.clientAdmin.clientId.companyId" },
       {
         $addFields: {
-          clientId: "$siteId.clientId._id",
-          comapanyName: "$siteId.clientId.companyId.name",
+          clientId: "$siteId.clientAdmin.clientId._id",
+          comapanyName: "$siteId.clientAdmin.clientId.companyId.name",
         },
       },
       {
@@ -146,19 +146,16 @@ class DashboardController {
       {
         $group: {
           _id: "$clientId",
-
           comapanyName: { $first: "$comapanyName" },
           count: { $sum: "$count" },
         },
       },
     ]);
-
     const result = {
       siteMean,
       clientMean,
       total: mean.length,
     };
-
     res.status(200).send(response(STRINGS.TEXTS.success, result));
   }
 
