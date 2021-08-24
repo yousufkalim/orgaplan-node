@@ -28,6 +28,7 @@ const schemas = {
           STRINGS.CONTRACTTYPES.MASTERCLIENT
         ),
       description: Joi.string().allow(""),
+      quoteVerified: Joi.bool(),
     });
 
     const { error, value } = Validation.validate(data);
@@ -62,6 +63,7 @@ const schemas = {
           STRINGS.CONTRACTTYPES.MASTERCLIENT
         ),
       description: Joi.string().allow(""),
+      quoteVerified: Joi.bool(),
     });
 
     const { error, value } = Validation.validate(data);
@@ -97,6 +99,7 @@ const schemas = {
       notificationPriorToDays: Joi.number().allow(""),
       notificationTo: Joi.array().items(Joi.string()),
       monthlyCost: Joi.any(),
+      quoteVerified: Joi.bool(),
     });
 
     if (data.contractType === STRINGS.CONTRACTTYPES.MASTERCLIENT) {
