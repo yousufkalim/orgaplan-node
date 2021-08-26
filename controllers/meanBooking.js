@@ -340,7 +340,7 @@ class MeanBookingController {
     const siteId = req.params.siteId;
     const bookings = await Booking.find({
       siteId: siteId,
-    });
+    }).populate("companyId");
     let result = { bookings };
     res.status(200).send(response(STRINGS.TEXTS.bookingOfSite, result));
   }

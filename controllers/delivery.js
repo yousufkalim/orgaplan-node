@@ -6,6 +6,7 @@ const response = require("../utils/response");
 const Delivery = require("../models/delivery");
 const StroageArea = require("../models/storageArea");
 const Incidents = require("../models/incidents");
+const Booking = require("../models/meanBooking");
 const CustomError = require("../utils/customError");
 const { writeLog } = require("../utils/logs");
 const Site = require("../models/site");
@@ -17,6 +18,31 @@ const moment = require("moment");
 class DeliveryController {
   async create(req, res) {
     const validatedData = await Validations.delivery.create(req.body);
+
+    let means = validatedData.liftingMeans.concat(validatedData.routingMeans);
+
+    let sDate = moment(validatedData.date)
+      .set("hours", validatedData.startTime.split(":")[0])
+      .set("minutes", validatedData.startTime.split(":")[1]);
+    let eDate = moment(validatedData.date)
+      .set("hours", validatedData.endTime.split(":")[0])
+      .set("minutes", validatedData.endTime.split(":")[1]);
+
+    means.map(async (mean) => {
+      var data = {
+        status: validatedData.status,
+        startDate: sDate,
+        endDate: eDate,
+        startTime: validatedData.startTime,
+        endTime: validatedData.endTime,
+        bookingReason: "",
+        siteId: validatedData.siteId,
+        userId: validatedData.userId,
+        companyId: validatedData.companyId,
+        meanId: mean,
+      };
+      await new Booking(data).save();
+    });
 
     const result = await Delivery.create(validatedData);
 
@@ -44,7 +70,7 @@ class DeliveryController {
       }, for ${siteData.name}`
     );
 
-    res.status(200).send(response(STRINGS.TEXTS.deliveryCreated, result));
+    res.status(200).send(response(STRINGS.TEXTS.deliveryCreated, ""));
   }
 
   async getAll(req, res) {
