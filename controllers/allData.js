@@ -137,9 +137,7 @@ class AllDataController {
 
         const meanBooking = await MeanBooking.find({
           siteId: site.siteId._id,
-          userId: userId,
         })
-          .populate("meanId")
           .populate("companyId")
           .lean();
 
