@@ -70,7 +70,7 @@ class DeliveryController {
       }, for ${siteData.name}`
     );
 
-    res.status(200).send(response(STRINGS.TEXTS.deliveryCreated, ""));
+    res.status(200).send(response(STRINGS.TEXTS.deliveryCreated, result));
   }
 
   async getAll(req, res) {
