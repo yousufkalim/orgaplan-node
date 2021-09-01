@@ -15,7 +15,6 @@ const SiteCompanies = require("../models/SiteCompanies");
 const User = require("../models/user");
 const MailService = require("../services/mail.service");
 const moment = require("moment");
-const siteCompanies = require("./siteCompanies");
 
 class DeliveryController {
   async create(req, res) {
