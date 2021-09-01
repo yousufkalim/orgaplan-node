@@ -11,9 +11,11 @@ const CustomError = require("../utils/customError");
 const { writeLog } = require("../utils/logs");
 const Site = require("../models/site");
 const Company = require("../models/company");
+const SiteCompanies = require("../models/SiteCompanies");
 const User = require("../models/user");
 const MailService = require("../services/mail.service");
 const moment = require("moment");
+const siteCompanies = require("./siteCompanies");
 
 class DeliveryController {
   async create(req, res) {
@@ -116,11 +118,52 @@ class DeliveryController {
 
   async delete(req, res) {
     const id = req.params.id;
+    const result = await Delivery.findByIdAndDelete(id).populate("siteId");
 
-    const result = await Delivery.findByIdAndDelete(id);
+    // to delete mean booking
+    const bookings = await Booking.find();
+    let means = result.liftingMeans.concat(result.routingMeans);
+    await Promise.all(
+      bookings.map((item) => {
+        means.map(async (mean) => {
+          if (item.meanId.toString() === mean.toString()) {
+            if (
+              moment(moment(item.createdAt).format("yyyy/MM/DD")).isSame(
+                moment(moment(result.createdAt).format("yyyy/MM/DD"))
+              )
+            ) {
+              if (
+                moment(item.createdAt).format("HH:mm:ss") ===
+                moment(result.createdAt).format("HH:mm:ss")
+              ) {
+                await Booking.findByIdAndDelete(item._id);
+              }
+            }
+          }
+        });
+      })
+    );
+
+    // to send email to all admins and enterprise
+    const siteCompanies = await SiteCompanies.findOne({
+      siteId: result.siteId._id,
+    });
+    let emails = [];
+    await Promise.all(
+      siteCompanies.users.map(async (item) => {
+        if (item.role == "ADMIN" || item.role == "ENTERPRISE") {
+          let user = await User.findById(item.userId);
+          emails.push(user.email);
+        }
+      })
+    );
 
     let emailService = new MailService();
-    await emailService.sendEmailDeliveryAreaDeleted(result.userEmail);
+    await emailService.sendEmailDeliveryAreaDeleted(
+      emails,
+      result.siteId.name,
+      result.date
+    );
 
     // Logging Activity
     const siteData = await Site.findOne({ _id: result.siteId });
