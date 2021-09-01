@@ -8,7 +8,7 @@ const exportsObj = {
   admin: require("./Admin"),
   level: require("./Level"),
   client: require("./Client"),
-  delivery: require("./delivery"),
+  delivery: require("./Delivery"),
   building: require("./Building"),
   incident: require("./incident"),
   organigramme: require("./organigramme"),

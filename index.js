@@ -1,5 +1,5 @@
 require("colors");
-require("express-async-ERRORS");
+require("express-async-errors");
 const dotenv = require("dotenv");
 const express = require("express");
 const mongoose = require("mongoose");
