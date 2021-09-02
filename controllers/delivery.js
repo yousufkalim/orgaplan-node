@@ -29,22 +29,27 @@ class DeliveryController {
       .set("hours", validatedData.endTime.split(":")[0])
       .set("minutes", validatedData.endTime.split(":")[1]);
 
-    means.map(async (mean) => {
-      var data = {
-        status: validatedData.status,
-        startDate: sDate,
-        endDate: eDate,
-        startTime: validatedData.startTime,
-        endTime: validatedData.endTime,
-        bookingReason: "",
-        siteId: validatedData.siteId,
-        userId: validatedData.userId,
-        companyId: validatedData.companyId,
-        meanId: mean,
-      };
-      await new Booking(data).save();
-    });
+    let meanBookings = [];
+    await Promise.all(
+      means.map(async (mean) => {
+        var data = {
+          status: validatedData.status,
+          startDate: sDate,
+          endDate: eDate,
+          startTime: validatedData.startTime,
+          endTime: validatedData.endTime,
+          bookingReason: "",
+          siteId: validatedData.siteId,
+          userId: validatedData.userId,
+          companyId: validatedData.companyId,
+          meanId: mean,
+        };
+        let result = await new Booking(data).save();
+        meanBookings.push(result._id);
+      })
+    );
 
+    validatedData.meanBookings = meanBookings;
     const result = await Delivery.create(validatedData);
 
     // if (body.sendDeliverySummary) {
@@ -120,42 +125,25 @@ class DeliveryController {
     const result = await Delivery.findByIdAndDelete(id).populate("siteId");
 
     // to delete mean booking
-    const bookings = await Booking.find();
-    let means = result.liftingMeans.concat(result.routingMeans);
-    await Promise.all(
-      bookings.map((item) => {
-        means.map(async (mean) => {
-          if (item.meanId.toString() === mean.toString()) {
-            if (
-              moment(moment(item.createdAt).format("yyyy/MM/DD")).isSame(
-                moment(moment(result.createdAt).format("yyyy/MM/DD"))
-              )
-            ) {
-              if (
-                moment(item.createdAt).format("HH:mm:ss") ===
-                moment(result.createdAt).format("HH:mm:ss")
-              ) {
-                await Booking.findByIdAndDelete(item._id);
-              }
-            }
-          }
-        });
-      })
-    );
+    result.meanBookings.map(async (bookingId) => {
+      await Booking.findByIdAndDelete(bookingId);
+    });
 
     // to send email to all admins and enterprise
     const siteCompanies = await SiteCompanies.findOne({
       siteId: result.siteId._id,
     });
+    let users = await User.find();
     let emails = [];
-    await Promise.all(
-      siteCompanies.users.map(async (item) => {
-        if (item.role == "ADMIN" || item.role == "ENTERPRISE") {
-          let user = await User.findById(item.userId);
-          emails.push(user.email);
-        }
-      })
-    );
+    siteCompanies.users.map((item) => {
+      if (item.role == "ADMIN" || item.role == "ENTERPRISE") {
+        users.map((user) => {
+          if (user._id.toString() === item.userId.toString()) {
+            emails.push(user.email);
+          }
+        });
+      }
+    });
 
     let emailService = new MailService();
     await emailService.sendEmailDeliveryAreaDeleted(
