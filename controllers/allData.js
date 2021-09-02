@@ -12,7 +12,7 @@ const MeanBooking = require("../models/meanBooking");
 const StorageAreas = require("../models/storageArea");
 const Organigramme = require("../models/organigramme");
 const DeliveryAreas = require("../models/deliveryArea");
-const SiteCompanies = require("../models/SiteCompanies");
+const SiteCompanies = require("../models/siteCompanies");
 
 const buffer = require("buffer");
 const moment = require("moment");
@@ -137,9 +137,7 @@ class AllDataController {
 
         const meanBooking = await MeanBooking.find({
           siteId: site.siteId._id,
-          userId: userId,
         })
-          .populate("meanId")
           .populate("companyId")
           .lean();
 

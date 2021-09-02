@@ -2,7 +2,7 @@ const STRINGS = require("../utils/texts");
 const response = require("../utils/response");
 const CustomError = require("../utils/customError");
 const Booking = require("../models/meanBooking");
-const SiteCompanies = require("../models/SiteCompanies");
+const SiteCompanies = require("../models/siteCompanies");
 const Delivery = require("../models/delivery");
 const DeliveryArea = require("../models/deliveryArea");
 const StorageArea = require("../models/storageArea");
@@ -340,7 +340,7 @@ class MeanBookingController {
     const siteId = req.params.siteId;
     const bookings = await Booking.find({
       siteId: siteId,
-    });
+    }).populate("companyId");
     let result = { bookings };
     res.status(200).send(response(STRINGS.TEXTS.bookingOfSite, result));
   }

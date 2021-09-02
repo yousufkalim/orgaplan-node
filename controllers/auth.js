@@ -10,7 +10,7 @@ const response = require("../utils/response");
 const UserSites = require("../models/userSites");
 const CustomError = require("../utils/customError");
 const MailService = require("../services/mail.service");
-const SiteCompanies = require("../models/SiteCompanies");
+const SiteCompanies = require("../models/siteCompanies");
 
 const ENV = process.env;
 
