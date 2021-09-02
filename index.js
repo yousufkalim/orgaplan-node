@@ -20,6 +20,11 @@ app.use("/api", require("./routes"));
 // Ping route for testing connection
 app.get("/ping", (req, res) => res.status(200).send("Hello world!"));
 
+// Production
+if (process.NODE_ENV === "production") {
+  app.use("/", express.static("client/build/index.html"));
+}
+
 // Error middlewares
 require("./middlewares/error")(app);
 // PORT Handling
