@@ -125,7 +125,7 @@ class DeliveryController {
     const result = await Delivery.findByIdAndDelete(id).populate("siteId");
 
     // to delete mean booking
-    await model.deleteMany({ _id: { $in: result.meanBookings } });
+    await Booking.deleteMany({ _id: { $in: result.meanBookings } });
 
     // to send email to all admins and enterprise
     const siteCompanies = await SiteCompanies.findOne({
