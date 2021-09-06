@@ -253,6 +253,7 @@ class DeliveryController {
       { _id: id },
       {
         $set: {
+          verifiedBy: validatedData.verifiedBy,
           status: validatedData.status,
           materialsDelivered: validatedData.materialsDelivered,
         },
@@ -273,7 +274,7 @@ class DeliveryController {
       }
       /*
       ===================
-      This code block is disabled by hamza because he is calling the api for this job directly from frontend
+      This code block is disabled by humza because he is calling the api for this job directly from frontend
       ===================
       */
       // await Incidents.create({

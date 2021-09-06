@@ -21,6 +21,10 @@ const deliverySchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.USER,
     },
+    verifiedBy: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.USER,
+    },
     deliveryArea: {
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.DELIVERYAREA,

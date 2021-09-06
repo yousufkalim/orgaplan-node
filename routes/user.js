@@ -35,6 +35,12 @@ router.put(
   userController.updateCompanyUser
 );
 
+router.put(
+  "/add_sign/:userId",
+  multer("user", "image", "single"),
+  userController.addSign
+);
+
 router.put("/update/:userId", upload("user", "image"), userController.update);
 
 // DELETES
