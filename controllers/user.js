@@ -11,6 +11,7 @@ const ObjectId = require("mongodb").ObjectID;
 const Validations = require("../validators");
 const { writeLog } = require("../utils/logs");
 const moment = require("moment");
+var fs = require("fs");
 
 const bcrypt = require("bcryptjs");
 const ENV = process.env;
@@ -434,6 +435,35 @@ class UserContoller {
     result.remove();
 
     res.status(200).send(response(STRINGS.TEXTS.userDeleted, result));
+  }
+  async addSign(req, res) {
+    try {
+      const id = req.params.userId;
+      const user = await User.findOne({ _id: id });
+      if (user.sign) {
+        fs.unlink("./" + user.sign, function (err) {
+          console.log(err);
+        });
+      }
+      var base64Data = req.body.sign;
+      var path = "./uploads/sign/" + Date.now() + "-" + "sign.png";
+
+      fs.writeFile(path, base64Data, "base64", function (err) {
+        console.log(err);
+      });
+
+      var newPath = path.substring(2);
+      await User.findOneAndUpdate(
+        { _id: id },
+        {
+          $set: { sign: newPath },
+        }
+      );
+
+      res.status(200).send(response("user signature", newPath));
+    } catch (error) {
+      res.status(400).send({ message: error.message });
+    }
   }
 }
 
