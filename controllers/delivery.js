@@ -35,7 +35,7 @@ class DeliveryController {
         endDate: eDate,
         startTime: validatedData.startTime,
         endTime: validatedData.endTime,
-        bookingReason: "",
+        bookingReason: validatedData.comment,
         siteId: validatedData.siteId,
         userId: validatedData.userId,
         companyId: validatedData.companyId,
