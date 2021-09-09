@@ -408,6 +408,18 @@ class MailService {
     });
     return;
   }
+  async sendEmailDeliveryAreaDeleted(emails, siteName, deliveryDate) {
+    let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
+    emails.map(async (email) => {
+      await this.transporter.sendMail({
+        from,
+        to: email,
+        subject: "Requête de livraison refusée",
+        html: `<p>La requête de livraison effectuée pour le chantier ${siteName} pour le ${deliveryDate} a été refusée par l'administrateur.</p><br><p>Orgaplan</p>`,
+      });
+    });
+    return;
+  }
 }
 
 module.exports = MailService;

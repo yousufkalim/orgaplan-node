@@ -11,6 +11,7 @@ const CustomError = require("../utils/customError");
 const { writeLog } = require("../utils/logs");
 const Site = require("../models/site");
 const Company = require("../models/company");
+const SiteCompanies = require("../models/siteCompanies");
 const User = require("../models/user");
 const MailService = require("../services/mail.service");
 const moment = require("moment");
@@ -28,22 +29,27 @@ class DeliveryController {
       .set("hours", validatedData.endTime.split(":")[0])
       .set("minutes", validatedData.endTime.split(":")[1]);
 
-    means.map(async (mean) => {
-      var data = {
-        status: validatedData.status,
-        startDate: sDate,
-        endDate: eDate,
-        startTime: validatedData.startTime,
-        endTime: validatedData.endTime,
-        bookingReason: validatedData.comment,
-        siteId: validatedData.siteId,
-        userId: validatedData.userId,
-        companyId: validatedData.companyId,
-        meanId: mean,
-      };
-      await new Booking(data).save();
-    });
+    let meanBookings = [];
+    await Promise.all(
+      means.map(async (mean) => {
+        var data = {
+          status: validatedData.status,
+          startDate: sDate,
+          endDate: eDate,
+          startTime: validatedData.startTime,
+          endTime: validatedData.endTime,
+          bookingReason: "",
+          siteId: validatedData.siteId,
+          userId: validatedData.userId,
+          companyId: validatedData.companyId,
+          meanId: mean,
+        };
+        let result = await new Booking(data).save();
+        meanBookings.push(result._id);
+      })
+    );
 
+    validatedData.meanBookings = meanBookings;
     const result = await Delivery.create(validatedData);
 
     // if (body.sendDeliverySummary) {
@@ -116,8 +122,33 @@ class DeliveryController {
 
   async delete(req, res) {
     const id = req.params.id;
+    const result = await Delivery.findByIdAndDelete(id).populate("siteId");
 
-    const result = await Delivery.findByIdAndDelete(id);
+    // to delete mean booking
+    await Booking.deleteMany({ _id: { $in: result.meanBookings } });
+
+    // to send email to all admins and enterprise
+    const siteCompanies = await SiteCompanies.findOne({
+      siteId: result.siteId._id,
+    });
+    let users = await User.find();
+    let emails = [];
+    siteCompanies.users.map((item) => {
+      if (item.role == "ADMIN" || item.role == "ENTERPRISE") {
+        users.map((user) => {
+          if (user._id.toString() === item.userId.toString()) {
+            emails.push(user.email);
+          }
+        });
+      }
+    });
+
+    let emailService = new MailService();
+    await emailService.sendEmailDeliveryAreaDeleted(
+      emails,
+      result.siteId.name,
+      result.date
+    );
 
     // Logging Activity
     const siteData = await Site.findOne({ _id: result.siteId });
