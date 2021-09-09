@@ -354,29 +354,9 @@ class SuperAdminClientsController {
     if (client.status === STRINGS.STATUS.DELETED)
       throw new CustomError(STRINGS.ERRORS.clientNotActive, 404);
 
-    await Promise.all(
-      client.adminIds.map(async (adminId) => {
-        const site = await Site.findOne({ adminId });
-        if (site) {
-          throw new CustomError(
-            STRINGS.ERRORS.deleteClientAdminSitesFirst,
-            404
-          );
-        } else {
-          let countUsers = await User.find().countDocuments();
-          let admin = await User.findById(adminId);
-          if (admin && admin.status !== STRINGS.STATUS.DELETED) {
-            admin.firstName = admin.firstName[0];
-            admin.lastName = admin.lastName[0];
-            admin.email = `AAA@${countUsers}.com`;
-            admin.phone = 9999999999;
-            admin.image = "uploads/avatar.jpeg";
-            admin.status = STRINGS.STATUS.DELETED;
-            await admin.save();
-          }
-        }
-      })
-    );
+    console.log("client:", client);
+    if (client.adminIds.length != 0)
+      throw new CustomError(STRINGS.ERRORS.DeleteAdminFirst, 404);
 
     const company = await Company.findById(client.companyId);
     if (!company) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
