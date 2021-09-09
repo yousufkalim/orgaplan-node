@@ -17,6 +17,7 @@ module.exports = {
     picNotFound: "PIC non trouvé",
     siteNotFound: "Pas de chantier trouvé",
     clientNotActive: "Client non actif",
+    DeleteAdminFirst: "Supprimez d'abord son administrateur",
 
     incidentDateBeforeSiteStartDate:
       "La date d'incident ne peut être avant la date de démarrage du chantier.",
