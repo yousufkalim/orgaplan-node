@@ -33,12 +33,15 @@ class DeliveryController {
     await Promise.all(
       means.map(async (mean) => {
         var data = {
-          status: validatedData.status,
+          status:
+            validatedData.status === "COMPLETEDWITHISSUE"
+              ? "VALIDATED"
+              : validatedData.status,
           startDate: sDate,
           endDate: eDate,
           startTime: validatedData.startTime,
           endTime: validatedData.endTime,
-          bookingReason: "",
+          bookingReason: comments,
           siteId: validatedData.siteId,
           userId: validatedData.userId,
           companyId: validatedData.companyId,
