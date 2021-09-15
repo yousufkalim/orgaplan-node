@@ -21,6 +21,8 @@ const schemas = {
       date: Joi.date().required(),
       startTime: Joi.string().required(),
       endTime: Joi.string().required(),
+      sDate: Joi.date().required(),
+      eDate: Joi.date().required(),
       type: Joi.string().required(),
       status: Joi.string().required(),
     });

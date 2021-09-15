@@ -22,13 +22,6 @@ class DeliveryController {
 
     let means = validatedData.liftingMeans.concat(validatedData.routingMeans);
 
-    let sDate = moment(validatedData.date)
-      .set("hours", validatedData.startTime.split(":")[0])
-      .set("minutes", validatedData.startTime.split(":")[1]);
-    let eDate = moment(validatedData.date)
-      .set("hours", validatedData.endTime.split(":")[0])
-      .set("minutes", validatedData.endTime.split(":")[1]);
-
     let meanBookings = [];
     await Promise.all(
       means.map(async (mean) => {
@@ -37,8 +30,8 @@ class DeliveryController {
             validatedData.status === "COMPLETEDWITHISSUE"
               ? "VALIDATED"
               : validatedData.status,
-          startDate: sDate,
-          endDate: eDate,
+          startDate: validatedData.sDate,
+          endDate: validatedData.eDate,
           startTime: validatedData.startTime,
           endTime: validatedData.endTime,
           bookingReason: validatedData.comment,
@@ -53,6 +46,8 @@ class DeliveryController {
     );
 
     validatedData.meanBookings = meanBookings;
+    delete validatedData.sDate;
+    delete validatedData.eDate;
     const result = await Delivery.create(validatedData);
 
     // if (body.sendDeliverySummary) {
