@@ -53,6 +53,8 @@ const schemas = {
       building: Joi.string().allow(""),
       level: Joi.string().allow(""),
       date: Joi.date().required(),
+      sDate: Joi.date().required(),
+      eDate: Joi.date().required(),
       startTime: Joi.string().required(),
       endTime: Joi.string().required(),
       type: Joi.string().required(),
