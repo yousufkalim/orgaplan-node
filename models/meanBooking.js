@@ -31,6 +31,10 @@ const meanBookingSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: STRINGS.MODALS.MEAN,
     },
+    deliveryId: {
+      type: Schema.Types.ObjectId,
+      ref: STRINGS.MODALS.DELIVERY,
+    },
   },
   {
     timestamps: true,
