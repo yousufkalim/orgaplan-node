@@ -19,9 +19,9 @@ const moment = require("moment");
 class DeliveryController {
   async create(req, res) {
     const validatedData = await Validations.delivery.create(req.body);
+    const result = await Delivery.create(validatedData);
 
     let means = validatedData.liftingMeans.concat(validatedData.routingMeans);
-
     let meanBookings = [];
     await Promise.all(
       means.map(async (mean) => {
@@ -39,16 +39,14 @@ class DeliveryController {
           userId: validatedData.userId,
           companyId: validatedData.companyId,
           meanId: mean,
+          deliveryId: result._id,
         };
-        let result = await new Booking(data).save();
-        meanBookings.push(result._id);
+        let rss = await new Booking(data).save();
+        meanBookings.push(rss._id);
       })
     );
 
     validatedData.meanBookings = meanBookings;
-    delete validatedData.sDate;
-    delete validatedData.eDate;
-    const result = await Delivery.create(validatedData);
 
     // if (body.sendDeliverySummary) {
     //   await new EmailService().sendDeliverySummaryEmail(
@@ -56,6 +54,7 @@ class DeliveryController {
     //     body.html
     //   );
     // }
+
     // Logging Activity
     const user = await User.findOne({ _id: result.userId });
     const { firstName, lastName } = user;
