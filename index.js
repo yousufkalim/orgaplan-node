@@ -5,6 +5,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cron = require("node-cron");
 const Cronjobs = require("./services/Cron");
+const path = require("path");
 // Load env vars
 dotenv.config({ path: ".env" });
 
@@ -20,10 +21,11 @@ app.use("/api", require("./routes"));
 // Ping route for testing connection
 app.get("/ping", (req, res) => res.status(200).send("Hello world!"));
 
-// Production
-if (process.NODE_ENV === "production") {
-  app.use("/", express.static("client/build/index.html"));
-}
+app.use(express.static(path.join(__dirname, "build")));
+
+app.get("/", (req, res) => {
+  res.sendFile(express.static(path.join(__dirname, "build", "index.html")));
+});
 
 // Error middlewares
 require("./middlewares/error")(app);
