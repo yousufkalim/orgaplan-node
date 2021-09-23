@@ -93,10 +93,9 @@ class SitePicController {
 
   async updateShape(req, res) {
     const validatedData = req.body;
-    const result = await SitePic.findByIdAndUpdate(
-      validatedData.picId,
-      { $addToSet: { shapes: validatedData } },
-      { new: true }
+    const result = await SitePic.updateOne(
+      { _id: validatedData.picId, "shapes._id": validatedData._id },
+      { $set: { "shapes.$": validatedData } }
     )
       .populate("shapes.mean")
       .populate({
