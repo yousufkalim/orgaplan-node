@@ -38,6 +38,10 @@ function auth(role = STRINGS.ROLES.USER) {
     req.user = user;
     req.userId = user._id;
 
+    res.set(
+      "cache-control",
+      "no-cache, no-store, private, must-revalidate, post-check=0, pre-check=0"
+    );
     next();
   };
 }
