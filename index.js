@@ -21,12 +21,6 @@ app.use("/api", require("./routes"));
 // Ping route for testing connection
 app.get("/ping", (req, res) => res.status(200).send("Hello world!"));
 
-app.use(express.static(path.join(__dirname, "build")));
-
-app.get("/", (req, res) => {
-  res.sendFile(express.static(path.join(__dirname, "build", "index.html")));
-});
-
 // Error middlewares
 require("./middlewares/error")(app);
 // PORT Handling
