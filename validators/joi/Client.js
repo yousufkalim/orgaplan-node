@@ -11,9 +11,7 @@ const schemas = {
       color: Joi.string().required(),
       firstName: Joi.string().allow(""),
       lastName: Joi.string().allow(""),
-      email: Joi.string()
-        .email({ tlds: { allow: false } })
-        .allow(""),
+      email: Joi.string().allow(""),
       phone: Joi.custom((value, helper) => {
         if (String(value).length > 26)
           return helper.message("phone is invalid");
@@ -79,9 +77,7 @@ const schemas = {
       companyId: Joi.string().required(),
       firstName: Joi.string().allow(""),
       lastName: Joi.string().allow(""),
-      email: Joi.string()
-        .email({ tlds: { allow: false } })
-        .allow(""),
+      email: Joi.string().allow(""),
       phone: Joi.custom((value, helper) => {
         console.log(value);
 
