@@ -213,9 +213,18 @@ class MeanController {
       // location: { $ne: STRINGS.STATUS.OUTSIDE },
     });
 
-    const siteCompanies = await SiteCompanies.findOne({
+    let siteCompanies = await SiteCompanies.findOne({
       siteId: siteId,
     }).populate("companies.companyId");
+
+    // Filtering duplicate companies
+    // There's a bug when 2 admin assigns to same company
+    siteCompanies.companies = [
+      ...new Map(
+        siteCompanies.companies.map((item) => [item.companyId._id, item])
+      ).values(),
+    ];
+
     if (!siteCompanies) throw new CustomError(STRINGS.ERRORS.companyNotFound);
 
     const result = {
