@@ -4,7 +4,7 @@ const multer = require("../middlewares/multer");
 const sitePicController = require("../controllers/sitePic");
 
 // GETS
-router.get("/get/:id", sitePicController.getOne);
+router.get("/get/:id", auth(), sitePicController.getOne);
 router.get("/site/:siteId", sitePicController.getBySite);
 
 // GETS Count

@@ -11,6 +11,7 @@ router.get("/get/:id", superAdmin.clientsController.getById);
 // POSTS
 router.post(
   "/",
+  auth(),
   multer("company", "logo", "single"),
   superAdmin.clientsController.create
 );

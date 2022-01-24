@@ -14,6 +14,7 @@ router.get("/client/:clientId", superAdmin.sitesController.getSitesByClient);
 // POSTS
 router.post(
   "/",
+  auth(),
   multer("site", "logo", "single"),
   superAdmin.sitesController.create
 );
@@ -24,7 +25,7 @@ router.put(
   multer("site", "logo", "single"),
   superAdmin.sitesController.update
 );
-router.put("/archive/:id", superAdmin.sitesController.archiveSite);
+router.put("/archive/:id", auth(), superAdmin.sitesController.archiveSite);
 router.put("/unarchive/:id", superAdmin.sitesController.unArchiveSite);
 
 // DELETES

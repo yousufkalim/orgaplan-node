@@ -16,7 +16,7 @@ router.get(
 );
 
 // POSTS
-router.post("/", upload("company", "logo"), companyController.create);
+router.post("/", auth(), upload("company", "logo"), companyController.create);
 router.post(
   "/add_user",
   auth(),

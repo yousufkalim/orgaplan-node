@@ -24,6 +24,7 @@ router.post(
 router.post("/register", upload("user", "image"), userController.register);
 router.post(
   "/add_company_user",
+  auth(),
   upload("user", "image"),
   userController.createCompanyUser
 );
@@ -46,6 +47,7 @@ router.put("/update/:userId", upload("user", "image"), userController.update);
 // DELETES
 router.delete(
   "/delete_company_user",
+  auth(),
   upload(),
   userController.deleteCompanyUser
 );

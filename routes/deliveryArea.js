@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const auth = require("../middlewares/auth");
 
 const deliveryAreaController = require("../controllers/deliveryArea");
 
@@ -16,7 +17,7 @@ router.get(
 );
 
 // POSTS
-router.post("/", deliveryAreaController.create);
+router.post("/", auth(), deliveryAreaController.create);
 // PUTS
 router.put("/:id", deliveryAreaController.update);
 // DELETES

@@ -24,7 +24,7 @@ router.get("/enterprise", deliveryController.enterpiseDeliveries);
 
 // POSTS
 router.post("/", auth(), deliveryController.create);
-router.post("/enterprise", deliveryController.enterpriseDeliveries);
+router.post("/enterprise", auth(), deliveryController.enterpriseDeliveries);
 
 // PUTS
 router.put("/:id", deliveryController.update);
@@ -34,9 +34,14 @@ router.put(
   multer("incidents", "photos", "single"),
   deliveryController.completeDelivery
 );
-router.put("/buffer/:id", multer(), deliveryController.bufferUpdateDelivery);
+router.put(
+  "/buffer/:id",
+  auth(),
+  multer(),
+  deliveryController.bufferUpdateDelivery
+);
 
 // DELETES
-router.delete("/:id", deliveryController.delete);
+router.delete("/:id", auth(), deliveryController.delete);
 
 module.exports = router;

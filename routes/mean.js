@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const upload = require("../middlewares/multer");
+const auth = require("../middlewares/auth");
 
 const meanController = require("../controllers/mean");
 
@@ -14,6 +15,7 @@ router.get("/get_add_mean/:siteId", meanController.getAddMean);
 // POSTS
 router.post(
   "/",
+  auth(),
   upload(
     "mean",
     [

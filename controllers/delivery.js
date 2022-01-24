@@ -67,7 +67,11 @@ class DeliveryController {
     }
 
     await writeLog(
+      // name
+      `${firstName} ${lastName}`,
+      //date
       moment().format("DD/MM/YYYY"),
+      //description
       `A delivery request has been created by the ${firstName} ${lastName} for ${result.date.toLocaleString()}, for ${
         company.name
       }, for ${siteData.name}`
@@ -146,11 +150,14 @@ class DeliveryController {
       result.siteId.name,
       result.date
     );
-
+    // console.log("userrrrr", req.user);
     // Logging Activity
     const siteData = await Site.findOne({ _id: result.siteId });
     const company = await Company.findOne({ _id: result.companyId });
     await writeLog(
+      // name
+      `${req.user.firstName} ${req.user.lastName}`,
+      //date
       moment(new Date()).format("DD/MM/YYYY"),
       `Admin has refused a delivery request for ${result.date.toLocaleString()}, for ${
         company.name
@@ -262,6 +269,9 @@ class DeliveryController {
     const siteData = await Site.findOne({ _id: result.siteId });
     const company = await Company.findOne({ _id: result.companyId });
     await writeLog(
+      // name
+      `${req.user.firstName} ${req.user.lastName}`,
+      //date
       moment().format("DD/MM/YYYY"),
       `Admin has accepted a delivery request for ${result.date.toLocaleString()}, for ${
         company.name
@@ -330,6 +340,9 @@ class DeliveryController {
     const company = await Company.findOne({ _id: result.companyId });
 
     await writeLog(
+      // name
+      validatedData.username,
+      //date
       moment().format("DD/MM/YYYY"),
       `The traffic agent ${
         validatedData.username
@@ -362,6 +375,9 @@ class DeliveryController {
     if (validatedData.bufferArea) {
       const siteData = await Site.findOne({ _id: result.siteId });
       await writeLog(
+        // name
+        `${req.user.firstName} ${req.user.lastName}`,
+        //date
         moment().format("DD/MM/YYYY"),
         `Truck ${
           result.flatRegistration
