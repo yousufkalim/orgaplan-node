@@ -40,7 +40,8 @@ class IncidentsController {
       `${req.user.firstName} ${req.user.lastName}`,
       //date
       moment().format("DD/MM/YYYY"),
-      `Admin has created the incident named ${result.name} for the site ${site.name}`
+      `L'administrateur a créé l'incident nommé ${result.name} pour le chantier
+      ${site.name}`
     );
 
     res.status(200).send(response(STRINGS.TEXTS.incidentCreated, result));

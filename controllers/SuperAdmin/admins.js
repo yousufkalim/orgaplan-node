@@ -64,7 +64,7 @@ class SuperAdminAdminsController {
 
       //date
       moment().format("DD/MM/YYYY"),
-      `Super admin has added ${firstName} ${lastName} to the platform`
+      `Le super administrateur a ajouté ${firstName} ${lastName} à la plate-forme`
     );
 
     res.status(200).send(response(STRINGS.TEXTS.adminCreated, result));

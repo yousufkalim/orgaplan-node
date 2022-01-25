@@ -57,7 +57,7 @@ class SuperAdminClientsController {
 
       //date
       moment().format("DD/MM/YYYY"),
-      `Super admin has added ${companyData.name} to the platform`
+      `Le super administrateur a ajouté ${companyData.name} à la plate-forme`
     );
     res.status(200).send(response(STRINGS.TEXTS.clientCreated, client));
   }

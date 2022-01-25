@@ -20,7 +20,8 @@ class DeliveryAreaController {
       `${req.user.firstName} ${req.user.lastName}`,
       //date
       moment().format("DD/MM/YYYY"),
-      `${validatedData.name} has been added to the site ${siteData.name}`
+      `${validatedData.name} a été ajouté au site
+      ${siteData.name}`
     );
     res.status(201).send(response(STRINGS.TEXTS.deliveryAreaCreated, result));
   }

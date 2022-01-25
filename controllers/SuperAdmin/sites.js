@@ -95,7 +95,7 @@ class SuperAdminSitesController {
 
       //date
       moment().format("DD/MM/YYYY"),
-      `Super admin has created the site ${validatedData.name}`
+      `Le super administrateur a créé le site ${validatedData.name}`
     );
     await res.status(200).send(response(STRINGS.TEXTS.siteCreated, result));
   }
@@ -391,7 +391,7 @@ class SuperAdminSitesController {
 
       //date
       moment(new Date()).format("DD/MM/YYYY"),
-      `Super admin has archived the site ${result.name}`
+      `Le super administrateur a archivé le site ${result.name}`
     );
 
     res.status(200).send(response(STRINGS.TEXTS.siteArchived, result));

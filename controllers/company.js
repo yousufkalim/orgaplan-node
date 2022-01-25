@@ -58,7 +58,7 @@ class CompanyController {
       //date
       moment().format("DD/MM/YYYY"),
       //description
-      `${validatedData.name} has been added to the site ${siteData.name}`
+      `${validatedData.name} a été ajouté au site ${siteData.name}`
     );
 
     res.status(200).send(response(STRINGS.TEXTS.companyAdded, company));

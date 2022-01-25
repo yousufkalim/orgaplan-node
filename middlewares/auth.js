@@ -13,28 +13,35 @@ function auth(role = STRINGS.ROLES.USER) {
 
   return async (req, res, next) => {
     const header = req.get("Authorization");
-
+    // Unauthorized access: token not found
     if (!header || !header.startsWith("Bearer")) {
-      throw new CustomError("Unauthorized access: Token not found", 401);
+      throw new CustomError("Accès non autorisé : jeton introuvable", 401);
     }
     const token = header.split(" ")[1];
     const decoded = JWT.verify(token, process.env.JWT_SECRET);
 
     let user = await User.findOne({ _id: decoded.id });
+    // Unauthorized access: user does not exist
     if (!user)
-      throw new CustomError("Unauthorized access: User does not exist", 401);
+      throw new CustomError(
+        "Accès non autorisé : l'utilisateur n'existe pas",
+        401
+      );
+    //Unauthorized access: user is no longer active
     if (user.status !== STRINGS.STATUS.ACTIVE)
       throw new CustomError(
-        "Unauthorized access: User is not active anymore",
+        "Accès non autorisé : l'utilisateur n'est plus actif",
         401
       );
+    // Unauthorized access: Please verify email address
     if (!user.isVerified)
       throw new CustomError(
-        "Unauthorized access: Please verify email address",
+        "Accès non autorisé : veuillez vérifier l'adresse e-mail",
         401
       );
+    // console.log("roleee", role, user.role);
     if (role !== STRINGS.ROLES.ALL && role !== user.role)
-      throw new CustomError("Unauthorized access", 401);
+      throw new CustomError("L'accès non autorisé", 401);
     req.user = user;
     req.userId = user._id;
 
