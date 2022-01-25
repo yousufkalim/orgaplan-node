@@ -52,7 +52,12 @@ class CompanyController {
     // Logging this activity
     const siteData = await site.findOne({ _id: validatedData.siteId });
     await writeLog(
+      // name
+      `${req.user.firstName} ${req.user.lastName}`,
+
+      //date
       moment().format("DD/MM/YYYY"),
+      //description
       `${validatedData.name} has been added to the site ${siteData.name}`
     );
 

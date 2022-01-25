@@ -90,6 +90,10 @@ class SuperAdminSitesController {
 
     // Logging this activity
     await writeLog(
+      // name
+      `${req.user.firstName} ${req.user.lastName}`,
+
+      //date
       moment().format("DD/MM/YYYY"),
       `Super admin has created the site ${validatedData.name}`
     );
@@ -382,6 +386,10 @@ class SuperAdminSitesController {
 
     // Logging this activity
     await writeLog(
+      // name
+      `${req.user.firstName} ${req.user.lastName}`,
+
+      //date
       moment(new Date()).format("DD/MM/YYYY"),
       `Super admin has archived the site ${result.name}`
     );

@@ -52,6 +52,10 @@ class SuperAdminClientsController {
       .execPopulate();
 
     await writeLog(
+      // name
+      `${req.user.firstName} ${req.user.lastName}`,
+
+      //date
       moment().format("DD/MM/YYYY"),
       `Super admin has added ${companyData.name} to the platform`
     );

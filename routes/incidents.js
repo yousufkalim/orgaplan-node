@@ -17,6 +17,7 @@ router.get("/incidents_list/:siteId", incidentsController.getIncidentsList);
 router.post(
   "/",
   multer("incidents", "photos", "single"),
+  auth(),
   incidentsController.create
 );
 

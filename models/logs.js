@@ -5,6 +5,7 @@ const STRINGS = require("../utils/texts");
 // Schema
 const logsSchema = new mongoose.Schema(
   {
+    name: String,
     date: String,
     description: String,
   },

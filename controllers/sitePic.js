@@ -180,6 +180,10 @@ class SitePicController {
     // Logging Activity
     const siteData = await Site.findOne({ _id: pic.siteId });
     await writeLog(
+      // name
+      `${req.user.firstName} ${req.user.lastName}`,
+
+      //date
       moment().format("DD/MM/YYYY"),
       `${del.name} has been deleted from the site ${siteData.name}`
     );
