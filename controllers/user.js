@@ -279,7 +279,8 @@ class UserContoller {
         `${req.user.firstName} ${req.user.lastName}`,
         //date
         moment().format("DD/MM/YYYY"),
-        `${firstName} ${lastName} has been added to the site ${siteData.name}`
+        `${firstName} ${lastName} a été ajouté au site
+        ${siteData.name}`
       );
 
       await res.status(200).send(response(STRINGS.TEXTS.userCreated, user));
@@ -320,10 +321,13 @@ class UserContoller {
 
         //date
         moment().format("DD/MM/YYYY"),
-        `${firstName} ${lastName} has been deleted from the site ${siteData.name}`
+        `${firstName} ${lastName} a été supprimé du site ${siteData.name}`
       );
 
-      await res.status(200).send(response("User Remove Successfully"));
+      await res
+        .status(200)
+        // User Remove Successfully
+        .send(response("Supprimer l'utilisateur avec succès"));
     } else {
       throw new CustomError(STRINGS.ERRORS.error, 404);
     }

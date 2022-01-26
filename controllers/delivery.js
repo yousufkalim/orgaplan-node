@@ -72,9 +72,9 @@ class DeliveryController {
       //date
       moment().format("DD/MM/YYYY"),
       //description
-      `A delivery request has been created by the ${firstName} ${lastName} for ${result.date.toLocaleString()}, for ${
+      `Une demande de livraison a été créée par le ${firstName} ${lastName} pour ${result.date.toLocaleString()}, pour ${
         company.name
-      }, for ${siteData.name}`
+      }, pour ${siteData.name}`
     );
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryCreated, result));
@@ -159,9 +159,9 @@ class DeliveryController {
       `${req.user.firstName} ${req.user.lastName}`,
       //date
       moment(new Date()).format("DD/MM/YYYY"),
-      `Admin has refused a delivery request for ${result.date.toLocaleString()}, for ${
+      `L'administrateur a refusé une demande de livraison pour ${result.date.toLocaleString()}, pour ${
         company.name
-      }, for ${siteData.name}`
+      }, pour ${siteData.name}`
     );
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryDeleted, result));
@@ -273,9 +273,10 @@ class DeliveryController {
       `${req.user.firstName} ${req.user.lastName}`,
       //date
       moment().format("DD/MM/YYYY"),
-      `Admin has accepted a delivery request for ${result.date.toLocaleString()}, for ${
-        company.name
-      }, for ${siteData.name}`
+      `L'administrateur a accepté une demande de livraison pour
+      ${result.date.toLocaleString()}, pour ${company.name}, pour ${
+        siteData.name
+      }`
     );
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryUpdated, result));
@@ -344,11 +345,11 @@ class DeliveryController {
       validatedData.username,
       //date
       moment().format("DD/MM/YYYY"),
-      `The traffic agent ${
-        validatedData.username
-      } has completed the delivery for ${result.date.toLocaleString()}, for ${
-        company.name
-      }, for ${siteData.name}`
+      `L'agent de trafic
+      ${validatedData.username} a terminé la livraison pour
+      ${result.date.toLocaleString()}, pour ${company.name}, pour ${
+        siteData.name
+      }`
     );
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryUpdated, result));
@@ -379,11 +380,9 @@ class DeliveryController {
         `${req.user.firstName} ${req.user.lastName}`,
         //date
         moment().format("DD/MM/YYYY"),
-        `Truck ${
-          result.flatRegistration
-        } has returned to buffer area at ${result.arrivalTime.toLocaleString()} for site ${
-          siteData.name
-        }`
+        `Camion ${result.flatRegistration} est retourné dans la zone tampon à
+        ${result.arrivalTime.toLocaleString()} pour chantier
+        ${siteData.name}`
       );
     }
 

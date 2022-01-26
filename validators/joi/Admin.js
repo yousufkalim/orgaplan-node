@@ -11,7 +11,7 @@ const schemas = {
       phone: Joi.string().min(10).max(25).required(),
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
-      image: Joi.string().required(),
+      image: Joi.string().optional().allow(""),
       companyId: Joi.string().required(),
       adminType: Joi.string()
         .required()
@@ -21,7 +21,6 @@ const schemas = {
           STRINGS.ROLES.ADMINPERSITE
         ),
     });
-
     const { error, value } = Validation.validate(data);
     if (error) {
       const { details } = error;
@@ -36,7 +35,7 @@ const schemas = {
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
       phone: Joi.string().min(10).max(25).required(),
-      image: Joi.string().optional(),
+      image: Joi.string().optional().allow(""),
       companyId: Joi.string().required(),
       adminType: Joi.string()
         .required()
@@ -47,7 +46,7 @@ const schemas = {
         ),
     });
 
-    if (!data.image) delete data.image;
+    // if (!data.image) delete data.image;
 
     const { error, value } = Validation.validate(data);
     if (error) {

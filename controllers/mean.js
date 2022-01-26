@@ -42,7 +42,8 @@ class MeanController {
       `${req.user.firstName} ${req.user.lastName}`,
       //date
       moment().format("DD/MM/YYYY"),
-      `${validatedData.name} has been added to the site ${site.name}`
+      `${validatedData.name} a été ajouté au site
+      ${site.name}`
     );
 
     res.status(200).send(response(STRINGS.TEXTS.meanCreated, result));

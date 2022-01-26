@@ -185,7 +185,7 @@ class SitePicController {
 
       //date
       moment().format("DD/MM/YYYY"),
-      `${del.name} has been deleted from the site ${siteData.name}`
+      `${del.name} a été supprimé du site ${siteData.name}`
     );
 
     res.status(200).send(response(STRINGS.TEXTS.picUpdated, result));
