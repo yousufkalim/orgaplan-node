@@ -46,7 +46,7 @@ const schemas = {
         ),
     });
 
-    // if (!data.image) delete data.image;
+    if (!data.image) delete data.image;
 
     const { error, value } = Validation.validate(data);
     if (error) {
@@ -68,6 +68,7 @@ const schemas = {
     });
 
     const { error, value } = Validation.validate(data);
+
     if (error) {
       const { details } = error;
       const message = details.map((i) => i.message).join(",");
