@@ -13,6 +13,7 @@ const schemas = {
       addresses: Joi.array()
         .items(
           Joi.object().keys({
+            street: Joi.string().required(),
             city: Joi.string().required(),
             postal: Joi.string().required(),
           })
@@ -99,6 +100,7 @@ const schemas = {
       addresses: Joi.array()
         .items(
           Joi.object().keys({
+            street: Joi.string().required(),
             city: Joi.string().required(),
             postal: Joi.string().required(),
           })
