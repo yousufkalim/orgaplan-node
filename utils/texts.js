@@ -53,6 +53,11 @@ module.exports = {
 
     zacAlreadyExists: "La ZAC existe déjà",
 
+    questionNotFound: "La question n'a pas été trouvé",
+    questionStepsMaximumNumberLimit: "Une question doit avoir au plus 5 étapes à sa solution",
+
+    questionSolutionStepNotFound: "L'étape de la question demandé n'a pas été trouvé",
+
     error: "Une erreur s'est produite",
     nameRequired: "Merci de renseigner le nom",
     typeRequired: "Merci de renseigner le type",
@@ -166,6 +171,15 @@ module.exports = {
     invoiceRequested: "Facture demandée",
     invoicesRequested: "Factures demandées",
     invoiceExistsAlready: "La dacture existe déjà",
+
+    questionCreated: "Question créé",
+    questionsRequested: "Questions demandées",
+    questionUpdated: "Question mise à jour",
+    questionDeleted: "Question supprimée",
+
+    questionSolutionStepCreated: "L'étape de la solution à été ajouté",
+    questionSolutionStepUpdated: "L'étape de la solution à été mise à jour",
+    questionSolutionStepDeleted: "L'étape de la solution à été supprimée",
 
     adminCreated: "Admin créé",
     adminUpdated: "Admin mis à jour",
@@ -455,6 +469,8 @@ module.exports = {
     ZAC: "Zac",
     MEAN: "Mean",
     USER: "User",
+    QUESTION: "Question",
+    QUESTIONSOLUTIONSTEP: "QuestionSolutionStep",
     SITE: "Site",
     USER: "User",
     ALERT: "Alert",

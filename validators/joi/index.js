@@ -4,6 +4,7 @@ const exportsObj = {
   mean: require("./Mean"),
   site: require("./Site"),
   user: require("./user"),
+  faq: require("./faq"),
   quote: require("./Quote"),
   admin: require("./Admin"),
   level: require("./Level"),
