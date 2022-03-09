@@ -131,7 +131,7 @@ class CompanyController {
   async update(req, res) {
     const companyId = req.params.id;
     const validatedData = req.body;
-
+    const trades = req.body.trades;
     let company = await Company.findByIdAndUpdate(
       companyId,
       {
@@ -149,9 +149,11 @@ class CompanyController {
       },
       {
         $set: {
-          "companies.$.parentCompanyId": validatedData.parentCompanyId,
+          "companies.$[elem].parentCompanyId": validatedData.parentCompanyId,
+          "companies.$[elem].trades": trades,
         },
-      }
+      },
+      { multi: true, arrayFilters: [{ "elem.companyId": companyId }] }
     );
 
     res.status(200).send(response(STRINGS.TEXTS.companyUpdated, company));
