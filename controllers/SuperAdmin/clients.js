@@ -62,6 +62,128 @@ class SuperAdminClientsController {
     res.status(200).send(response(STRINGS.TEXTS.clientCreated, client));
   }
 
+  async getAllWithoutPagination(req, res) {
+    const name = req.query.name || "";
+    const page = +req.query.page || 1;
+    const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
+
+    var re = new RegExp(`^${name}`, "i");
+
+    let totalItems = await Client.aggregate([
+      {
+        $lookup: {
+          from: Company.collection.name,
+          localField: "companyId",
+          foreignField: "_id",
+          as: "companyId",
+        },
+      },
+      {
+        $match: {
+          "companyId.name": { $regex: re },
+          status: { $ne: STRINGS.STATUS.DELETED },
+        },
+      },
+      { $count: "Total" },
+    ]);
+    const items = await Client.aggregate([
+      {
+        $lookup: {
+          from: Company.collection.name,
+          localField: "companyId",
+          foreignField: "_id",
+          as: "companyId",
+        },
+      },
+      {
+        $lookup: {
+          from: User.collection.name,
+          localField: "adminIds",
+          foreignField: "_id",
+          as: "adminIds",
+        },
+      },
+      {
+        $lookup: {
+          from: Contract.collection.name,
+          localField: "contractIds",
+          foreignField: "_id",
+          as: "contractIds",
+        },
+      },
+      {
+        $lookup: {
+          from: Site.collection.name,
+          localField: "_id",
+          foreignField: "clientId",
+          as: "sites",
+        },
+      },
+      {
+        $addFields: {
+          sites: {
+            $filter: {
+              input: "$sites",
+              as: "site",
+              cond: {
+                $ne: ["$$site.status", STRINGS.STATUS.ARCHIVED],
+              },
+            },
+          },
+        },
+      },
+      { $unwind: "$companyId" },
+      // {
+      //   $unwind: {
+      //     path: "$adminIds",
+      //     // includeArrayIndex: <string>,
+      //     preserveNullAndEmptyArrays: true,
+      //   },
+      // },
+      {
+        $match: {
+          "companyId.name": { $regex: re },
+          status: { $ne: STRINGS.STATUS.DELETED },
+        },
+      },
+      // { $skip: (page - 1) * ITEMS_PER_PAGE },
+      // { $limit: ITEMS_PER_PAGE },
+      // { $group: { _id: null, n: { $sum: 1 } } },
+      // {
+      //   $group: {
+      //     _id: "$_id",
+      //     contractIds: { $first: "$contractIds" },
+      //     adminIds: { $first: "$adminIds" },
+      //     companyId: { $push: "$companyId" },
+      //   },
+      // },
+      {
+        $project: {
+          _id: "$_id",
+          companyId: 1,
+          adminIds: 1,
+          contractIds: 1,
+          sites: { $size: "$sites" },
+        },
+      },
+    ]);
+    if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
+    totalItems = totalItems.length > 0 ? totalItems[0].Total : 0;
+    const result = {
+      items,
+      totalItems,
+      totalPages: Math.ceil(totalItems / ITEMS_PER_PAGE),
+      itemsPerPage: ITEMS_PER_PAGE,
+      currentPage: page,
+      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
+      hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+      hasPreviousPage: page > 1,
+      nextPage: page + 1,
+      previousPage: page - 1,
+    };
+    res.status(200).send(response(STRINGS.TEXTS.clientsRequested, result));
+  }
+
   async getAll(req, res) {
     const name = req.query.name || "";
     const page = +req.query.page || 1;
