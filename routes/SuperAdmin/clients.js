@@ -5,6 +5,7 @@ const multer = require("../../middlewares/multer");
 const superAdmin = require("../../controllers/SuperAdmin");
 
 // GETS
+router.get("/get_all", superAdmin.clientsController.getAllWithoutPagination);
 router.get("/", superAdmin.clientsController.getAll);
 router.get("/get/:id", superAdmin.clientsController.getById);
 
