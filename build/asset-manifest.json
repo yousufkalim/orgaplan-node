@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/static/css/main.2275b8e9.chunk.css",
-    "main.js": "/static/js/main.3ee21722.chunk.js",
-    "main.js.map": "/static/js/main.3ee21722.chunk.js.map",
+    "main.js": "/static/js/main.75684534.chunk.js",
+    "main.js.map": "/static/js/main.75684534.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.8f124964.js",
     "runtime-main.js.map": "/static/js/runtime-main.8f124964.js.map",
     "static/css/2.dc1789e0.chunk.css": "/static/css/2.dc1789e0.chunk.css",
-    "static/js/2.0c778eb5.chunk.js": "/static/js/2.0c778eb5.chunk.js",
-    "static/js/2.0c778eb5.chunk.js.map": "/static/js/2.0c778eb5.chunk.js.map",
+    "static/js/2.94a9aed2.chunk.js": "/static/js/2.94a9aed2.chunk.js",
+    "static/js/2.94a9aed2.chunk.js.map": "/static/js/2.94a9aed2.chunk.js.map",
     "static/js/3.a8426ca8.chunk.js": "/static/js/3.a8426ca8.chunk.js",
     "static/js/3.a8426ca8.chunk.js.map": "/static/js/3.a8426ca8.chunk.js.map",
     "static/js/4.80378b7e.chunk.js": "/static/js/4.80378b7e.chunk.js",
@@ -19,7 +19,7 @@
     "index.html": "/index.html",
     "static/css/2.dc1789e0.chunk.css.map": "/static/css/2.dc1789e0.chunk.css.map",
     "static/css/main.2275b8e9.chunk.css.map": "/static/css/main.2275b8e9.chunk.css.map",
-    "static/js/2.0c778eb5.chunk.js.LICENSE.txt": "/static/js/2.0c778eb5.chunk.js.LICENSE.txt",
+    "static/js/2.94a9aed2.chunk.js.LICENSE.txt": "/static/js/2.94a9aed2.chunk.js.LICENSE.txt",
     "static/js/3.a8426ca8.chunk.js.LICENSE.txt": "/static/js/3.a8426ca8.chunk.js.LICENSE.txt",
     "static/js/4.80378b7e.chunk.js.LICENSE.txt": "/static/js/4.80378b7e.chunk.js.LICENSE.txt",
     "static/js/5.6b42b346.chunk.js.LICENSE.txt": "/static/js/5.6b42b346.chunk.js.LICENSE.txt",
@@ -43,6 +43,7 @@
     "static/media/avatar.2a37a9b8.png": "/static/media/avatar.2a37a9b8.png",
     "static/media/calender.ba410edd.svg": "/static/media/calender.ba410edd.svg",
     "static/media/companies.727d330c.svg": "/static/media/companies.727d330c.svg",
+    "static/media/faq.06377d03.svg": "/static/media/faq.06377d03.svg",
     "static/media/incidents.8a2e7483.svg": "/static/media/incidents.8a2e7483.svg",
     "static/media/invoices.bd7d47ed.svg": "/static/media/invoices.bd7d47ed.svg",
     "static/media/Landing.css": "/static/media/land hero.9688bc70.png",
@@ -60,8 +61,8 @@
   "entrypoints": [
     "static/js/runtime-main.8f124964.js",
     "static/css/2.dc1789e0.chunk.css",
-    "static/js/2.0c778eb5.chunk.js",
+    "static/js/2.94a9aed2.chunk.js",
     "static/css/main.2275b8e9.chunk.css",
-    "static/js/main.3ee21722.chunk.js"
+    "static/js/main.75684534.chunk.js"
   ]
 }
