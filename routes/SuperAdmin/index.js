@@ -7,6 +7,7 @@ router.use("/quotes", require("./quotes"));
 router.use("/levels", require("./levels"));
 router.use("/clients", require("./clients"));
 router.use("/invoices", require("./invoices"));
+router.use("/faq", require("./faq"));
 router.use("/buildings", require("./buildings"));
 router.use("/dashboard", require("./dashboard"));
 router.use("/companies", require("./companies"));

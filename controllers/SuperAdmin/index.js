@@ -6,6 +6,7 @@ const exportsObj = {
   adminsController: require("./admins"),
   clientsController: require("./clients"),
   invoicesController: require("./invoices"),
+  faqController: require("./faq"),
   companiesController: require("./companies"),
   dashboardController: require("./dashboard"),
   buildingsController: require("./buildings"),
