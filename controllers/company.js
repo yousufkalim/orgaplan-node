@@ -103,9 +103,7 @@ class CompanyController {
       let results = await readXlsxFile(image);
       res.status(200).send(response(STRINGS.TEXTS.CompaniesUserData, results));
     } else {
-      res
-        .status(400)
-        .send(response(STRINGS.ERRORS.fileNotFound, null, success));
+      res.status(400).send(response(STRINGS.ERRORS.fileNotFound, null, success));
     }
   }
   async downloadCsvFile(req, res) {
@@ -174,10 +172,43 @@ class CompanyController {
     result = result ? result.companies : [];
 
     // Filtering duplicate companies
-    const unique = [
-      ...new Map(result.map((item) => [item.companyId._id, item])).values(),
-    ];
+    const unique = [...new Map(result.map((item) => [item.companyId._id, item])).values()];
     res.status(200).send(response(STRINGS.TEXTS.siteRequested, unique));
+  }
+
+  async deleteByAdmin(req, res) {
+    const { siteId, companyId } = req.params;
+
+    // Deleting user and company relations from site companies
+    const siteCompany = await SiteCompanies.findOneAndUpdate(
+      { siteId },
+      {
+        $pull: {
+          companies: { companyId },
+          users: { companyId },
+        },
+      }
+    );
+
+    // Deleting user relations with sites so that the users created in deleted company cannot be able to visit that site they assigned to
+    const deleteFromUserSites = siteCompany.users.map((a) => {
+      if (a.companyId == companyId) {
+        return UserSites.findOneAndUpdate(
+          { userId: a.userId },
+          {
+            $pull: {
+              sites: { siteId },
+            },
+          }
+        );
+      }
+    });
+    await Promise.all(deleteFromUserSites);
+
+    // Company delete
+    await Company.findByIdAndDelete(companyId);
+
+    res.status(200).send(response(STRINGS.TEXTS.compantDeleted));
   }
 
   async getNonSite(req, res) {
@@ -186,9 +217,7 @@ class CompanyController {
     let siteCompaniesIds = [];
     const siteCompaniesForIds = await SiteCompanies.findOne({ siteId: siteId });
     if (siteCompaniesForIds) {
-      siteCompaniesIds = siteCompaniesForIds.companies.map(
-        (item) => item.companyId
-      );
+      siteCompaniesIds = siteCompaniesForIds.companies.map((item) => item.companyId);
     }
 
     let result = await Company.find({
@@ -261,8 +290,7 @@ class CompanyController {
     let responsibleNameRegex = "";
 
     if (companyName) companyNameRegex = new RegExp(`^${companyName}`, "i");
-    if (responsibleName)
-      responsibleNameRegex = new RegExp(`^${responsibleName}`, "i");
+    if (responsibleName) responsibleNameRegex = new RegExp(`^${responsibleName}`, "i");
     const result = await SiteCompanies.findOne({
       siteId: siteId,
     })
@@ -272,9 +300,7 @@ class CompanyController {
         match: {
           $and: [
             companyName ? { name: { $regex: companyNameRegex } } : {},
-            responsibleName
-              ? { "incharge.firstName": { $regex: responsibleNameRegex } }
-              : {},
+            responsibleName ? { "incharge.firstName": { $regex: responsibleNameRegex } } : {},
           ],
         },
       })
