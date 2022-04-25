@@ -28,7 +28,7 @@ router.post("/enterprise", auth(), deliveryController.enterpriseDeliveries);
 
 // PUTS
 router.put("/:id", deliveryController.update);
-router.put("/updateStatus/:id", deliveryController.updateStatus);
+router.put("/updateStatus/:id", auth(), deliveryController.updateStatus);
 router.put(
   "/complete/:id",
   multer("incidents", "photos", "single"),
