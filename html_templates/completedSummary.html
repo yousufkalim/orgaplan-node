@@ -177,42 +177,50 @@
                   <tr>
                     <td class="content-cell">
                       <div class="f-fallback">
-                        <h1>Hi {{name}},</h1>
+                        <h1>Résumé de votre demande de livraison - Orgaplan</h1>
+                        <h1>Bonjour {{name}},</h1>
                         <p>
-                          Your Delivery request is {{status}}. Here is the
-                          summary:
+                          Votre demande de livraison a été validée par l'administrateur. Voici les informations :
                         </p>
 
                         <p class="f-fallback sub">
-                          <b>Company</b> : {{company}}
+                          <b>Entreprise</b> : {{company}}
                         </p>
                         <p class="f-fallback sub">
-                          <b>Date and Time</b> : {{date}} entre {{start}} et
+                          <b>Date et heure</b> : {{date}} entre {{start}} et
                           {{end}}
                         </p>
 
                         <p class="f-fallback sub">
-                          <b>Delivery Area / Mean</b> : {{deliveryArea}} /
+                          <b>Aire de livraison et Moyen de levage</b> : {{deliveryArea}} /
                           {{meanL}}
                         </p>
 
                         <p class="f-fallback sub">
-                          <b>Storage Area / Mean</b> : {{storage}} / {{meanR}}
+                          <b>Zone de stockage et Moyen d'acheminement</b> : {{storage}} / {{meanR}}
                         </p>
 
-                        <p class="f-fallback sub"><b>Delay</b> : {{delay}}</p>
+                        <p class="f-fallback sub"><b>Retard</b> : {{delay}}</p>
 
                         <p class="f-fallback sub">
-                          <b>Materials</b> : {{materials}}
+                          <b>Matériels</b> : {{materials}}
                         </p>
 
                         <p class="f-fallback sub">
-                          <b>Comments</b> : {{comments}}
+                          <b>Commentaires</b> : {{comments}}
                         </p>
                         <p
                           class="f-fallback sub"
                           style="text-decoration: underline; cursor: pointer"
-                        ></p>
+                        >
+                        Merci,
+                      </p>
+                      <p
+                          class="f-fallback sub"
+                          style="text-decoration: underline; cursor: pointer"
+                        >
+                        L'équipe Orgaplan
+                      </p>
                         <table class="body-sub" role="presentation">
                           <tr>
                             <td>
