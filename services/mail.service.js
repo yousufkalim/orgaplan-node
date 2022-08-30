@@ -1,13 +1,13 @@
-const nodemailer = require("nodemailer");
-const CustomError = require("./../utils/customError");
-const handlebars = require("handlebars");
-const fs = require("fs");
-const path = require("path");
-const STRINGS = require("../utils/texts");
+const nodemailer = require('nodemailer');
+const CustomError = require('./../utils/customError');
+const handlebars = require('handlebars');
+const fs = require('fs');
+const path = require('path');
+const STRINGS = require('../utils/texts');
 const ENV = process.env;
-const moment = require("moment");
+const moment = require('moment');
 
-const Delivery = require("../models/delivery");
+const Delivery = require('../models/delivery');
 
 class MailService {
   constructor() {
@@ -21,21 +21,14 @@ class MailService {
   }
   async completedDeliverySummary(id, body) {
     let delivery = await Delivery.findOne({ _id: id })
-      .populate("userId")
-      .populate("companyId")
-      .populate("deliveryArea")
-      .populate("storageArea")
-      .populate("liftingMeans")
-      .populate("routingMeans");
+      .populate('userId')
+      .populate('companyId')
+      .populate('deliveryArea')
+      .populate('storageArea')
+      .populate('liftingMeans')
+      .populate('routingMeans');
 
-    const {
-      userId,
-      companyId,
-      deliveryArea,
-      storageArea,
-      liftingMeans,
-      routingMeans,
-    } = delivery;
+    const { userId, companyId, deliveryArea, storageArea, liftingMeans, routingMeans } = delivery;
 
     let meanLifting = liftingMeans.map((item) => item.name);
     let meanRouting = routingMeans.map((item) => item.name);
@@ -44,36 +37,33 @@ class MailService {
     let to = userId.email;
 
     // Email Starts
-    const filePath = path.join(
-      __dirname,
-      "../html_templates/completedSummary.html"
-    );
-    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const filePath = path.join(__dirname, '../html_templates/completedSummary.html');
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
     const template = handlebars.compile(source);
     const replacements = {
-      name: userId.firstName + " " + userId.lastName,
+      name: userId.firstName + ' ' + userId.lastName,
       status:
-        delivery.status === "COMPLETED"
-          ? "Completed"
-          : delivery.status === "COMPLETEDWITHISSUE"
-          ? "Completed With Issues"
-          : delivery.status === "PENDING"
-          ? "Pending"
-          : delivery.status === "VALIDATED"
-          ? "Validated by Admin"
-          : "Incomplete",
+        delivery.status === 'COMPLETED'
+          ? 'Completed'
+          : delivery.status === 'COMPLETEDWITHISSUE'
+          ? 'Completed With Issues'
+          : delivery.status === 'PENDING'
+          ? 'Pending'
+          : delivery.status === 'VALIDATED'
+          ? 'Validated by Admin'
+          : 'Incomplete',
       email: userId.email,
       company: companyId.name,
-      date: moment(delivery.date).format("L"),
+      date: moment(delivery.date).format('L').tz('Europe/Paris'),
       start: delivery.startTime,
       end: delivery.endTime,
       deliveryArea: deliveryArea.name,
-      meanL: meanLifting.length > 0 ? meanLifting.join(", ") : "N/A",
+      meanL: meanLifting.length > 0 ? meanLifting.join(', ') : 'N/A',
       storage: storageArea.name,
-      meanR: meanRouting.length > 0 ? meanRouting.join(", ") : "N/A",
-      delay: body.delay === "true" ? `Delayed till ${body.time}` : "No",
-      comments: delivery.comment === "" ? "N/A" : delivery.comment,
-      materials: delivery.materials.join(", "),
+      meanR: meanRouting.length > 0 ? meanRouting.join(', ') : 'N/A',
+      delay: body.delay === 'true' ? `Delayed till ${body.time}` : 'No',
+      comments: delivery.comment === '' ? 'N/A' : delivery.comment,
+      materials: delivery.materials.join(', '),
     };
     const htmlToSend = template(replacements);
 
@@ -92,14 +82,11 @@ class MailService {
     if (!to) throw new CustomError(STRINGS.ERRORS.recipientRequired);
 
     // Email Starts
-    const filePath = path.join(
-      __dirname,
-      "../html_templates/requestEmailVerification.html"
-    );
-    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const filePath = path.join(__dirname, '../html_templates/requestEmailVerification.html');
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
     const template = handlebars.compile(source);
     const replacements = {
-      name: to.firstName + " " + to.lastName,
+      name: to.firstName + ' ' + to.lastName,
       email: to.email,
       link: link,
     };
@@ -123,12 +110,12 @@ class MailService {
     // Email Starts
     const filePath = path.join(
       __dirname,
-      "../html_templates/sendEmailVerificationConfirmation.html"
+      '../html_templates/sendEmailVerificationConfirmation.html'
     );
-    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
     const template = handlebars.compile(source);
     const replacements = {
-      name: to.firstName + " " + to.lastName,
+      name: to.firstName + ' ' + to.lastName,
       email: to.email,
       link: link,
     };
@@ -150,11 +137,8 @@ class MailService {
     if (!email) throw new CustomError(STRINGS.ERRORS.recipientRequired);
 
     // Email Starts
-    const filePath = path.join(
-      __dirname,
-      "../html_templates/sendDeliverySummary.html"
-    );
-    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const filePath = path.join(__dirname, '../html_templates/sendDeliverySummary.html');
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
     const template = handlebars.compile(source);
     const htmlTemplage = handlebars.compile(html);
     const replacements = {
@@ -178,14 +162,11 @@ class MailService {
     if (!to) throw new CustomError(STRINGS.ERRORS.recipientRequired);
 
     // Email Starts
-    const filePath = path.join(
-      __dirname,
-      "../html_templates/requestSubscriptionActivation.html"
-    );
-    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const filePath = path.join(__dirname, '../html_templates/requestSubscriptionActivation.html');
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
     const template = handlebars.compile(source);
     const replacements = {
-      name: to.firstName + " " + to.lastName,
+      name: to.firstName + ' ' + to.lastName,
       email: to.email,
     };
     const htmlToSend = template(replacements);
@@ -208,12 +189,12 @@ class MailService {
     // Email Starts
     const filePath = path.join(
       __dirname,
-      "../html_templates/sendSubscriptionActivationConfirmation.html"
+      '../html_templates/sendSubscriptionActivationConfirmation.html'
     );
-    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
     const template = handlebars.compile(source);
     const replacements = {
-      name: to.firstName + " " + to.lastName,
+      name: to.firstName + ' ' + to.lastName,
       email: to.email,
     };
     const htmlToSend = template(replacements);
@@ -234,14 +215,11 @@ class MailService {
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
 
     // Email Starts
-    const filePath = path.join(
-      __dirname,
-      "../html_templates/requestResetPassword.html"
-    );
-    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const filePath = path.join(__dirname, '../html_templates/requestResetPassword.html');
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
     const template = handlebars.compile(source);
     const replacements = {
-      name: to.firstName + " " + to.lastName,
+      name: to.firstName + ' ' + to.lastName,
       email: to.email,
       link: link,
     };
@@ -263,14 +241,11 @@ class MailService {
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
 
     // Email Starts
-    const filePath = path.join(
-      __dirname,
-      "../html_templates/sendPasswordResetConfirmation.html"
-    );
-    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const filePath = path.join(__dirname, '../html_templates/sendPasswordResetConfirmation.html');
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
     const template = handlebars.compile(source);
     const replacements = {
-      name: to.firstName + " " + to.lastName,
+      name: to.firstName + ' ' + to.lastName,
       email: to.email,
       link,
     };
@@ -291,17 +266,14 @@ class MailService {
     if (!emailArray) throw new CustomError(STRINGS.ERRORS.recipientRequired);
 
     // Email Starts
-    const filePath = path.join(
-      __dirname,
-      "../html_templates/requestClientNotification.html"
-    );
-    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const filePath = path.join(__dirname, '../html_templates/requestClientNotification.html');
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
     const template = handlebars.compile(source);
 
     emailArray.map(async (key, index) => {
       key.email.map(async (email, emailIndex) => {
         const replacements = {
-          name: key.firstName + " " + key.lastName,
+          name: key.firstName + ' ' + key.lastName,
           email: email,
         };
         const htmlToSend = template(replacements);
@@ -322,11 +294,8 @@ class MailService {
     if (!emailArray) throw new CustomError(STRINGS.ERRORS.recipientRequired);
 
     // Email Starts
-    const filePath = path.join(
-      __dirname,
-      "../html_templates/requestSiteNotification.html"
-    );
-    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const filePath = path.join(__dirname, '../html_templates/requestSiteNotification.html');
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
     const template = handlebars.compile(source);
 
     emailArray.map(async (key, index) => {
@@ -352,11 +321,8 @@ class MailService {
     if (!emailArray) throw new CustomError(STRINGS.ERRORS.recipientRequired);
 
     // Email Starts
-    const filePath = path.join(
-      __dirname,
-      "../html_templates/requestStorageAreaNotification.html"
-    );
-    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const filePath = path.join(__dirname, '../html_templates/requestStorageAreaNotification.html');
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
     const template = handlebars.compile(source);
 
     emailArray.map(async (key, index) => {
@@ -383,11 +349,8 @@ class MailService {
     if (!emailArray) throw new CustomError(STRINGS.ERRORS.recipientRequired);
 
     // Email Starts
-    const filePath = path.join(
-      __dirname,
-      "../html_templates/requestDeliveryAreaNotification.html"
-    );
-    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const filePath = path.join(__dirname, '../html_templates/requestDeliveryAreaNotification.html');
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
     const template = handlebars.compile(source);
 
     emailArray.map(async (key, index) => {
@@ -414,8 +377,10 @@ class MailService {
       await this.transporter.sendMail({
         from,
         to: email,
-        subject: "Requête de livraison refusée",
-        html: `<p>La requête de livraison effectuée pour le chantier ${siteName} pour le ${deliveryDate} a été refusée par l'administrateur.</p><br><p>Orgaplan</p>`,
+        subject: 'Requête de livraison refusée',
+        html: `<p>La requête de livraison effectuée pour le chantier ${siteName} pour le ${moment(
+          deliveryDate
+        ).tz('Europe/Paris')} a été refusée par l'administrateur.</p><br><p>Orgaplan</p>`,
       });
     });
     return;
