@@ -435,7 +435,10 @@ class MailService {
         from,
         to: email,
         subject: 'Requête de livraison refusée',
-        html: `<p>La requête de livraison effectuée pour le chantier ${siteName} pour le ${deliveryDate} a été refusée par l'administrateur.</p><br><p>Orgaplan</p>`,
+        html: `<p>La requête de livraison effectuée pour le chantier ${siteName} pour le ${deliveryDate.toLocaleString(
+          'en-GB',
+          { timeZone: 'Europe/Paris' }
+        )} a été refusée par l'administrateur.</p><br><p>Orgaplan</p>`,
       });
     });
     return;
