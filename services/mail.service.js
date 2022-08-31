@@ -118,7 +118,8 @@ class MailService {
       meanL: meanLifting.length > 0 ? meanLifting.join(', ') : 'N/A',
       storage: storageArea.name,
       meanR: meanRouting.length > 0 ? meanRouting.join(', ') : 'N/A',
-      delay: body.delay === 'true' ? `Delayed till ${body.time}` : 'No',
+      // delay: body.delay === 'true' ? `Delayed till ${body.time}` : 'No',
+      delay: body.delay === 'true' ? `Retardé jusqu'à ${body.time}` : 'Non',
       comments: delivery.comment === '' ? 'N/A' : delivery.comment,
       materials: delivery.materials.join(', '),
     };
