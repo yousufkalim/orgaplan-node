@@ -1,20 +1,20 @@
-"use strict";
+'use strict';
 
-const STRINGS = require("../utils/texts");
-const Validations = require("../validators");
-const response = require("../utils/response");
-const Delivery = require("../models/delivery");
-const StroageArea = require("../models/storageArea");
-const Incidents = require("../models/incidents");
-const Booking = require("../models/meanBooking");
-const CustomError = require("../utils/customError");
-const { writeLog } = require("../utils/logs");
-const Site = require("../models/site");
-const Company = require("../models/company");
-const SiteCompanies = require("../models/siteCompanies");
-const User = require("../models/user");
-const MailService = require("../services/mail.service");
-const moment = require("moment");
+const STRINGS = require('../utils/texts');
+const Validations = require('../validators');
+const response = require('../utils/response');
+const Delivery = require('../models/delivery');
+const StroageArea = require('../models/storageArea');
+const Incidents = require('../models/incidents');
+const Booking = require('../models/meanBooking');
+const CustomError = require('../utils/customError');
+const { writeLog } = require('../utils/logs');
+const Site = require('../models/site');
+const Company = require('../models/company');
+const SiteCompanies = require('../models/siteCompanies');
+const User = require('../models/user');
+const MailService = require('../services/mail.service');
+const moment = require('moment');
 
 class DeliveryController {
   async create(req, res) {
@@ -27,9 +27,7 @@ class DeliveryController {
       means.map(async (mean) => {
         var data = {
           status:
-            validatedData.status === "COMPLETEDWITHISSUE"
-              ? "VALIDATED"
-              : validatedData.status,
+            validatedData.status === 'COMPLETEDWITHISSUE' ? 'VALIDATED' : validatedData.status,
           startDate: validatedData.sDate,
           endDate: validatedData.eDate,
           startTime: validatedData.startTime,
@@ -66,11 +64,21 @@ class DeliveryController {
       await emailService.completedDeliverySummary(result._id, req.body);
     }
 
+    let site = await Site.findById(result.siteId);
+
+    if (site.notificationTo.length > 0) {
+      let emailService = new MailService();
+
+      site.notificationTo.map(async (email) => {
+        await emailService.completedDeliverySummaryToSiteAdmin(result._id, req.body, email);
+      });
+    }
+
     await writeLog(
       // name
       `${firstName} ${lastName}`,
       //date
-      moment().format("DD/MM/YYYY"),
+      moment().format('DD/MM/YYYY'),
       //description
       `Une demande de livraison a été créée par le ${firstName} ${lastName} pour ${result.date.toLocaleString()}, pour ${
         company.name
@@ -89,11 +97,11 @@ class DeliveryController {
     const id = req.params.id;
 
     const result = await Delivery.findOne({ _id: id }, { password: 0, __v: 0 })
-      .populate("companyId")
-      .populate("storageArea")
-      .populate("deliveryArea")
-      .populate("liftingMeans")
-      .populate("routingMeans");
+      .populate('companyId')
+      .populate('storageArea')
+      .populate('deliveryArea')
+      .populate('liftingMeans')
+      .populate('routingMeans');
     if (!result) throw new CustomError(STRINGS.ERRORS.deliveryNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryRequested, result));
@@ -123,7 +131,7 @@ class DeliveryController {
 
   async delete(req, res) {
     const id = req.params.id;
-    const result = await Delivery.findByIdAndDelete(id).populate("siteId");
+    const result = await Delivery.findByIdAndDelete(id).populate('siteId');
 
     // to delete mean booking
     await Booking.deleteMany({ _id: { $in: result.meanBookings } });
@@ -135,7 +143,7 @@ class DeliveryController {
     let users = await User.find();
     let emails = [];
     siteCompanies.users.map((item) => {
-      if (item.role == "ADMIN" || item.role == "ENTERPRISE") {
+      if (item.role == 'ADMIN' || item.role == 'ENTERPRISE') {
         users.map((user) => {
           if (user._id.toString() === item.userId.toString()) {
             emails.push(user.email);
@@ -145,11 +153,7 @@ class DeliveryController {
     });
 
     let emailService = new MailService();
-    await emailService.sendEmailDeliveryAreaDeleted(
-      emails,
-      result.siteId.name,
-      result.date
-    );
+    await emailService.sendEmailDeliveryAreaDeleted(emails, result.siteId.name, result.date);
     // console.log("userrrrr", req.user);
     // Logging Activity
     const siteData = await Site.findOne({ _id: result.siteId });
@@ -158,7 +162,7 @@ class DeliveryController {
       // name
       `${req.user.firstName} ${req.user.lastName}`,
       //date
-      moment(new Date()).format("DD/MM/YYYY"),
+      moment(new Date()).format('DD/MM/YYYY'),
       `L'administrateur a refusé une demande de livraison pour ${result.date.toLocaleString()}, pour ${
         company.name
       }, pour ${siteData.name}`
@@ -169,7 +173,7 @@ class DeliveryController {
 
   async enterpriseDeliveries(req, res) {
     const { siteId, companyId, date } = req.body;
-    const secondDate = moment(date).add(1, "days");
+    const secondDate = moment(date).add(1, 'days');
     const result = await Delivery.find({
       siteId: siteId,
       companyId: companyId,
@@ -178,9 +182,9 @@ class DeliveryController {
         date ? { date: { $lte: new Date(secondDate) } } : {},
       ],
     })
-      .populate("companyId")
-      .populate("deliveryArea")
-      .populate("storageArea");
+      .populate('companyId')
+      .populate('deliveryArea')
+      .populate('storageArea');
     res.status(200).send(response(STRINGS.TEXTS.allDeliveries, result));
   }
 
@@ -204,19 +208,15 @@ class DeliveryController {
     date &&
       (query.date = {
         $gte: new Date(`${date}T00:00:00.000+00:00`),
-        $lte: new Date(
-          `${moment(date)
-            .add(1, "day")
-            .format("YYYY-MM-DD")}T00:00:00.000+00:00`
-        ),
+        $lte: new Date(`${moment(date).add(1, 'day').format('YYYY-MM-DD')}T00:00:00.000+00:00`),
       });
 
     const result = await Delivery.find(query)
-      .populate("companyId")
-      .populate("liftingMeans")
-      .populate("routingMeans")
-      .populate("deliveryArea")
-      .populate("storageArea");
+      .populate('companyId')
+      .populate('liftingMeans')
+      .populate('routingMeans')
+      .populate('deliveryArea')
+      .populate('storageArea');
     res.status(200).send(response(STRINGS.TEXTS.allDeliveries, result));
   }
 
@@ -239,19 +239,15 @@ class DeliveryController {
     date &&
       (query.date = {
         $gte: new Date(`${date}T00:00:00.000+00:00`),
-        $lte: new Date(
-          `${moment(date)
-            .add(1, "day")
-            .format("YYYY-MM-DD")}T00:00:00.000+00:00`
-        ),
+        $lte: new Date(`${moment(date).add(1, 'day').format('YYYY-MM-DD')}T00:00:00.000+00:00`),
       });
 
     const result = await Delivery.find(query)
-      .populate("companyId")
-      .populate("liftingMeans")
-      .populate("routingMeans")
-      .populate("deliveryArea")
-      .populate("storageArea");
+      .populate('companyId')
+      .populate('liftingMeans')
+      .populate('routingMeans')
+      .populate('deliveryArea')
+      .populate('storageArea');
     res.status(200).send(response(STRINGS.TEXTS.allDeliveries, result));
   }
 
@@ -259,7 +255,7 @@ class DeliveryController {
     const id = req.params.id;
     const result = await Delivery.findByIdAndUpdate(
       { _id: id },
-      { $set: { status: "VALIDATED" } },
+      { $set: { status: 'VALIDATED' } },
       { new: true }
     );
 
@@ -272,11 +268,9 @@ class DeliveryController {
       // name
       `${req.user.firstName} ${req.user.lastName}`,
       //date
-      moment().format("DD/MM/YYYY"),
+      moment().format('DD/MM/YYYY'),
       `L'administrateur a accepté une demande de livraison pour
-      ${result.date.toLocaleString()}, pour ${company.name}, pour ${
-        siteData.name
-      }`
+      ${result.date.toLocaleString()}, pour ${company.name}, pour ${siteData.name}`
     );
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryUpdated, result));
@@ -344,12 +338,10 @@ class DeliveryController {
       // name
       validatedData.username,
       //date
-      moment().format("DD/MM/YYYY"),
+      moment().format('DD/MM/YYYY'),
       `L'agent de trafic
       ${validatedData.username} a terminé la livraison pour
-      ${result.date.toLocaleString()}, pour ${company.name}, pour ${
-        siteData.name
-      }`
+      ${result.date.toLocaleString()}, pour ${company.name}, pour ${siteData.name}`
     );
 
     res.status(200).send(response(STRINGS.TEXTS.deliveryUpdated, result));
@@ -379,7 +371,7 @@ class DeliveryController {
         // name
         `${req.user.firstName} ${req.user.lastName}`,
         //date
-        moment().format("DD/MM/YYYY"),
+        moment().format('DD/MM/YYYY'),
         `Camion ${result.flatRegistration} est retourné dans la zone tampon à
         ${result.arrivalTime.toLocaleString()} pour chantier
         ${siteData.name}`
@@ -395,18 +387,14 @@ class DeliveryController {
     const result = await StroageArea.find({
       $and: [{ deliveryArea: deliveryId }, { siteId: siteId }],
     });
-    res
-      .status(200)
-      .send(response(STRINGS.TEXTS.getDeliveryAllStorageArea, result));
+    res.status(200).send(response(STRINGS.TEXTS.getDeliveryAllStorageArea, result));
   }
 
   async getValidatedDeliveryMean(req, res) {
     const result = await Delivery.find({
-      status: "VALIDATED",
-    }).populate("companyId");
-    res
-      .status(200)
-      .send(response(STRINGS.TEXTS.getValidatedDeliveryMean, result));
+      status: 'VALIDATED',
+    }).populate('companyId');
+    res.status(200).send(response(STRINGS.TEXTS.getValidatedDeliveryMean, result));
   }
   async getValidatedDeliveryMeanbySiteandMean(req, res) {
     const siteId = req.params.siteId;
@@ -415,16 +403,14 @@ class DeliveryController {
       $and: [
         { siteId: siteId },
         {
-          status: "VALIDATED",
+          status: 'VALIDATED',
         },
         {
           $or: [{ liftingMeans: meanId }, { routingMeans: meanId }],
         },
       ],
-    }).populate("companyId");
-    res
-      .status(200)
-      .send(response(STRINGS.TEXTS.getValidatedDeliveryMean, result));
+    }).populate('companyId');
+    res.status(200).send(response(STRINGS.TEXTS.getValidatedDeliveryMean, result));
   }
 }
 

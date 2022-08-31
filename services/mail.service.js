@@ -54,7 +54,7 @@ class MailService {
           : 'Incomplete',
       email: userId.email,
       company: companyId.name,
-      date: moment(delivery.date).format('L').tz('Europe/Paris'),
+      date: moment(delivery.date).format('L'),
       start: delivery.startTime,
       end: delivery.endTime,
       deliveryArea: deliveryArea.name,
@@ -70,6 +70,63 @@ class MailService {
     await this.transporter.sendMail({
       from,
       to: to,
+      subject: STRINGS.TEXTS.summaryDelivery,
+      html: htmlToSend,
+    });
+
+    return;
+  }
+
+  async completedDeliverySummaryToSiteAdmin(id, body, email) {
+    let delivery = await Delivery.findOne({ _id: id })
+      .populate('userId')
+      .populate('companyId')
+      .populate('deliveryArea')
+      .populate('storageArea')
+      .populate('liftingMeans')
+      .populate('routingMeans');
+
+    const { userId, companyId, deliveryArea, storageArea, liftingMeans, routingMeans } = delivery;
+
+    let meanLifting = liftingMeans.map((item) => item.name);
+    let meanRouting = routingMeans.map((item) => item.name);
+
+    let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
+
+    // Email Starts
+    const filePath = path.join(__dirname, '../html_templates/completedSummary.html');
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
+    const template = handlebars.compile(source);
+    const replacements = {
+      name: userId.firstName + ' ' + userId.lastName,
+      status:
+        delivery.status === 'COMPLETED'
+          ? 'Completed'
+          : delivery.status === 'COMPLETEDWITHISSUE'
+          ? 'Completed With Issues'
+          : delivery.status === 'PENDING'
+          ? 'Pending'
+          : delivery.status === 'VALIDATED'
+          ? 'Validated by Admin'
+          : 'Incomplete',
+      email: userId.email,
+      company: companyId.name,
+      date: moment(delivery.date).format('L'),
+      start: delivery.startTime,
+      end: delivery.endTime,
+      deliveryArea: deliveryArea.name,
+      meanL: meanLifting.length > 0 ? meanLifting.join(', ') : 'N/A',
+      storage: storageArea.name,
+      meanR: meanRouting.length > 0 ? meanRouting.join(', ') : 'N/A',
+      delay: body.delay === 'true' ? `Delayed till ${body.time}` : 'No',
+      comments: delivery.comment === '' ? 'N/A' : delivery.comment,
+      materials: delivery.materials.join(', '),
+    };
+    const htmlToSend = template(replacements);
+
+    await this.transporter.sendMail({
+      from,
+      to: email,
       subject: STRINGS.TEXTS.summaryDelivery,
       html: htmlToSend,
     });
@@ -378,9 +435,7 @@ class MailService {
         from,
         to: email,
         subject: 'Requête de livraison refusée',
-        html: `<p>La requête de livraison effectuée pour le chantier ${siteName} pour le ${moment(
-          deliveryDate
-        ).tz('Europe/Paris')} a été refusée par l'administrateur.</p><br><p>Orgaplan</p>`,
+        html: `<p>La requête de livraison effectuée pour le chantier ${siteName} pour le ${deliveryDate} a été refusée par l'administrateur.</p><br><p>Orgaplan</p>`,
       });
     });
     return;
