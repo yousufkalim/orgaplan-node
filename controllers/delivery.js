@@ -13,6 +13,8 @@ const Site = require('../models/site');
 const Company = require('../models/company');
 const SiteCompanies = require('../models/siteCompanies');
 const User = require('../models/user');
+const UserSites = require('../models/userSites');
+
 const MailService = require('../services/mail.service');
 const moment = require('moment');
 
@@ -70,9 +72,29 @@ class DeliveryController {
       let emailService = new MailService();
 
       site.notificationTo.map(async (email) => {
-        await emailService.completedDeliverySummaryToSiteAdmin(result._id, req.body, email);
+        await emailService.completedDeliverySummaryToMailsAddedBySuperAdmin(
+          result._id,
+          req.body,
+          email
+        );
       });
     }
+
+    let usersites = await UserSites.find({
+      sites: {
+        siteId: result.siteId,
+        role: 'ADMIN',
+      },
+    }).populate('userId');
+
+    let emailService = new MailService();
+    usersites.map(async (site) => {
+      await emailService.completedDeliverySummaryToSiteAdmins(
+        result._id,
+        req.body,
+        site.userId?.email
+      );
+    });
 
     await writeLog(
       // name

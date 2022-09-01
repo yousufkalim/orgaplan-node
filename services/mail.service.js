@@ -77,7 +77,7 @@ class MailService {
     return;
   }
 
-  async completedDeliverySummaryToSiteAdmin(id, body, email) {
+  async completedDeliverySummaryToMailsAddedBySuperAdmin(id, body, email) {
     let delivery = await Delivery.findOne({ _id: id })
       .populate('userId')
       .populate('companyId')
@@ -129,6 +129,33 @@ class MailService {
       from,
       to: email,
       subject: STRINGS.TEXTS.summaryDelivery,
+      html: htmlToSend,
+    });
+
+    return;
+  }
+
+  async completedDeliverySummaryToSiteAdmins(id, body, email) {
+    let delivery = await Delivery.findOne({ _id: id }).populate('userId').populate('siteId');
+
+    const { userId, siteId } = delivery;
+
+    let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
+
+    // Email Starts
+    const filePath = path.join(__dirname, '../html_templates/completedSummaryForSiteAdmins.html');
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
+    const template = handlebars.compile(source);
+    const replacements = {
+      name: userId.firstName + ' ' + userId.lastName,
+      siteName: siteId.name,
+    };
+    const htmlToSend = template(replacements);
+
+    await this.transporter.sendMail({
+      from,
+      to: email,
+      subject: 'Vous avez une nouvelle requête de livraison - Orgaplan',
       html: htmlToSend,
     });
 
