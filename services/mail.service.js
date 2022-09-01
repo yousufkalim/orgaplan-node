@@ -61,7 +61,8 @@ class MailService {
       meanL: meanLifting.length > 0 ? meanLifting.join(', ') : 'N/A',
       storage: storageArea.name,
       meanR: meanRouting.length > 0 ? meanRouting.join(', ') : 'N/A',
-      delay: body.delay === 'true' ? `Delayed till ${body.time}` : 'No',
+      // delay: body.delay === 'true' ? `Delayed till ${body.time}` : 'No',
+      delay: body.delay === 'true' ? `Retardé jusqu'à ${body.time}` : 'Non',
       comments: delivery.comment === '' ? 'N/A' : delivery.comment,
       materials: delivery.materials.join(', '),
     };
@@ -135,7 +136,8 @@ class MailService {
     return;
   }
 
-  async completedDeliverySummaryToSiteAdmins(id, body, email) {
+  //when user (traffic/enterprise user) creates a delivery request on a site, then admins of this site receives this email
+  async createDeliveryNotiToSiteAdmins(id, body, email) {
     let delivery = await Delivery.findOne({ _id: id }).populate('userId').populate('siteId');
 
     const { userId, siteId } = delivery;
@@ -156,6 +158,128 @@ class MailService {
       from,
       to: email,
       subject: 'Vous avez une nouvelle requête de livraison - Orgaplan',
+      html: htmlToSend,
+    });
+
+    return;
+  }
+
+  //when admin validates a delivery request, that user receives the email
+  async validatedDeliveryNoti(id, body, cc) {
+    let delivery = await Delivery.findOne({ _id: id })
+      .populate('userId')
+      .populate('companyId')
+      .populate('deliveryArea')
+      .populate('storageArea')
+      .populate('liftingMeans')
+      .populate('routingMeans');
+
+    const { userId, companyId, deliveryArea, storageArea, liftingMeans, routingMeans } = delivery;
+
+    let meanLifting = liftingMeans.map((item) => item.name);
+    let meanRouting = routingMeans.map((item) => item.name);
+
+    let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
+    let to = userId.email;
+
+    // Email Starts
+    const filePath = path.join(__dirname, '../html_templates/validatedDelivery.html');
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
+    const template = handlebars.compile(source);
+    const replacements = {
+      name: userId.firstName + ' ' + userId.lastName,
+      status:
+        delivery.status === 'COMPLETED'
+          ? 'Completed'
+          : delivery.status === 'COMPLETEDWITHISSUE'
+          ? 'Completed With Issues'
+          : delivery.status === 'PENDING'
+          ? 'Pending'
+          : delivery.status === 'VALIDATED'
+          ? 'Validated by Admin'
+          : 'Incomplete',
+      email: userId.email,
+      company: companyId.name,
+      date: moment(delivery.date).format('L'),
+      start: delivery.startTime,
+      end: delivery.endTime,
+      deliveryArea: deliveryArea.name,
+      meanL: meanLifting.length > 0 ? meanLifting.join(', ') : 'N/A',
+      storage: storageArea.name,
+      meanR: meanRouting.length > 0 ? meanRouting.join(', ') : 'N/A',
+      // delay: body.delay === 'true' ? `Delayed till ${body.time}` : 'No',
+      delay: body.delay === 'true' ? `Retardé jusqu'à ${body.time}` : 'Non',
+      comments: delivery.comment === '' ? 'N/A' : delivery.comment,
+      materials: delivery.materials.join(', '),
+    };
+    const htmlToSend = template(replacements);
+
+    await this.transporter.sendMail({
+      from,
+      to: to,
+      cc,
+      subject: 'Votre demande de livraison est validée - Orgaplan',
+      html: htmlToSend,
+    });
+
+    return;
+  }
+
+  //when admin modifies a delivery request, that user receives the email
+  async modifyDeliveryNoti(id, body, cc) {
+    let delivery = await Delivery.findOne({ _id: id })
+      .populate('userId')
+      .populate('companyId')
+      .populate('deliveryArea')
+      .populate('storageArea')
+      .populate('liftingMeans')
+      .populate('routingMeans');
+
+    const { userId, companyId, deliveryArea, storageArea, liftingMeans, routingMeans } = delivery;
+
+    let meanLifting = liftingMeans.map((item) => item.name);
+    let meanRouting = routingMeans.map((item) => item.name);
+
+    let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
+    let to = userId.email;
+
+    // Email Starts
+    const filePath = path.join(__dirname, '../html_templates/modifyDelivery.html');
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
+    const template = handlebars.compile(source);
+    const replacements = {
+      name: userId.firstName + ' ' + userId.lastName,
+      status:
+        delivery.status === 'COMPLETED'
+          ? 'Completed'
+          : delivery.status === 'COMPLETEDWITHISSUE'
+          ? 'Completed With Issues'
+          : delivery.status === 'PENDING'
+          ? 'Pending'
+          : delivery.status === 'VALIDATED'
+          ? 'Validated by Admin'
+          : 'Incomplete',
+      email: userId.email,
+      company: companyId.name,
+      date: moment(delivery.date).format('L'),
+      start: delivery.startTime,
+      end: delivery.endTime,
+      deliveryArea: deliveryArea.name,
+      meanL: meanLifting.length > 0 ? meanLifting.join(', ') : 'N/A',
+      storage: storageArea.name,
+      meanR: meanRouting.length > 0 ? meanRouting.join(', ') : 'N/A',
+      // delay: body.delay === 'true' ? `Delayed till ${body.time}` : 'No',
+      delay: body.delay === 'true' ? `Retardé jusqu'à ${body.time}` : 'Non',
+      comments: delivery.comment === '' ? 'N/A' : delivery.comment,
+      materials: delivery.materials.join(', '),
+    };
+    const htmlToSend = template(replacements);
+
+    await this.transporter.sendMail({
+      from,
+      to: to,
+      cc,
+      subject: 'Votre demande de livraison est modifiée - Orgaplan',
       html: htmlToSend,
     });
 
@@ -456,12 +580,13 @@ class MailService {
     });
     return;
   }
-  async sendEmailDeliveryAreaDeleted(emails, siteName, deliveryDate) {
+  async sendEmailDeliveryAreaDeleted(emails, siteName, deliveryDate, cc) {
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
     emails.map(async (email) => {
       await this.transporter.sendMail({
         from,
         to: email,
+        cc,
         subject: 'Requête de livraison refusée',
         html: `<p>La requête de livraison effectuée pour le chantier ${siteName} pour le ${deliveryDate.toLocaleString(
           'en-GB',

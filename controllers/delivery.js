@@ -66,19 +66,19 @@ class DeliveryController {
       await emailService.completedDeliverySummary(result._id, req.body);
     }
 
-    let site = await Site.findById(result.siteId);
+    // let site = await Site.findById(result.siteId);
 
-    if (site.notificationTo.length > 0) {
-      let emailService = new MailService();
+    // if (site.notificationTo.length > 0) {
+    //   let emailService = new MailService();
 
-      site.notificationTo.map(async (email) => {
-        await emailService.completedDeliverySummaryToMailsAddedBySuperAdmin(
-          result._id,
-          req.body,
-          email
-        );
-      });
-    }
+    //   site.notificationTo.map(async (email) => {
+    //     await emailService.completedDeliverySummaryToMailsAddedBySuperAdmin(
+    //       result._id,
+    //       req.body,
+    //       email
+    //     );
+    //   });
+    // }
 
     let usersites = await UserSites.find({
       sites: {
@@ -89,11 +89,7 @@ class DeliveryController {
 
     let emailService = new MailService();
     usersites.map(async (site) => {
-      await emailService.completedDeliverySummaryToSiteAdmins(
-        result._id,
-        req.body,
-        site.userId?.email
-      );
+      await emailService.createDeliveryNotiToSiteAdmins(result._id, req.body, site.userId?.email);
     });
 
     await writeLog(
@@ -134,10 +130,21 @@ class DeliveryController {
       deliveryId: req.params.id,
       ...req.body,
     });
+    delete validatedData.userId;
 
-    const result = await Delivery.findByIdAndUpdate(validatedData.deliveryId, {
-      $set: validatedData,
-    });
+    const result = await Delivery.findByIdAndUpdate(validatedData.deliveryId, validatedData);
+    //adding notification email when admin modifies the delivery request for the user
+
+    let adminEmailsM = await UserSites.find({
+      sites: {
+        siteId: result.siteId,
+        role: 'ADMIN',
+      },
+    }).populate('userId');
+    adminEmailsM = adminEmailsM.map((site) => site.userId.email);
+
+    let emailService = new MailService();
+    await emailService.modifyDeliveryNoti(result._id, req.body, adminEmailsM.toString());
 
     // if (body.sendDeliverySummary) {
     //   await new EmailService().sendDeliverySummaryEmail(
@@ -174,8 +181,21 @@ class DeliveryController {
       }
     });
 
+    let adminEmailsNoti = await UserSites.find({
+      sites: {
+        siteId: result.siteId,
+        role: 'ADMIN',
+      },
+    }).populate('userId');
+    adminEmailsNoti = adminEmailsNoti.map((site) => site.userId.email);
+
     let emailService = new MailService();
-    await emailService.sendEmailDeliveryAreaDeleted(emails, result.siteId.name, result.date);
+    await emailService.sendEmailDeliveryAreaDeleted(
+      emails,
+      result.siteId.name,
+      result.date,
+      adminEmailsNoti.toString()
+    );
     // console.log("userrrrr", req.user);
     // Logging Activity
     const siteData = await Site.findOne({ _id: result.siteId });
@@ -286,6 +306,17 @@ class DeliveryController {
     // Logging Activity
     const siteData = await Site.findOne({ _id: result.siteId });
     const company = await Company.findOne({ _id: result.companyId });
+    let adminEmails = await UserSites.find({
+      sites: {
+        siteId: result.siteId,
+        role: 'ADMIN',
+      },
+    }).populate('userId');
+    adminEmails = adminEmails.map((site) => site.userId.email);
+
+    let emailService = new MailService();
+    await emailService.validatedDeliveryNoti(result._id, req.body, adminEmails.toString());
+
     await writeLog(
       // name
       `${req.user.firstName} ${req.user.lastName}`,
