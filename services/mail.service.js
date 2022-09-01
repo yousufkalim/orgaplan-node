@@ -71,7 +71,7 @@ class MailService {
     await this.transporter.sendMail({
       from,
       to: to,
-      subject: STRINGS.TEXTS.summaryDelivery,
+      subject: 'Résumé de votre demande de livraison - Orgaplan',
       html: htmlToSend,
     });
 
@@ -580,7 +580,7 @@ class MailService {
     });
     return;
   }
-  async sendEmailDeliveryAreaDeleted(emails, siteName, deliveryDate, cc) {
+  async sendEmailDeliveryAreaDeleted(emails, siteName, deliveryDate, startDate, endDate, cc) {
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
     emails.map(async (email) => {
       await this.transporter.sendMail({
@@ -588,11 +588,16 @@ class MailService {
         to: email,
         cc,
         subject: 'Requête de livraison refusée',
-        html: `<p>La requête de livraison effectuée pour le chantier ${siteName} pour le ${deliveryDate.toLocaleString(
-          'en-GB',
-          { timeZone: 'Europe/Paris' }
-        )} a été refusée par l'administrateur.</p><br><p>Orgaplan</p>`,
+        html: `<p>La requête de livraison effectuée pour le chantier ${siteName} pour le ${moment(
+          deliveryDate
+        ).format(
+          'L'
+        )} entre ${startDate} et ${endDate} a été refusée par l'administrateur.</p><br><p>Orgaplan</p>`,
       });
+      //deliveryDate.toLocaleString(
+      //   [],
+      //   { dateStyle: 'short' }
+      // )
     });
     return;
   }
