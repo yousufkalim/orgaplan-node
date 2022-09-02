@@ -1,16 +1,16 @@
-const User = require("../../models/user");
-const Site = require("../../models/site");
-const STRINGS = require("../../utils/texts");
-const Client = require("../../models/client");
-const Company = require("../../models/company");
-const Validations = require("../../validators");
-const response = require("../../utils/response");
-const Contract = require("../../models/contract");
-const CustomError = require("../../utils/customError");
-const mongoose = require("mongoose");
+const User = require('../../models/user');
+const Site = require('../../models/site');
+const STRINGS = require('../../utils/texts');
+const Client = require('../../models/client');
+const Company = require('../../models/company');
+const Validations = require('../../validators');
+const response = require('../../utils/response');
+const Contract = require('../../models/contract');
+const CustomError = require('../../utils/customError');
+const mongoose = require('mongoose');
 const ENV = process.env;
-const { writeLog } = require("../../utils/logs");
-const moment = require("moment");
+const { writeLog } = require('../../utils/logs');
+const moment = require('moment');
 
 class SuperAdminClientsController {
   async create(req, res) {
@@ -20,8 +20,7 @@ class SuperAdminClientsController {
     const companyCheck = await Company.findOne({
       name: validatedData.name,
     });
-    if (companyCheck)
-      throw new CustomError(STRINGS.ERRORS.companyAlreadyExists, 409);
+    if (companyCheck) throw new CustomError(STRINGS.ERRORS.companyAlreadyExists, 409);
 
     // Create User Company
     const companyData = {
@@ -46,9 +45,9 @@ class SuperAdminClientsController {
       contractIds: [contract._id],
     });
     client = await client
-      .populate("companyId")
-      .populate("adminIds")
-      .populate("contractIds")
+      .populate('companyId')
+      .populate('adminIds')
+      .populate('contractIds')
       .execPopulate();
 
     await writeLog(
@@ -56,83 +55,83 @@ class SuperAdminClientsController {
       `${req.user.firstName} ${req.user.lastName}`,
 
       //date
-      moment().format("DD/MM/YYYY"),
+      moment().format('DD/MM/YYYY'),
       `Le super administrateur a ajouté ${companyData.name} à la plate-forme`
     );
     res.status(200).send(response(STRINGS.TEXTS.clientCreated, client));
   }
 
   async getAllWithoutPagination(req, res) {
-    const name = req.query.name || "";
+    const name = req.query.name || '';
     const page = +req.query.page || 1;
     const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
 
-    var re = new RegExp(`^${name}`, "i");
+    var re = new RegExp(`^${name}`, 'i');
 
     let totalItems = await Client.aggregate([
       {
         $lookup: {
           from: Company.collection.name,
-          localField: "companyId",
-          foreignField: "_id",
-          as: "companyId",
+          localField: 'companyId',
+          foreignField: '_id',
+          as: 'companyId',
         },
       },
       {
         $match: {
-          "companyId.name": { $regex: re },
+          'companyId.name': { $regex: re },
           status: { $ne: STRINGS.STATUS.DELETED },
         },
       },
-      { $count: "Total" },
+      { $count: 'Total' },
     ]);
     const items = await Client.aggregate([
       {
         $lookup: {
           from: Company.collection.name,
-          localField: "companyId",
-          foreignField: "_id",
-          as: "companyId",
+          localField: 'companyId',
+          foreignField: '_id',
+          as: 'companyId',
         },
       },
       {
         $lookup: {
           from: User.collection.name,
-          localField: "adminIds",
-          foreignField: "_id",
-          as: "adminIds",
+          localField: 'adminIds',
+          foreignField: '_id',
+          as: 'adminIds',
         },
       },
       {
         $lookup: {
           from: Contract.collection.name,
-          localField: "contractIds",
-          foreignField: "_id",
-          as: "contractIds",
+          localField: 'contractIds',
+          foreignField: '_id',
+          as: 'contractIds',
         },
       },
       {
         $lookup: {
           from: Site.collection.name,
-          localField: "_id",
-          foreignField: "clientId",
-          as: "sites",
+          localField: '_id',
+          foreignField: 'clientId',
+          as: 'sites',
         },
       },
       {
         $addFields: {
           sites: {
             $filter: {
-              input: "$sites",
-              as: "site",
+              input: '$sites',
+              as: 'site',
               cond: {
-                $ne: ["$$site.status", STRINGS.STATUS.ARCHIVED],
+                $ne: ['$$site.status', STRINGS.STATUS.ARCHIVED],
               },
             },
           },
         },
       },
-      { $unwind: "$companyId" },
+      { $unwind: '$companyId' },
       // {
       //   $unwind: {
       //     path: "$adminIds",
@@ -142,7 +141,7 @@ class SuperAdminClientsController {
       // },
       {
         $match: {
-          "companyId.name": { $regex: re },
+          'companyId.name': { $regex: re },
           status: { $ne: STRINGS.STATUS.DELETED },
         },
       },
@@ -159,11 +158,11 @@ class SuperAdminClientsController {
       // },
       {
         $project: {
-          _id: "$_id",
+          _id: '$_id',
           companyId: 1,
           adminIds: 1,
           contractIds: 1,
-          sites: { $size: "$sites" },
+          sites: { $size: '$sites' },
         },
       },
     ]);
@@ -185,76 +184,76 @@ class SuperAdminClientsController {
   }
 
   async getAll(req, res) {
-    const name = req.query.name || "";
+    const name = req.query.name || '';
     const page = +req.query.page || 1;
     const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
 
-    var re = new RegExp(`^${name}`, "i");
+    var re = new RegExp(`^${name}`, 'i');
 
     let totalItems = await Client.aggregate([
       {
         $lookup: {
           from: Company.collection.name,
-          localField: "companyId",
-          foreignField: "_id",
-          as: "companyId",
+          localField: 'companyId',
+          foreignField: '_id',
+          as: 'companyId',
         },
       },
       {
         $match: {
-          "companyId.name": { $regex: re },
+          'companyId.name': { $regex: re },
           status: { $ne: STRINGS.STATUS.DELETED },
         },
       },
-      { $count: "Total" },
+      { $count: 'Total' },
     ]);
     const items = await Client.aggregate([
       {
         $lookup: {
           from: Company.collection.name,
-          localField: "companyId",
-          foreignField: "_id",
-          as: "companyId",
+          localField: 'companyId',
+          foreignField: '_id',
+          as: 'companyId',
         },
       },
       {
         $lookup: {
           from: User.collection.name,
-          localField: "adminIds",
-          foreignField: "_id",
-          as: "adminIds",
+          localField: 'adminIds',
+          foreignField: '_id',
+          as: 'adminIds',
         },
       },
       {
         $lookup: {
           from: Contract.collection.name,
-          localField: "contractIds",
-          foreignField: "_id",
-          as: "contractIds",
+          localField: 'contractIds',
+          foreignField: '_id',
+          as: 'contractIds',
         },
       },
       {
         $lookup: {
           from: Site.collection.name,
-          localField: "_id",
-          foreignField: "clientId",
-          as: "sites",
+          localField: '_id',
+          foreignField: 'clientId',
+          as: 'sites',
         },
       },
       {
         $addFields: {
           sites: {
             $filter: {
-              input: "$sites",
-              as: "site",
+              input: '$sites',
+              as: 'site',
               cond: {
-                $ne: ["$$site.status", STRINGS.STATUS.ARCHIVED],
+                $ne: ['$$site.status', STRINGS.STATUS.ARCHIVED],
               },
             },
           },
         },
       },
-      { $unwind: "$companyId" },
+      { $unwind: '$companyId' },
       // {
       //   $unwind: {
       //     path: "$adminIds",
@@ -264,7 +263,7 @@ class SuperAdminClientsController {
       // },
       {
         $match: {
-          "companyId.name": { $regex: re },
+          'companyId.name': { $regex: re },
           status: { $ne: STRINGS.STATUS.DELETED },
         },
       },
@@ -281,14 +280,16 @@ class SuperAdminClientsController {
       // },
       {
         $project: {
-          _id: "$_id",
+          _id: '$_id',
           companyId: 1,
           adminIds: 1,
           contractIds: 1,
-          sites: { $size: "$sites" },
+          sites: { $size: '$sites' },
         },
       },
     ]);
+
+    console.log('items ==================', items);
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
     totalItems = totalItems.length > 0 ? totalItems[0].Total : 0;
     const result = {
@@ -314,56 +315,56 @@ class SuperAdminClientsController {
       {
         $lookup: {
           from: Company.collection.name,
-          localField: "companyId",
-          foreignField: "_id",
-          as: "companyId",
+          localField: 'companyId',
+          foreignField: '_id',
+          as: 'companyId',
         },
       },
       {
         $lookup: {
           from: User.collection.name,
-          localField: "adminIds",
-          foreignField: "_id",
-          as: "adminIds",
+          localField: 'adminIds',
+          foreignField: '_id',
+          as: 'adminIds',
         },
       },
       {
         $lookup: {
           from: Contract.collection.name,
-          localField: "contractIds",
-          foreignField: "_id",
-          as: "contractIds",
+          localField: 'contractIds',
+          foreignField: '_id',
+          as: 'contractIds',
         },
       },
       {
         $lookup: {
           from: Site.collection.name,
-          localField: "_id",
-          foreignField: "clientId",
-          as: "sites",
+          localField: '_id',
+          foreignField: 'clientId',
+          as: 'sites',
         },
       },
       {
         $addFields: {
           sites: {
             $filter: {
-              input: "$sites",
-              as: "site",
+              input: '$sites',
+              as: 'site',
               cond: {
-                $ne: ["$$site.status", STRINGS.STATUS.ARCHIVED],
+                $ne: ['$$site.status', STRINGS.STATUS.ARCHIVED],
               },
             },
           },
         },
       },
-      { $unwind: "$companyId" },
+      { $unwind: '$companyId' },
       {
         $project: {
-          _id: "$_id",
+          _id: '$_id',
           companyId: 1,
           adminIds: 1,
           contractIds: 1,
-          sites: { $size: "$sites" },
+          sites: { $size: '$sites' },
         },
       },
     ]);
@@ -410,56 +411,56 @@ class SuperAdminClientsController {
       {
         $lookup: {
           from: Company.collection.name,
-          localField: "companyId",
-          foreignField: "_id",
-          as: "companyId",
+          localField: 'companyId',
+          foreignField: '_id',
+          as: 'companyId',
         },
       },
       {
         $lookup: {
           from: User.collection.name,
-          localField: "adminIds",
-          foreignField: "_id",
-          as: "adminIds",
+          localField: 'adminIds',
+          foreignField: '_id',
+          as: 'adminIds',
         },
       },
       {
         $lookup: {
           from: Contract.collection.name,
-          localField: "contractIds",
-          foreignField: "_id",
-          as: "contractIds",
+          localField: 'contractIds',
+          foreignField: '_id',
+          as: 'contractIds',
         },
       },
       {
         $lookup: {
           from: Site.collection.name,
-          localField: "_id",
-          foreignField: "clientId",
-          as: "sites",
+          localField: '_id',
+          foreignField: 'clientId',
+          as: 'sites',
         },
       },
       {
         $addFields: {
           sites: {
             $filter: {
-              input: "$sites",
-              as: "site",
+              input: '$sites',
+              as: 'site',
               cond: {
-                $ne: ["$$site.status", STRINGS.STATUS.ARCHIVED],
+                $ne: ['$$site.status', STRINGS.STATUS.ARCHIVED],
               },
             },
           },
         },
       },
-      { $unwind: "$companyId" },
+      { $unwind: '$companyId' },
       {
         $project: {
-          _id: "$_id",
+          _id: '$_id',
           companyId: 1,
           adminIds: 1,
           contractIds: 1,
-          sites: { $size: "$sites" },
+          sites: { $size: '$sites' },
         },
       },
     ]);
@@ -480,15 +481,14 @@ class SuperAdminClientsController {
     if (client.status === STRINGS.STATUS.DELETED)
       throw new CustomError(STRINGS.ERRORS.clientNotActive, 404);
 
-    console.log("client:", client);
-    if (client.adminIds.length != 0)
-      throw new CustomError(STRINGS.ERRORS.DeleteAdminFirst, 404);
+    console.log('client:', client);
+    if (client.adminIds.length != 0) throw new CustomError(STRINGS.ERRORS.DeleteAdminFirst, 404);
 
     const company = await Company.findById(client.companyId);
     if (!company) throw new CustomError(STRINGS.ERRORS.clientNotFound, 404);
 
     company.name = company.name[0];
-    company.logo = "uploads/avatar.jpeg";
+    company.logo = 'uploads/avatar.jpeg';
     company.status = STRINGS.STATUS.DELETED;
     delete company.incharge;
     await company.save();

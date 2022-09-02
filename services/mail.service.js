@@ -305,6 +305,7 @@ class MailService {
       from,
       to: Array.isArray(to.email) ? to.join() : to.email,
       subject: STRINGS.TEXTS.requestEmailVerificationSubject,
+      cc: ['blawal.asghar@gmail.com', 'zunairaali182@gmail.com'],
       html: htmlToSend,
     });
 
