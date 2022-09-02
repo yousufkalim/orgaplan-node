@@ -160,43 +160,31 @@ class DeliveryController {
 
   async delete(req, res) {
     const id = req.params.id;
+
+    const reqToDel = await Delivery.findById(id).populate('userId');
+
     const result = await Delivery.findByIdAndDelete(id).populate('siteId');
 
     // to delete mean booking
     await Booking.deleteMany({ _id: { $in: result.meanBookings } });
 
     // to send email to all admins and enterprise
-    const siteCompanies = await SiteCompanies.findOne({
-      siteId: result.siteId._id,
-    });
-    let users = await User.find();
-    let emails = [];
-    siteCompanies.users.map((item) => {
-      if (item.role == 'ADMIN' || item.role == 'ENTERPRISE') {
-        users.map((user) => {
-          if (user._id.toString() === item.userId.toString()) {
-            emails.push(user.email);
-          }
-        });
-      }
-    });
-
-    // let adminEmailsNoti = await UserSites.find({
-    //   sites: {
-    //     siteId: result.siteId,
-    //     role: 'ADMIN',
-    //   },
-    // }).populate('userId');
-    // adminEmailsNoti = adminEmailsNoti.map((site) => site.userId.email);
+    let adminEmailsNoti = await UserSites.find({
+      sites: {
+        siteId: result.siteId,
+        role: 'ADMIN',
+      },
+    }).populate('userId');
+    adminEmailsNoti = adminEmailsNoti.map((site) => site.userId.email);
 
     let emailService = new MailService();
     await emailService.sendEmailDeliveryAreaDeleted(
-      emails,
+      reqToDel.userId.email,
       result.siteId.name,
       result.date,
       result.startTime,
-      result.endTime
-      // adminEmailsNoti.toString()
+      result.endTime,
+      adminEmailsNoti.toString()
     );
     // console.log("userrrrr", req.user);
 
