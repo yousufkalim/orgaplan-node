@@ -181,13 +181,13 @@ class DeliveryController {
       }
     });
 
-    let adminEmailsNoti = await UserSites.find({
-      sites: {
-        siteId: result.siteId,
-        role: 'ADMIN',
-      },
-    }).populate('userId');
-    adminEmailsNoti = adminEmailsNoti.map((site) => site.userId.email);
+    // let adminEmailsNoti = await UserSites.find({
+    //   sites: {
+    //     siteId: result.siteId,
+    //     role: 'ADMIN',
+    //   },
+    // }).populate('userId');
+    // adminEmailsNoti = adminEmailsNoti.map((site) => site.userId.email);
 
     let emailService = new MailService();
     await emailService.sendEmailDeliveryAreaDeleted(
@@ -195,8 +195,8 @@ class DeliveryController {
       result.siteId.name,
       result.date,
       result.startTime,
-      result.endTime,
-      adminEmailsNoti.toString()
+      result.endTime
+      // adminEmailsNoti.toString()
     );
     // console.log("userrrrr", req.user);
 
