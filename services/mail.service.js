@@ -305,7 +305,7 @@ class MailService {
       from,
       to: Array.isArray(to.email) ? to.join() : to.email,
       subject: STRINGS.TEXTS.requestEmailVerificationSubject,
-      cc: ['blawal.asghar@gmail.com', 'zunairaali182@gmail.com'],
+      cc: 'orgaplan@falconit.com.pk',
       html: htmlToSend,
     });
 
@@ -581,13 +581,12 @@ class MailService {
     });
     return;
   }
-  async sendEmailDeliveryAreaDeleted(emails, siteName, deliveryDate, startDate, endDate, cc) {
+  async sendEmailDeliveryAreaDeleted(emails, siteName, deliveryDate, startDate, endDate) {
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
     emails.map(async (email) => {
       await this.transporter.sendMail({
         from,
         to: email,
-        cc,
         subject: 'Requête de livraison refusée',
         html: `<p>La requête de livraison effectuée pour le chantier ${siteName} pour le ${moment(
           deliveryDate
