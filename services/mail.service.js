@@ -581,24 +581,33 @@ class MailService {
     });
     return;
   }
-  async sendEmailDeliveryAreaDeleted(emails, siteName, deliveryDate, startDate, endDate) {
+  async sendEmailDeliveryAreaDeleted(
+    reqToDelEmail,
+    siteName,
+    deliveryDate,
+    startDate,
+    endDate,
+    cc
+  ) {
+    // let delivery = await Delivery.findOne({ _id: reqToDel }).populate('userId');
+
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
-    emails.map(async (email) => {
-      await this.transporter.sendMail({
-        from,
-        to: email,
-        subject: 'Requête de livraison refusée',
-        html: `<p>La requête de livraison effectuée pour le chantier ${siteName} pour le ${moment(
-          deliveryDate
-        ).format(
-          'L'
-        )} entre ${startDate} et ${endDate} a été refusée par l'administrateur.</p><br><p>Orgaplan</p>`,
-      });
-      //deliveryDate.toLocaleString(
-      //   [],
-      //   { dateStyle: 'short' }
-      // )
+    await this.transporter.sendMail({
+      from,
+      to: reqToDelEmail,
+      subject: 'Requête de livraison refusée',
+      cc,
+      html: `<p>La requête de livraison effectuée pour le chantier ${siteName} pour le ${moment(
+        deliveryDate
+      ).format(
+        'L'
+      )} entre ${startDate} et ${endDate} a été refusée par l'administrateur.</p><br><p>Orgaplan</p>`,
     });
+    //deliveryDate.toLocaleString(
+    //   [],
+    //   { dateStyle: 'short' }
+    // )
+
     return;
   }
 }
