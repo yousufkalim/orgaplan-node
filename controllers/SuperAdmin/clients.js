@@ -236,31 +236,12 @@ class SuperAdminClientsController {
         $lookup: {
           from: Site.collection.name,
           localField: '_id',
-          foreignField: 'clientId',
+          foreignField: 'clientAdmin.clientId',
           as: 'sites',
         },
       },
-      {
-        $addFields: {
-          sites: {
-            $filter: {
-              input: '$sites',
-              as: 'site',
-              cond: {
-                $ne: ['$$site.status', STRINGS.STATUS.ARCHIVED],
-              },
-            },
-          },
-        },
-      },
       { $unwind: '$companyId' },
-      // {
-      //   $unwind: {
-      //     path: "$adminIds",
-      //     // includeArrayIndex: <string>,
-      //     preserveNullAndEmptyArrays: true,
-      //   },
-      // },
+
       {
         $match: {
           'companyId.name': { $regex: re },
@@ -269,27 +250,24 @@ class SuperAdminClientsController {
       },
       { $skip: (page - 1) * ITEMS_PER_PAGE },
       { $limit: ITEMS_PER_PAGE },
-      // { $group: { _id: null, n: { $sum: 1 } } },
-      // {
-      //   $group: {
-      //     _id: "$_id",
-      //     contractIds: { $first: "$contractIds" },
-      //     adminIds: { $first: "$adminIds" },
-      //     companyId: { $push: "$companyId" },
-      //   },
-      // },
+
       {
         $project: {
           _id: '$_id',
           companyId: 1,
           adminIds: 1,
           contractIds: 1,
-          sites: { $size: '$sites' },
+          sites: 1,
         },
       },
     ]);
+    //finding count of sites assigned to company's admin (no duplicate sites)
+    items.map((item) => {
+      let clientSites = item.sites.map((a) => a._id.toString());
+      clientSites = [...new Set(clientSites)];
+      item.sites = clientSites.length;
+    });
 
-    console.log('items ==================', items);
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
     totalItems = totalItems.length > 0 ? totalItems[0].Total : 0;
     const result = {
@@ -481,7 +459,6 @@ class SuperAdminClientsController {
     if (client.status === STRINGS.STATUS.DELETED)
       throw new CustomError(STRINGS.ERRORS.clientNotActive, 404);
 
-    console.log('client:', client);
     if (client.adminIds.length != 0) throw new CustomError(STRINGS.ERRORS.DeleteAdminFirst, 404);
 
     const company = await Company.findById(client.companyId);
