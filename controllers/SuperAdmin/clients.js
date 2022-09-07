@@ -261,9 +261,11 @@ class SuperAdminClientsController {
         },
       },
     ]);
-    //finding count of sites assigned to company's admin (no duplicate sites)
+    //finding count of sites assigned to company's admins (no duplicate sites)
     items.map((item) => {
-      let clientSites = item.sites.map((a) => a._id.toString());
+      let clientSites = item.sites
+        .filter((a) => a.status !== 'ARCHIVED')
+        .map((a) => a._id.toString());
       clientSites = [...new Set(clientSites)];
       item.sites = clientSites.length;
     });
