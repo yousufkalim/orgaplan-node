@@ -78,6 +78,28 @@ class MailService {
     return;
   }
 
+  //when superadmin creates a site, then emails added to this site receives this email
+  async siteCreationNotiToMailsAddedBySuperAdmin(id, body, email) {
+    let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
+
+    // Email Starts
+    const filePath = path.join(__dirname, '../html_templates/siteCreation.html');
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
+    const template = handlebars.compile(source);
+
+    const htmlToSend = template('hello World');
+
+    await this.transporter.sendMail({
+      from,
+      to: email,
+      subject: STRINGS.TEXTS.summaryDelivery,
+      html: htmlToSend,
+    });
+
+    return;
+  }
+
+  //when superadmin creates a site, then emails added to this site receives delievry summary every ttime a delivery request is made on this site
   async completedDeliverySummaryToMailsAddedBySuperAdmin(id, body, email) {
     let delivery = await Delivery.findOne({ _id: id })
       .populate('userId')
@@ -135,7 +157,6 @@ class MailService {
 
     return;
   }
-
   //when user (traffic/enterprise user) creates a delivery request on a site, then admins of this site receives this email
   async createDeliveryNotiToSiteAdmins(id, body, email) {
     let delivery = await Delivery.findOne({ _id: id }).populate('userId').populate('siteId');

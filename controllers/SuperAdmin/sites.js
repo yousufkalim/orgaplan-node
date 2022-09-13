@@ -14,6 +14,8 @@ const { findOneAndUpdate } = require('../../models/zac');
 const ENV = process.env;
 const moment = require('moment');
 
+const MailService = require('../../services/mail.service');
+
 class SuperAdminSitesController {
   async create(req, res) {
     const validatedData = await Validations.site.create(req.body);
@@ -60,6 +62,7 @@ class SuperAdminSitesController {
       const userSitesCheck = await UserSites.findOne({
         userId: key.adminId,
       });
+      console.log('userSitesCheck', userSitesCheck);
 
       if (userSitesCheck) {
         return UserSites.findByIdAndUpdate(userSitesCheck._id, {
@@ -85,6 +88,17 @@ class SuperAdminSitesController {
 
     let result = site;
 
+    let site1 = await Site.findById(result._id);
+
+    if (site1.notificationTo.length > 0) {
+      let emailService = new MailService();
+
+      site.notificationTo.map(async (email) => {
+        await emailService.siteCreationNotiToMailsAddedBySuperAdmin(result._id, req.body, email);
+      });
+    }
+    console.log('clientAdmin', clientAdmin);
+    console.log('siteCompanyUser', siteCompanyUser);
     await SitePic.create({
       siteId: site._id,
       // exteriorBuilding: building._id,
