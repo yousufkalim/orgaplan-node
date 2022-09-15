@@ -2,6 +2,7 @@
 
 const STRINGS = require('../utils/texts');
 const Validations = require('../validators');
+const mongoose = require('mongoose');
 const response = require('../utils/response');
 const Delivery = require('../models/delivery');
 const StroageArea = require('../models/storageArea');
