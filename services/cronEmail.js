@@ -11,8 +11,11 @@ const path = require('path');
 const STRINGS = require('../utils/texts');
 const ENV = process.env;
 const Delivery = require('../models/delivery');
+const Site = require('../models/site');
 const cron = require('node-cron');
+const mongoose = require('mongoose');
 const MailService = require('../services/mail.service');
+const User = require('../models/user');
 
 let transporter = nodemailer.createTransport({
   service: ENV.MAILER_HOST,
@@ -21,8 +24,6 @@ let transporter = nodemailer.createTransport({
     pass: ENV.MAILER_PASSWORD,
   },
 });
-
-// Handlebars Config with Transporter
 transporter.use(
   'compile',
   hbs({
@@ -35,7 +36,6 @@ transporter.use(
     extName: '.handlebars',
   })
 );
-
 cron.schedule(
   '00 9 * * *',
   async () => {
@@ -90,10 +90,8 @@ cron.schedule(
           ?.name,
       }));
 
-      console.log('delivery', deliveries);
       let emailService = new MailService();
       emailService.dailyPendingDeliveryReminder(deliveries, site, emails);
-      console.log(emails);
     });
   },
   {
