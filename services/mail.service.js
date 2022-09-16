@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const CustomError = require('./../utils/customError');
 const handlebars = require('handlebars');
+const hbs = require('nodemailer-express-handlebars');
 const fs = require('fs');
 const path = require('path');
 const STRINGS = require('../utils/texts');
@@ -26,8 +27,8 @@ class MailService {
       .populate('deliveryArea')
       .populate('storageArea')
       .populate('liftingMeans')
-      .populate('routingMeans');
-
+      .populate('routingMeans')
+      .populate('siteId');
     const { userId, companyId, deliveryArea, storageArea, liftingMeans, routingMeans } = delivery;
 
     let meanLifting = liftingMeans.map((item) => item.name);
@@ -73,11 +74,67 @@ class MailService {
       to: to,
       subject: 'Résumé de votre demande de livraison - Orgaplan',
       html: htmlToSend,
+      attachments: [
+        {
+          // filename and content type is derived from path
+          path: delivery.siteId.pdf,
+        },
+      ],
     });
 
     return;
   }
 
+  //when superadmin creates a site, then emails added to this site receives this email
+  async siteCreationNotiToMailsAddedBySuperAdmin(id, body, email) {
+    let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
+
+    // Email Starts
+    const filePath = path.join(__dirname, '../html_templates/siteCreation.html');
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
+    const template = handlebars.compile(source);
+
+    const htmlToSend = template('hello World');
+
+    await this.transporter.sendMail({
+      from,
+      to: email,
+      subject: STRINGS.TEXTS.summaryDelivery,
+      html: htmlToSend,
+    });
+
+    return;
+  }
+
+  //when user creates a delivery request, then admins receives reminder email about pending requests daily
+  async dailyPendingDeliveryReminder(deliveries, site, emails) {
+    let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
+    // Email Starts
+    const filePath = path.join(__dirname, '../html_templates/reminderPendingReq.handlebars');
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
+    const template = handlebars.compile(source);
+
+    const link = `${ENV.CLIENT_URL}/calendar`;
+
+    const replacements = {
+      Sitename: site.name,
+      deliveries,
+      url: link,
+    };
+
+    const htmlToSend = template(replacements);
+
+    await this.transporter.sendMail({
+      from,
+      to: emails,
+      subject: 'Demandes de livraison en attente',
+      html: htmlToSend,
+    });
+
+    return;
+  }
+
+  //when superadmin creates a site, then emails added to this site receives delievry summary every ttime a delivery request is made on this site
   async completedDeliverySummaryToMailsAddedBySuperAdmin(id, body, email) {
     let delivery = await Delivery.findOne({ _id: id })
       .populate('userId')
@@ -135,7 +192,6 @@ class MailService {
 
     return;
   }
-
   //when user (traffic/enterprise user) creates a delivery request on a site, then admins of this site receives this email
   async createDeliveryNotiToSiteAdmins(id, body, email) {
     let delivery = await Delivery.findOne({ _id: id }).populate('userId').populate('siteId');

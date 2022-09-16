@@ -2,6 +2,7 @@
 
 const STRINGS = require('../utils/texts');
 const Validations = require('../validators');
+const mongoose = require('mongoose');
 const response = require('../utils/response');
 const Delivery = require('../models/delivery');
 const StroageArea = require('../models/storageArea');
@@ -66,19 +67,19 @@ class DeliveryController {
       await emailService.completedDeliverySummary(result._id, req.body);
     }
 
-    // let site = await Site.findById(result.siteId);
+    let site = await Site.findById(result.siteId);
 
-    // if (site.notificationTo.length > 0) {
-    //   let emailService = new MailService();
+    if (site.notificationTo.length > 0) {
+      let emailService = new MailService();
 
-    //   site.notificationTo.map(async (email) => {
-    //     await emailService.completedDeliverySummaryToMailsAddedBySuperAdmin(
-    //       result._id,
-    //       req.body,
-    //       email
-    //     );
-    //   });
-    // }
+      site.notificationTo.map(async (email) => {
+        await emailService.completedDeliverySummaryToMailsAddedBySuperAdmin(
+          result._id,
+          req.body,
+          email
+        );
+      });
+    }
 
     let usersites = await UserSites.find({
       sites: {
@@ -186,7 +187,6 @@ class DeliveryController {
       result.endTime,
       adminEmailsNoti.toString()
     );
-    // console.log("userrrrr", req.user);
 
     // Logging Activity
     const siteData = await Site.findOne({ _id: result.siteId });

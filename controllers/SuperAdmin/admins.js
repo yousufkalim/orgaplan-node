@@ -131,12 +131,6 @@ class SuperAdminAdminsController {
       { $limit: ITEMS_PER_PAGE },
     ]);
 
-    console.log('itemSites------------>', items.sites);
-    // items.map((item) => {
-    //   let adminArchived = item.sites.filter((a) => a.status !== 'ARCHIVED');
-    //   item.sites = adminArchived;
-    // });
-
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
     totalItems = totalItems.length > 0 ? totalItems[0].Total : 0;
     const result = {
