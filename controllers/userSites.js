@@ -1,8 +1,8 @@
-const UserSites = require("../models/userSites");
-const Site = require("../models/site");
-const STRINGS = require("../utils/texts");
-const response = require("../utils/response");
-const CustomError = require("../utils/customError");
+const UserSites = require('../models/userSites');
+const Site = require('../models/site');
+const STRINGS = require('../utils/texts');
+const response = require('../utils/response');
+const CustomError = require('../utils/customError');
 const ENV = process.env;
 
 class UserSitesController {
@@ -16,15 +16,10 @@ class UserSitesController {
         userId: data.userId,
         sites: [{ siteId: data.siteId, role: data.role }],
       }).save();
-      res
-        .status(200)
-        .send(response(STRINGS.TEXTS.userSiteRequested, userSites));
+      res.status(200).send(response(STRINGS.TEXTS.userSiteRequested, userSites));
     } else {
-      const siteIndex = result.sites.findIndex(
-        (sit) => String(sit.siteId) === String(data.siteId)
-      );
+      const siteIndex = result.sites.findIndex((sit) => String(sit.siteId) === String(data.siteId));
       if (siteIndex == -1) {
-        console.log(data.siteId);
         result.sites.push({ siteId: data.siteId, role: data.role });
         await result.save(result);
         res.status(200).send(response(STRINGS.TEXTS.userSiteRequested, result));
@@ -36,9 +31,7 @@ class UserSitesController {
 
   async getAll(req, res) {
     const result = await UserSites.find({}, { password: 0, __v: 0 });
-    res
-      .status(200)
-      .send(response(STRINGS.TEXTS.allRequestedSubscriptions, result));
+    res.status(200).send(response(STRINGS.TEXTS.allRequestedSubscriptions, result));
   }
 
   async getOne(req, res) {
@@ -63,11 +56,7 @@ class UserSitesController {
     const id = req.params.id;
     const data = req.body;
 
-    const result = await UserSites.findByIdAndUpdate(
-      { _id: id },
-      { $set: data },
-      { new: true }
-    );
+    const result = await UserSites.findByIdAndUpdate({ _id: id }, { $set: data }, { new: true });
 
     if (!result) throw new CustomError(STRINGS.ERRORS.userSitesNotFound, 404);
 
@@ -88,9 +77,7 @@ class UserSitesController {
   async getSitesByUser(req, res) {
     const userId = req.params.userId;
 
-    const result = await UserSites.findOne({ userId: userId }).populate(
-      "sites.siteId"
-    );
+    const result = await UserSites.findOne({ userId: userId }).populate('sites.siteId');
 
     if (!result) throw new CustomError(STRINGS.ERRORS.userSitesNotFound);
 
@@ -100,9 +87,7 @@ class UserSitesController {
   async getSiteByUserId(req, res) {
     const userId = req.params.userId;
 
-    const result = await UserSites.findOne({ userId: userId }).populate(
-      "sites.siteId"
-    );
+    const result = await UserSites.findOne({ userId: userId }).populate('sites.siteId');
     if (!result) throw new CustomError(STRINGS.ERRORS.userSitesNotFound);
 
     res.status(200).send(response(STRINGS.TEXTS.userSiteRequested, result));

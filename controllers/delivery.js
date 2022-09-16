@@ -187,7 +187,6 @@ class DeliveryController {
       result.endTime,
       adminEmailsNoti.toString()
     );
-    // console.log("userrrrr", req.user);
 
     // Logging Activity
     const siteData = await Site.findOne({ _id: result.siteId });

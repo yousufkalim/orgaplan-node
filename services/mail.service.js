@@ -27,8 +27,8 @@ class MailService {
       .populate('deliveryArea')
       .populate('storageArea')
       .populate('liftingMeans')
-      .populate('routingMeans');
-
+      .populate('routingMeans')
+      .populate('siteId');
     const { userId, companyId, deliveryArea, storageArea, liftingMeans, routingMeans } = delivery;
 
     let meanLifting = liftingMeans.map((item) => item.name);
@@ -74,6 +74,12 @@ class MailService {
       to: to,
       subject: 'Résumé de votre demande de livraison - Orgaplan',
       html: htmlToSend,
+      attachments: [
+        {
+          // filename and content type is derived from path
+          path: delivery.siteId.pdf,
+        },
+      ],
     });
 
     return;
