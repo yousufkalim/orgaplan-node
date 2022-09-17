@@ -74,6 +74,7 @@ const schemas = {
       deliveryId: Joi.string().required('Delivery ID is required'),
       verifiedBy: Joi.string().required('User ID is required'),
       materialsDelivered: Joi.array().items(Joi.string()).min(1),
+
       delay: Joi.bool().required(''),
       status: Joi.string().required(''),
       comments: Joi.string().optional().allow(''),
