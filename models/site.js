@@ -32,6 +32,7 @@ const siteSchema = new Schema(
     ],
     pdf: String,
     trades: [{ type: String }],
+    materials: [{ type: String }],
     penaltyforLateDelivery: Number,
     penaltyforUnexpDelivery: Number,
     start: Date,
