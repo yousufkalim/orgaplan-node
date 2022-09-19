@@ -309,15 +309,12 @@ class DeliveryController {
     }).populate('userId');
     adminEmails = adminEmails.map((site) => site.userId.email);
 
-    console.log('adminEmails', adminEmails);
     let emailService = new MailService();
 
     let notiMails = siteData.notificationTo;
-    console.log('notiMails', notiMails);
 
     if (notiMails.length > 0) {
       adminEmails = notiMails.concat(adminEmails);
-      console.log('COncated', adminEmails);
     }
 
     await emailService.validatedDeliveryNoti(result._id, req.body, adminEmails.toString());
