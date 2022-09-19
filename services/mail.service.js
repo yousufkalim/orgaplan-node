@@ -55,7 +55,7 @@ class MailService {
           : 'Incomplete',
       email: userId.email,
       company: companyId.name,
-      date: moment(delivery.date).format('L'),
+      date: moment(delivery.date).format('DD/MM/YYYY'),
       start: delivery.startTime,
       end: delivery.endTime,
       deliveryArea: deliveryArea.name,
@@ -169,7 +169,7 @@ class MailService {
           : 'Incomplete',
       email: userId.email,
       company: companyId.name,
-      date: moment(delivery.date).format('L'),
+      date: moment(delivery.date).format('DD/MM/YYYY'),
       start: delivery.startTime,
       end: delivery.endTime,
       deliveryArea: deliveryArea.name,
@@ -186,7 +186,7 @@ class MailService {
     await this.transporter.sendMail({
       from,
       to: email,
-      subject: STRINGS.TEXTS.summaryDelivery,
+      subject: 'Résumé de votre demande de livraison - Orgaplan',
       html: htmlToSend,
     });
 
@@ -220,7 +220,7 @@ class MailService {
     return;
   }
 
-  //when admin validates a delivery request, that user receives the email
+  //when admin validates a delivery request, that user receives the email (also the emails added in site)
   async validatedDeliveryNoti(id, body, cc) {
     let delivery = await Delivery.findOne({ _id: id })
       .populate('userId')
@@ -256,7 +256,7 @@ class MailService {
           : 'Incomplete',
       email: userId.email,
       company: companyId.name,
-      date: moment(delivery.date).format('L'),
+      date: moment(delivery.date).format('DD/MM/YYYY'),
       start: delivery.startTime,
       end: delivery.endTime,
       deliveryArea: deliveryArea.name,
@@ -281,7 +281,7 @@ class MailService {
     return;
   }
 
-  //when admin modifies a delivery request, that user receives the email
+  //when admin modifies a delivery request, that user receives the email (also the emails added in site)
   async modifyDeliveryNoti(id, body, cc) {
     let delivery = await Delivery.findOne({ _id: id })
       .populate('userId')
@@ -317,7 +317,7 @@ class MailService {
           : 'Incomplete',
       email: userId.email,
       company: companyId.name,
-      date: moment(delivery.date).format('L'),
+      date: moment(delivery.date).format('DD/MM/YYYY'),
       start: delivery.startTime,
       end: delivery.endTime,
       deliveryArea: deliveryArea.name,
@@ -415,7 +415,7 @@ class MailService {
     await this.transporter.sendMail({
       from,
       to: email,
-      subject: STRINGS.TEXTS.sendEmailConfirmationSubject,
+      subject: 'Résumé de votre demande de livraison - Orgaplan',
       html: html,
     });
 
@@ -637,14 +637,7 @@ class MailService {
     });
     return;
   }
-  async sendEmailDeliveryAreaDeleted(
-    reqToDelEmail,
-    siteName,
-    deliveryDate,
-    startDate,
-    endDate,
-    cc
-  ) {
+  async sendEmailDeliveryReqDeleted(reqToDelEmail, siteName, deliveryDate, startDate, endDate, cc) {
     // let delivery = await Delivery.findOne({ _id: reqToDel }).populate('userId');
 
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
@@ -656,7 +649,7 @@ class MailService {
       html: `<p>La requête de livraison effectuée pour le chantier ${siteName} pour le ${moment(
         deliveryDate
       ).format(
-        'L'
+        'DD/MM/YYYY'
       )} entre ${startDate} et ${endDate} a été refusée par l'administrateur.</p><br><p>Orgaplan</p>`,
     });
     //deliveryDate.toLocaleString(

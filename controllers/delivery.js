@@ -143,16 +143,15 @@ class DeliveryController {
       },
     }).populate('userId');
     adminEmailsM = adminEmailsM.map((site) => site.userId.email);
+    const siteData = await Site.findOne({ _id: result.siteId });
+    let notiMails = siteData.notificationTo;
+
+    if (notiMails.length > 0) {
+      adminEmailsM = notiMails.concat(adminEmailsM);
+    }
 
     let emailService = new MailService();
     await emailService.modifyDeliveryNoti(result._id, req.body, adminEmailsM.toString());
-
-    // if (body.sendDeliverySummary) {
-    //   await new EmailService().sendDeliverySummaryEmail(
-    //     body.userEmail,
-    //     body.html
-    //   );
-    // }
 
     if (!result) throw new CustomError(STRINGS.ERRORS.error, 400);
 
@@ -178,8 +177,14 @@ class DeliveryController {
     }).populate('userId');
     adminEmailsNoti = adminEmailsNoti.map((site) => site.userId.email);
 
+    const siteData = await Site.findOne({ _id: result.siteId });
+    let notiMails = siteData.notificationTo;
+    if (notiMails.length > 0) {
+      adminEmailsNoti = notiMails.concat(adminEmailsNoti);
+    }
+
     let emailService = new MailService();
-    await emailService.sendEmailDeliveryAreaDeleted(
+    await emailService.sendEmailDeliveryReqDeleted(
       reqToDel.userId.email,
       result.siteId.name,
       result.date,
@@ -189,7 +194,6 @@ class DeliveryController {
     );
 
     // Logging Activity
-    const siteData = await Site.findOne({ _id: result.siteId });
     const company = await Company.findOne({ _id: result.companyId });
     await writeLog(
       // name
@@ -306,6 +310,13 @@ class DeliveryController {
     adminEmails = adminEmails.map((site) => site.userId.email);
 
     let emailService = new MailService();
+
+    let notiMails = siteData.notificationTo;
+
+    if (notiMails.length > 0) {
+      adminEmails = notiMails.concat(adminEmails);
+    }
+
     await emailService.validatedDeliveryNoti(result._id, req.body, adminEmails.toString());
 
     await writeLog(
