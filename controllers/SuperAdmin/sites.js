@@ -91,7 +91,7 @@ class SuperAdminSitesController {
       let emailService = new MailService();
 
       site.notificationTo.map(async (email) => {
-        await emailService.siteCreationNotiToMailsAddedBySuperAdmin(result._id, req.body, email);
+        await emailService.siteCreationNotiToMailsAddedBySuperAdmin(result.name, email);
       });
     }
 
