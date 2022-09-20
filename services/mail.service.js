@@ -86,7 +86,7 @@ class MailService {
   }
 
   //when superadmin creates a site, then emails added to this site receives this email
-  async siteCreationNotiToMailsAddedBySuperAdmin(id, body, email) {
+  async siteCreationNotiToMailsAddedBySuperAdmin(name, email) {
     let from = `${ENV.APP_NAME} <no-reply${ENV.MAILER_DOMAIN}>`;
 
     // Email Starts
@@ -94,12 +94,16 @@ class MailService {
     const source = fs.readFileSync(filePath, 'utf-8').toString();
     const template = handlebars.compile(source);
 
-    const htmlToSend = template('hello World');
+    const replacements = {
+      name,
+    };
+
+    const htmlToSend = template(replacements);
 
     await this.transporter.sendMail({
       from,
       to: email,
-      subject: STRINGS.TEXTS.summaryDelivery,
+      subject: 'Un chantier a été créé - ORGAPLAN',
       html: htmlToSend,
     });
 
