@@ -12,7 +12,18 @@ router.get('/admin/:adminId', superAdmin.sitesController.getSitesByAdmin);
 router.get('/client/:clientId', superAdmin.sitesController.getSitesByClient);
 
 // POSTS
-router.post('/', auth(), multer('site', 'logo', 'single'), superAdmin.sitesController.create);
+router.post(
+  '/',
+  auth('SUPERADMIN'),
+  multer('site', 'logo', 'single'),
+  superAdmin.sitesController.create
+);
+router.post(
+  '/siteByMasterAdmin',
+  auth(),
+  multer('site', 'logo', 'single'),
+  superAdmin.sitesController.create
+);
 router.post('/pdf', multer('site', 'pdf', 'single'), (req, res) => {
   res.json({ success: true, url: req.file.path });
 });
