@@ -89,8 +89,7 @@ cron.schedule(
       deliveries.map((a) => {
         let deliveryDate = new Date(a.date).setHours(a.endTime.split(':')[0]);
         let currentDate = new Date().setHours(9);
-        console.log('currentDate===', currentDate);
-        console.log('deliveryDate===', deliveryDate);
+
         if (deliveryDate >= currentDate) {
           filteredDeliveries.push({
             ...a,
