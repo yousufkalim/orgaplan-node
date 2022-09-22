@@ -87,7 +87,11 @@ cron.schedule(
       let { deliveries } = site;
       let filteredDeliveries = [];
       deliveries.map((a) => {
-        if (a.date >= new Date()) {
+        let deliveryDate = new Date(a.date).setHours(a.endTime.split(':')[0]);
+        let currentDate = new Date().setHours(9);
+        console.log('currentDate===', currentDate);
+        console.log('deliveryDate===', deliveryDate);
+        if (deliveryDate >= currentDate) {
           filteredDeliveries.push({
             ...a,
             date: a.date.toLocaleDateString('en-GB'),
@@ -97,7 +101,7 @@ cron.schedule(
         }
       });
       let emailService = new MailService();
-      filteredDeliveries.length > 1
+      filteredDeliveries.length >= 1
         ? emailService.dailyPendingDeliveryReminder(filteredDeliveries, site, emails)
         : '';
     });
