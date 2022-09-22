@@ -38,6 +38,7 @@ transporter.use(
 );
 cron.schedule(
   '00 9 * * *',
+
   async () => {
     let allDeliveries = await Delivery.find({ status: 'PENDING' }).populate('companyId');
     let deliveryIds = allDeliveries.map((a) => mongoose.Types.ObjectId(a.siteId));
@@ -82,16 +83,23 @@ cron.schedule(
 
     sites.map((site) => {
       let emails = site.admins.map((_) => _.email);
-      let { deliveries } = site;
-      deliveries = deliveries.map((a) => ({
-        ...a,
-        date: a.date.toLocaleDateString('en-GB'),
-        companyName: allDeliveries.find((b) => b._id.toString() === a._id.toString())?.companyId
-          ?.name,
-      }));
 
+      let { deliveries } = site;
+      let filteredDeliveries = [];
+      deliveries.map((a) => {
+        if (a.date >= new Date()) {
+          filteredDeliveries.push({
+            ...a,
+            date: a.date.toLocaleDateString('en-GB'),
+            companyName: allDeliveries.find((b) => b._id.toString() === a._id.toString())?.companyId
+              ?.name,
+          });
+        }
+      });
       let emailService = new MailService();
-      emailService.dailyPendingDeliveryReminder(deliveries, site, emails);
+      filteredDeliveries.length > 1
+        ? emailService.dailyPendingDeliveryReminder(filteredDeliveries, site, emails)
+        : '';
     });
   },
   {
