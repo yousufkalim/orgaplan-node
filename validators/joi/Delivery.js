@@ -49,7 +49,7 @@ const schemas = {
       trades: Joi.array().items(Joi.string()).min(1),
       liftingMeans: Joi.array().items(Joi.string()).min(0),
       routingMeans: Joi.array().items(Joi.string()).min(0),
-      materials: Joi.array().items(Joi.string()).min(1),
+      materials: Joi.array().items(Joi.string()).min(0),
       building: Joi.string().allow(''),
       level: Joi.string().allow(''),
       date: Joi.date().required(),

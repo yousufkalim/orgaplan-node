@@ -33,6 +33,10 @@ router.put('/', multer('site', 'logo', 'single'), superAdmin.sitesController.upd
 router.put('/archive/:id', auth('SUPERADMIN'), superAdmin.sitesController.archiveSite);
 router.put('/unarchive/:id', superAdmin.sitesController.unArchiveSite);
 
+router.put('/pdf', multer('site', 'pdf', 'single'), (req, res) => {
+  res.json({ success: true, url: req.file.path });
+});
+
 // DELETES
 router.delete('/delete/:id', superAdmin.sitesController.delete);
 
