@@ -11,6 +11,7 @@ const schemas = {
       clientAdmin: Joi.array().items(),
       functionality: Joi.string().optional().allow(''),
       pdf: Joi.string().optional().allow(''),
+
       addresses: Joi.array()
         .items(
           Joi.object().keys({
@@ -22,6 +23,7 @@ const schemas = {
         .min(1, 'Min one address required'),
       trades: Joi.array().items(Joi.string().optional()),
       materials: Joi.array().items(Joi.string().optional()),
+      pdfFileName: Joi.string().optional().allow(''),
 
       penaltyforLateDelivery: Joi.number()
         .integer()
@@ -113,6 +115,9 @@ const schemas = {
         )
         .min(1, 'Min one address required'),
       trades: Joi.array().items(Joi.string().optional()),
+      materials: Joi.array().items(Joi.string().optional()),
+      pdf: Joi.string().optional().allow(''),
+      pdfFileName: Joi.string().optional().allow(''),
 
       penaltyforLateDelivery: Joi.number()
         .integer()
@@ -165,6 +170,7 @@ const schemas = {
     data.clientAdmin = JSON.parse(data.clientAdmin);
     data.addresses = JSON.parse(data.addresses);
     data.trades = JSON.parse(data.trades);
+    data.materials = JSON.parse(data.materials);
 
     data.openingHours = JSON.parse(data.openingHours);
     data.unavailabilityDates = JSON.parse(data.unavailabilityDates);
