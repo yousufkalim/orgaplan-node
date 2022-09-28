@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "start:dev": "nodemon index.js",
-    "deploy": "sudo chmod 644 .git/index && git pull origin main && npm install && sudo pm2 restart 6"
+    "deploy": "sudo chmod 644 .git/index && git pull origin main && npm install && sudo pm2 restart 6",
+    "prepare": "husky install"
   },
   "keywords": [
     "orga",
@@ -51,6 +52,9 @@
     "xss-clean": "^0.1.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.6"
+    "husky": "^8.0.0",
+    "nodemon": "^2.0.6",
+    "prettier": "^2.7.1",
+    "pretty-quick": "^3.1.3"
   }
 }
