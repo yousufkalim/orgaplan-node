@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const STRINGS = require("../utils/texts");
+const STRINGS = require('../utils/texts');
 
 const siteSchema = new Schema(
   {
@@ -30,7 +30,10 @@ const siteSchema = new Schema(
         postal: String,
       },
     ],
+    pdf: String,
+    pdfFileName: String,
     trades: [{ type: String }],
+    materials: [{ type: String }],
     penaltyforLateDelivery: Number,
     penaltyforUnexpDelivery: Number,
     start: Date,

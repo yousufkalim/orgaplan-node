@@ -1,24 +1,24 @@
-const mongoose = require("mongoose");
-const Auth = require("../auth");
-const bcrypt = require("bcryptjs");
-const JWT = require("jsonwebtoken");
-const User = require("../../models/user");
-const Token = require("../../models/token");
-const Site = require("../../models/site");
-const UserSites = require("../../models/userSites");
-const STRINGS = require("../../utils/texts");
-const Client = require("../../models/client");
-const Company = require("../../models/company");
-const Validations = require("../../validators");
-const response = require("../../utils/response");
-const CustomError = require("../../utils/customError");
-const MailService = require("../../services/mail.service");
-const { writeLog } = require("../../utils/logs");
-const site = require("../../models/site");
-const userSites = require("../../models/userSites");
-const { array } = require("joi");
+const mongoose = require('mongoose');
+const Auth = require('../auth');
+const bcrypt = require('bcryptjs');
+const JWT = require('jsonwebtoken');
+const User = require('../../models/user');
+const Token = require('../../models/token');
+const Site = require('../../models/site');
+const UserSites = require('../../models/userSites');
+const STRINGS = require('../../utils/texts');
+const Client = require('../../models/client');
+const Company = require('../../models/company');
+const Validations = require('../../validators');
+const response = require('../../utils/response');
+const CustomError = require('../../utils/customError');
+const MailService = require('../../services/mail.service');
+const { writeLog } = require('../../utils/logs');
+const site = require('../../models/site');
+const userSites = require('../../models/userSites');
+const { array } = require('joi');
 const ENV = process.env;
-const moment = require("moment");
+const moment = require('moment');
 
 class SuperAdminAdminsController {
   async create(req, res) {
@@ -26,8 +26,7 @@ class SuperAdminAdminsController {
 
     // Check Company
     const companyCheck = await Company.findById(validatedData.companyId);
-    if (!companyCheck)
-      throw new CustomError(STRINGS.ERRORS.companyNotFound, 404);
+    if (!companyCheck) throw new CustomError(STRINGS.ERRORS.companyNotFound, 404);
 
     // Create Login User
     const user = await Auth.signup({
@@ -54,7 +53,7 @@ class SuperAdminAdminsController {
       sites: [],
     });
 
-    const result = await User.findById(user._id).populate("company");
+    const result = await User.findById(user._id).populate('company');
 
     // Logging this activity
     const { firstName, lastName } = validatedData;
@@ -63,7 +62,7 @@ class SuperAdminAdminsController {
       `${req.user.firstName} ${req.user.lastName}`,
 
       //date
-      moment().format("DD/MM/YYYY"),
+      moment().format('DD/MM/YYYY'),
       `Le super administrateur a ajouté ${firstName} ${lastName} à la plate-forme`
     );
 
@@ -71,10 +70,10 @@ class SuperAdminAdminsController {
   }
 
   async getAll(req, res) {
-    const name = req.query.name || "";
+    const name = req.query.name || '';
     const page = +req.query.page || 1;
     const ITEMS_PER_PAGE = +ENV.ITEMS_PER_PAGE;
-    var re = new RegExp(`^${name}`, "i");
+    var re = new RegExp(`^${name}`, 'i');
 
     let totalItems = await User.aggregate([
       {
@@ -84,7 +83,7 @@ class SuperAdminAdminsController {
           status: { $ne: STRINGS.STATUS.DELETED },
         },
       },
-      { $count: "Total" },
+      { $count: 'Total' },
     ]);
 
     let items = await User.aggregate([
@@ -98,58 +97,39 @@ class SuperAdminAdminsController {
       {
         $lookup: {
           from: Company.collection.name,
-          localField: "company",
-          foreignField: "_id",
-          as: "company",
+          localField: 'company',
+          foreignField: '_id',
+          as: 'company',
         },
       },
       {
         $lookup: {
           from: Site.collection.name,
-          localField: "_id",
-          foreignField: "adminId",
-          as: "sites",
+          localField: '_id',
+          foreignField: 'clientAdmin.adminId',
+          as: 'sites',
         },
       },
       {
         $addFields: {
           sites: {
             $filter: {
-              input: "$sites",
-              as: "site",
+              input: '$sites',
+              as: 'site',
               cond: {
-                $ne: ["$$site.status", STRINGS.STATUS.ARCHIVED],
+                $ne: ['$$site.status', STRINGS.STATUS.ARCHIVED],
               },
             },
           },
         },
       },
       {
-        $addFields: { sites: { $size: "$sites" } },
+        $addFields: { sites: { $size: '$sites' } },
       },
-      { $unwind: "$company" },
+      { $unwind: '$company' },
       { $skip: (page - 1) * ITEMS_PER_PAGE },
       { $limit: ITEMS_PER_PAGE },
     ]);
-
-    // pushing updated user in arrays
-    let array = [];
-
-    await Promise.all(
-      items.map(async (user) => {
-        const result = await UserSites.findOne({ userId: user._id }).populate(
-          "sites.siteId"
-        );
-
-        if (result !== null) {
-          user.sites = result.sites.length;
-        }
-
-        array.push(user);
-      })
-    );
-    // overwriting items with array
-    items = array;
 
     if (!items) throw new CustomError(STRINGS.ERRORS.error, 404);
     totalItems = totalItems.length > 0 ? totalItems[0].Total : 0;
@@ -172,9 +152,7 @@ class SuperAdminAdminsController {
   async getById(req, res) {
     const id = req.params.id;
 
-    const result = await User.findById(id, { password: 0, __v: 0 }).populate(
-      "company"
-    );
+    const result = await User.findById(id, { password: 0, __v: 0 }).populate('company');
 
     if (!result) throw new CustomError(STRINGS.ERRORS.adminNotFound, 404);
 
@@ -225,8 +203,8 @@ class SuperAdminAdminsController {
 
       // update clienId from Site scheema
       const siteUpdate = await Site.updateMany(
-        { "clientAdmin.adminId": validatedData.adminId },
-        { $set: { "clientAdmin.$.clientId": validatedData.companyId } }
+        { 'clientAdmin.adminId': validatedData.adminId },
+        { $set: { 'clientAdmin.$.clientId': validatedData.companyId } }
       );
     }
 
@@ -246,7 +224,7 @@ class SuperAdminAdminsController {
         $set: userData,
       },
       { new: true }
-    ).populate("company");
+    ).populate('company');
 
     if (!result) throw new CustomError(STRINGS.ERRORS.adminNotFound, 404);
 
@@ -285,7 +263,7 @@ class SuperAdminAdminsController {
       $set: {
         firstName: userCheck.firstName[0],
         lastName: userCheck.lastName[0],
-        image: "uploads/avatar.jpeg",
+        image: 'uploads/avatar.jpeg',
         phone: 9999999999,
         email: `AAA@${countUsers}.com`,
         status: STRINGS.STATUS.DELETED,
@@ -305,8 +283,7 @@ class SuperAdminAdminsController {
 
     // Check Company
     const companyCheck = await Company.findById(validatedData.companyId);
-    if (!companyCheck)
-      throw new CustomError(STRINGS.ERRORS.companyNotFound, 404);
+    if (!companyCheck) throw new CustomError(STRINGS.ERRORS.companyNotFound, 404);
 
     // Check User
     const userCheck = await User.findById(validatedData.adminId);
@@ -316,16 +293,10 @@ class SuperAdminAdminsController {
     let VToken = await Token.findOne({ userId: validatedData.adminId });
     if (!VToken) throw new CustomError(STRINGS.ERRORS.invalidToken);
 
-    const isValid = await bcrypt.compare(
-      validatedData.verifyToken,
-      VToken.token
-    );
+    const isValid = await bcrypt.compare(validatedData.verifyToken, VToken.token);
     if (!isValid) throw new CustomError(STRINGS.ERRORS.invalidToken);
 
-    const hashedPassword = await bcrypt.hash(
-      validatedData.password,
-      +ENV.BCRYPT_SALT
-    );
+    const hashedPassword = await bcrypt.hash(validatedData.password, +ENV.BCRYPT_SALT);
 
     validatedData.password = hashedPassword;
     validatedData.isVerified = true;
@@ -343,10 +314,7 @@ class SuperAdminAdminsController {
     let emailService = new MailService();
     await emailService.sendEmailConfirmation(user, link);
 
-    const token = await JWT.sign(
-      { id: user._id, role: user.role },
-      ENV.JWT_SECRET
-    );
+    const token = await JWT.sign({ id: user._id, role: user.role }, ENV.JWT_SECRET);
 
     const result = {
       user,

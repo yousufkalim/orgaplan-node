@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const STRINGS = require("../utils/texts");
+const STRINGS = require('../utils/texts');
 
 const deliverySchema = new Schema(
   {
@@ -41,9 +41,7 @@ const deliverySchema = new Schema(
     materialsDelivered: [String],
     liftingMeans: [{ type: Schema.Types.ObjectId, ref: STRINGS.MODALS.MEAN }],
     routingMeans: [{ type: Schema.Types.ObjectId, ref: STRINGS.MODALS.MEAN }],
-    meanBookings: [
-      { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.MEANBOOKING },
-    ],
+    meanBookings: [{ type: Schema.Types.ObjectId, ref: STRINGS.MODALS.MEANBOOKING }],
     building: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.BUILDING },
     level: { type: Schema.Types.ObjectId, ref: STRINGS.MODALS.LEVEL },
     date: Date,
@@ -62,6 +60,7 @@ const deliverySchema = new Schema(
         STRINGS.STATUS.COMPLETED,
         STRINGS.STATUS.COMPLETEDWITHISSUE,
       ],
+
       default: STRINGS.STATUS.PENDING,
     },
   },

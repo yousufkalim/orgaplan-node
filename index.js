@@ -1,28 +1,30 @@
-require("colors");
-require("express-async-errors");
-const dotenv = require("dotenv");
-const express = require("express");
-const mongoose = require("mongoose");
-const cron = require("node-cron");
-const Cronjobs = require("./services/Cron");
-const path = require("path");
+require('colors');
+require('./services/cronEmail');
+
+require('express-async-errors');
+const dotenv = require('dotenv');
+const express = require('express');
+const mongoose = require('mongoose');
+const cron = require('node-cron');
+const Cronjobs = require('./services/Cron');
+const path = require('path');
 // Load env vars
-dotenv.config({ path: ".env" });
+dotenv.config({ path: '.env' });
 
 // App initialization
 const app = express();
 
 // Pre-route middlewares
-require("./middlewares/pre-route")(app);
+require('./middlewares/pre-route')(app);
 
 // API routes
-app.use("/api", require("./routes"));
+app.use('/api', require('./routes'));
 
 // Ping route for testing connection
-app.get("/ping", (req, res) => res.status(200).send("Hello world!"));
+app.get('/ping', (req, res) => res.status(200).send('Hello world!'));
 
 // Error middlewares
-require("./middlewares/error")(app);
+require('./middlewares/error')(app);
 // PORT Handling
 const PORT = process.env.PORT;
 
@@ -40,16 +42,16 @@ mongoose
     });
   })
   .catch((err) => {
-    console.log("[App.Mongoose]".red, err);
+    console.log('[App.Mongoose]'.red, err);
   });
 cron.schedule(
-  "00 12 * * *",
+  '00 12 * * *',
   () => {
     new Cronjobs();
-    console.log("Cron is Running", new Date());
+    console.log('Cron is Running', new Date());
   },
   {
     scheduled: true,
-    timezone: "Asia/Karachi",
+    timezone: 'Europe/Paris',
   }
 );

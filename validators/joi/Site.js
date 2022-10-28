@@ -12,6 +12,10 @@ const schemas = {
       clientAdmin: Joi.array().items(),
       functionality: Joi.string().optional().allow(''),
       materials: Joi.array().optional().allow(''),
+
+      pdf: Joi.string().optional().allow(''),
+
+
       addresses: Joi.array()
         .items(
           Joi.object().keys({
@@ -22,13 +26,18 @@ const schemas = {
         )
         .min(1, 'Min one address required'),
       trades: Joi.array().items(Joi.string().optional()),
+      materials: Joi.array().items(Joi.string().optional()),
+      pdfFileName: Joi.string().optional().allow(''),
+
       penaltyforLateDelivery: Joi.number()
         .integer()
         .min(0)
         .max(9999)
         .messages({
           'number.min': 'Min value of 0 required',
+
           'number.max': 'Max value of 1 required'
+
         })
         .optional(),
       penaltyforUnexpDelivery: Joi.number()
@@ -37,7 +46,9 @@ const schemas = {
         .max(9999)
         .messages({
           'number.min': 'Min value of 0 required',
+
           'number.max': 'Max value of 1 required'
+
         })
         .optional(),
       start: Joi.date().required(),
@@ -61,13 +72,17 @@ const schemas = {
             startHour: Joi.number().required(),
             endHour: Joi.number().required(),
             dayOff: Joi.bool().required(),
+
             reason: Joi.string().optional().allow('')
+
           })
         )
         .optional(),
       additionalInfo: Joi.string().optional().allow(''),
       notificationPriorToDays: Joi.number().optional().allow('0'),
+
       notificationTo: Joi.array().items(Joi.string()).optional()
+
     });
 
     Helpers.isDateOccuranceChronological(data.start, data.end);
@@ -75,6 +90,9 @@ const schemas = {
     data.clientAdmin = JSON.parse(data.clientAdmin);
     data.addresses = JSON.parse(data.addresses);
     data.trades = JSON.parse(data.trades);
+    if (data.materials) {
+      data.materials = JSON.parse(data.materials);
+    }
     data.openingHours = JSON.parse(data.openingHours);
     data.unavailabilityDates = JSON.parse(data.unavailabilityDates);
     data.notificationTo = JSON.parse(data.notificationTo);
@@ -114,13 +132,19 @@ const schemas = {
         )
         .min(1, 'Min one address required'),
       trades: Joi.array().items(Joi.string().optional()),
+      materials: Joi.array().items(Joi.string().optional()),
+      pdf: Joi.string().optional().allow(''),
+      pdfFileName: Joi.string().optional().allow(''),
+
       penaltyforLateDelivery: Joi.number()
         .integer()
         .min(0)
         .max(9999)
         .messages({
           'number.min': 'Min value of 0 required',
+
           'number.max': 'Max value of 1 required'
+
         })
         .optional(),
       penaltyforUnexpDelivery: Joi.number()
@@ -129,7 +153,9 @@ const schemas = {
         .max(9999)
         .messages({
           'number.min': 'Min value of 0 required',
+
           'number.max': 'Max value of 1 required'
+
         })
         .optional(),
       start: Joi.date().required(),
@@ -153,18 +179,24 @@ const schemas = {
             startHour: Joi.number().required(),
             endHour: Joi.number().required(),
             dayOff: Joi.bool().required(),
+
             reason: Joi.string().optional().allow('')
+
           })
         )
         .optional(),
       additionalInfo: Joi.string().optional().allow(''),
       notificationPriorToDays: Joi.number().optional().allow('0'),
+
       notificationTo: Joi.array().items(Joi.string()).optional()
+
     });
 
     data.clientAdmin = JSON.parse(data.clientAdmin);
     data.addresses = JSON.parse(data.addresses);
     data.trades = JSON.parse(data.trades);
+    data.materials = JSON.parse(data.materials);
+
     data.openingHours = JSON.parse(data.openingHours);
     data.unavailabilityDates = JSON.parse(data.unavailabilityDates);
     data.notificationTo = JSON.parse(data.notificationTo);
