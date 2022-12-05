@@ -3,8 +3,7 @@ const Helpers = require('../../utils/helpers');
 const CustomError = require('../../utils/customError');
 
 const schemas = {
-  create: (data) => {
-    console.log('a1', data);
+  create: data => {
     const Validation = Joi.object().keys({
       name: Joi.string().required(),
       logo: Joi.string().optional().allow(''),
@@ -14,7 +13,6 @@ const schemas = {
       materials: Joi.array().optional().allow(''),
 
       pdf: Joi.string().optional().allow(''),
-
 
       addresses: Joi.array()
         .items(
@@ -37,7 +35,6 @@ const schemas = {
           'number.min': 'Min value of 0 required',
 
           'number.max': 'Max value of 1 required'
-
         })
         .optional(),
       penaltyforUnexpDelivery: Joi.number()
@@ -48,7 +45,6 @@ const schemas = {
           'number.min': 'Min value of 0 required',
 
           'number.max': 'Max value of 1 required'
-
         })
         .optional(),
       start: Joi.date().required(),
@@ -74,7 +70,6 @@ const schemas = {
             dayOff: Joi.bool().required(),
 
             reason: Joi.string().optional().allow('')
-
           })
         )
         .optional(),
@@ -82,7 +77,6 @@ const schemas = {
       notificationPriorToDays: Joi.number().optional().allow('0'),
 
       notificationTo: Joi.array().items(Joi.string()).optional()
-
     });
 
     Helpers.isDateOccuranceChronological(data.start, data.end);
@@ -97,7 +91,6 @@ const schemas = {
     data.unavailabilityDates = JSON.parse(data.unavailabilityDates);
     data.notificationTo = JSON.parse(data.notificationTo);
 
-    data.materials = JSON.parse(data.materials);
     if (data.image) {
       data.logo = data.image;
       delete data.image;
@@ -108,13 +101,13 @@ const schemas = {
 
     if (error) {
       const { details } = error;
-      const message = details.map((i) => i.message).join(',');
+      const message = details.map(i => i.message).join(',');
       throw new CustomError(message);
     }
 
     return value;
   },
-  update: (data) => {
+  update: data => {
     const Validation = Joi.object().keys({
       siteId: Joi.string().required(),
       name: Joi.string().required(),
@@ -144,7 +137,6 @@ const schemas = {
           'number.min': 'Min value of 0 required',
 
           'number.max': 'Max value of 1 required'
-
         })
         .optional(),
       penaltyforUnexpDelivery: Joi.number()
@@ -155,7 +147,6 @@ const schemas = {
           'number.min': 'Min value of 0 required',
 
           'number.max': 'Max value of 1 required'
-
         })
         .optional(),
       start: Joi.date().required(),
@@ -181,7 +172,6 @@ const schemas = {
             dayOff: Joi.bool().required(),
 
             reason: Joi.string().optional().allow('')
-
           })
         )
         .optional(),
@@ -189,7 +179,6 @@ const schemas = {
       notificationPriorToDays: Joi.number().optional().allow('0'),
 
       notificationTo: Joi.array().items(Joi.string()).optional()
-
     });
 
     data.clientAdmin = JSON.parse(data.clientAdmin);
@@ -207,7 +196,7 @@ const schemas = {
     const { error, value } = Validation.validate(data);
     if (error) {
       const { details } = error;
-      const message = details.map((i) => i.message).join(',');
+      const message = details.map(i => i.message).join(',');
       throw new CustomError(message);
     }
     return value;
