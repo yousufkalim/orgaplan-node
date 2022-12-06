@@ -7,13 +7,13 @@ const Validations = require('../../validators');
 const SitePic = require('../../models/sitePic');
 const response = require('../../utils/response');
 const UserSites = require('../../models/userSites');
+const Company = require('../../models/company');
 const CustomError = require('../../utils/customError');
 const SiteCompanies = mongoose.model(STRINGS.MODALS.SITECOMPANIES);
 const { writeLog } = require('../../utils/logs');
 const { findOneAndUpdate } = require('../../models/zac');
 const ENV = process.env;
 const moment = require('moment');
-
 
 const MailService = require('../../services/mail.service');
 
@@ -93,7 +93,7 @@ class SuperAdminSitesController {
     if (site.notificationTo.length > 0) {
       let emailService = new MailService();
 
-      site.notificationTo.map(async (email) => {
+      site.notificationTo.map(async email => {
         await emailService.siteCreationNotiToMailsAddedBySuperAdmin(result.name, email);
       });
     }
@@ -184,7 +184,6 @@ class SuperAdminSitesController {
       zacId: 1,
 
       'clientAdmin.adminId': 1
-
     }).lean();
     if (!itemCheck) throw new CustomError(STRINGS.TEXTS.siteNotFound, 404);
 
@@ -199,9 +198,7 @@ class SuperAdminSitesController {
 
     if (!validatedData.zacId) {
       await Site.findByIdAndUpdate(validatedData.siteId, {
-
         $unset: { zacId: '' }
-
       });
     }
     // start site_Companies update
@@ -209,53 +206,91 @@ class SuperAdminSitesController {
     const clientAdmin = validatedData.clientAdmin;
 
     //throwing error if superadmin adds a user as admin in site if he is already an enterprise user in this site added  by the admin
-    const clientAdminIds = clientAdmin.map((a) => a.adminId);
+    const clientAdminIds = clientAdmin.map(a => a.adminId);
 
     const existingUsers = await UserSites.find({
       userId: {
-        $in: clientAdminIds,
+        $in: clientAdminIds
       },
       $or: [
         {
           sites: {
             siteId: validatedData.siteId,
-            role: 'ENTERPRISE',
-          },
+            role: 'ENTERPRISE'
+          }
         },
         {
           sites: {
             siteId: validatedData.siteId,
-            role: 'BUFFER',
-          },
+            role: 'BUFFER'
+          }
         },
         {
           sites: {
             siteId: validatedData.siteId,
-            role: 'TRAFFIC',
-          },
-        },
-      ],
+            role: 'TRAFFIC'
+          }
+        }
+      ]
     });
 
     if (existingUsers.length > 0) throw new CustomError(STRINGS.ERRORS.userAlreadyExists, 400);
 
-    const siteCompanyUser = clientAdmin.map((key, index) => {
+    /*
+    --------------------------------- Multiple Admins ---------------------------------
+     */
+
+    // 1- Find all the companies for all the admins except the NOCLIENT
+    let adminCompanies = await Company.find({
+      adminIds: { $in: clientAdminIds },
+      type: { $ne: 'NOCLIENTS' }
+    });
+
+    // 2- Creating array for admins with their clients
+    const siteCompanyUser = clientAdmin.map(a => {
       return {
-        userId: key.adminId,
-        companyId: key.companyId,
+        userId: a.adminId,
+        companyId: String(adminCompanies.find(c => c.adminIds.includes(a.adminId))?._id),
         role: STRINGS.ROLES.ADMIN
       };
     });
 
-    const siteCompanyCompanies = clientAdmin.map((key, index) => {
+    // 3- Creating array for clients of the admins
+    let siteCompanyCompanies = siteCompanyUser.map(a => {
       return {
-        companyId: key.companyId,
+        companyId: a.companyId,
         trades: validatedData.trades
       };
     });
 
-    // 2- update Site Companies Doc
+    // 4- Finding all the site companies created by admins
+    let siteCompanies = await SiteCompanies.findOne({ siteId: validatedData.siteId });
+    siteCompanies = JSON.parse(JSON.stringify(siteCompanies));
 
+    // 5- Finding companies to filter if we deleted any admin
+    let companies = await Company.find({
+      _id: { $in: siteCompanies.companies.map(a => a.companyId) },
+      type: 'NOCLIENTS'
+    });
+    companies = JSON.parse(JSON.stringify(companies));
+
+    // 6- Filtering site companies to skip the companies of the deleted admins
+    await siteCompanyUser.map(a => {
+      let filteredCompanies = companies.filter(b => b.adminIds.includes(a.userId));
+
+      filteredCompanies = siteCompanies.companies.filter(c =>
+        filteredCompanies.map(d => d._id).includes(c.companyId)
+      );
+
+      siteCompanyCompanies.push(...filteredCompanies);
+    });
+
+    // 7- Removing duplicates
+    siteCompanyCompanies = siteCompanyCompanies.filter(
+      (thing, index, self) => index === self.findIndex(t => t.companyId === thing.companyId)
+    );
+
+    // 8- Updating site companies
     const update_Site_companies = await SiteCompanies.updateOne(
       { siteId: validatedData.siteId },
       { $set: { users: siteCompanyUser, companies: siteCompanyCompanies } },
@@ -286,19 +321,14 @@ class SuperAdminSitesController {
         userId: fromEditId.adminId
       });
       if (userSitesCheck) {
-
-        const userSiteupdate = await UserSites.findByIdAndUpdate(
-          userSitesCheck._id,
-          {
-            $addToSet: {
-              sites: {
-                siteId: validatedData.siteId,
-                role: STRINGS.ROLES.ADMIN
-              }
+        const userSiteupdate = await UserSites.findByIdAndUpdate(userSitesCheck._id, {
+          $addToSet: {
+            sites: {
+              siteId: validatedData.siteId,
+              role: STRINGS.ROLES.ADMIN
             }
           }
-        );
-
+        });
       } else {
         await UserSites.create({
           userId: fromEditId.adminId,
@@ -352,7 +382,6 @@ class SuperAdminSitesController {
         'clientAdmin.clientId': clientId,
 
         status: { $ne: STRINGS.STATUS.ARCHIVED }
-
       },
       { __v: 0, password: 0 }
     )
