@@ -284,6 +284,13 @@ class SuperAdminSitesController {
 
       siteCompanyCompanies.push(...filteredCompanies);
     });
+    siteCompanyUser.push(
+      ...siteCompanies?.users.filter(
+        u =>
+          u.role !== STRINGS.ROLES.ADMIN &&
+          siteCompanyCompanies.map(a => a.companyId).includes(u.companyId)
+      )
+    );
 
     // 7- Removing duplicates
     siteCompanyCompanies = siteCompanyCompanies.filter(
